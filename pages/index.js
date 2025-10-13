@@ -115,7 +115,7 @@ export default function Home() {
 
       <div className="container">
         <header className="header">
-          <h1 className="title">🤖 AI News Hub</h1>
+          <h1 className="title">🤖 NEWS ERDEROM</h1>
           <p className="subtitle">Latest Artificial Intelligence & Technology News</p>
         </header>
 
@@ -200,7 +200,7 @@ export default function Home() {
         </main>
 
         <footer className="footer">
-          <p>&copy; 2024 AI News Hub. Powered by NewsAPI & YouTube API</p>
+          <p>&copy; 2025 AI News Hub. Powered by erderom.ro</p>
         </footer>
       </div>
 
