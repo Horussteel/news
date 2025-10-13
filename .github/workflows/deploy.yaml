@@ -59,7 +59,7 @@ jobs:
           cp -r .output/* "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
           cp package.json "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
           cp package-lock.json "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
-          cp ecosystem.config.cjs "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
+          cp ecosystem.config.js "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
           cp migrate.js "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
           cp .env "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
 
@@ -70,4 +70,4 @@ jobs:
       - name: Restart application
         run: |
           cd ${{ env.DEPLOY_DIR }}
-          pm2 restart ecosystem.config.cjs || pm2 start ecosystem.config.cjs
+          pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
