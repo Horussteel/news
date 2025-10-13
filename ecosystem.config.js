@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
     name: 'news',
-    script: '.next/standalone/server.js',
+    script: 'server.js',
     cwd: '/var/www/news', // Schimbați cu calea reală pe server
     instances: '1',
     exec_mode: 'fork',
@@ -41,6 +41,6 @@ module.exports = {
     listen_timeout: 3000,
     
     // Custom variables for API keys
-    env_file: '.env.production'
+    env_file: '.env'
   }]
 };
