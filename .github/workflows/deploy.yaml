@@ -32,7 +32,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Commit lockfile changes
         continue-on-error: true
