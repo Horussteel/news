@@ -20,7 +20,7 @@ jobs:
       NEXT_PUBLIC_YOUTUBE_API_KEY: ${{ secrets.NEXT_PUBLIC_YOUTUBE_API_KEY }}
       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
       AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
-      DEPLOY_DIR: /root/news/news
+      DEPLOY_DIR: /var/www/news
 
     steps:
       - name: Checkout code
