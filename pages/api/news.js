@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Cache simplu în memorie
 const cache = new Map();
-const CACHE_TTL = 15 * 60 * 1000; // 15 minute
+const CACHE_TTL = 60 * 60 * 1000; // 1 oră
 
 // Retry logic with exponential backoff
 async function fetchWithRetry(url, params, maxRetries = 3) {
@@ -134,16 +134,36 @@ export default async function handler(req, res) {
       status: error.response?.status,
       statusText: error.response?.statusText,
       code: error.code,
-      url: error.config?.url
+      url: error.config?.url,
+      params: error.config?.params ? { ...error.config.params, apiKey: 'HIDDEN' } : null
     };
     console.error('News API Error:', sanitizedError);
     
     // Returnăm date mock în caz de eroare
+    let errorMessage = 'Unable to fetch news at this time';
+    let statusCode = 500;
+    
+    if (error.response?.status === 429) {
+      // Check if it's the specific rate limit message for developer accounts
+      if (error.response?.data?.code === 'rateLimited') {
+        errorMessage = 'News API rate limit reached. Free developer accounts are limited to 100 requests per day. Please try again in a few hours or consider upgrading to a paid plan.';
+      } else {
+        errorMessage = 'Too many requests. Please try again later.';
+      }
+      statusCode = 429;
+    } else if (error.response?.status === 401) {
+      errorMessage = 'API key invalid or expired. Please check your API key configuration.';
+      statusCode = 401;
+    } else if (error.response?.status === 426) {
+      errorMessage = 'API upgrade required. Please check your API plan.';
+      statusCode = 426;
+    }
+    
     const mockData = {
       articles: [
         {
           title: "AI News Platform Loading...",
-          description: "Unable to fetch latest news. Please try again later.",
+          description: errorMessage,
           url: "#",
           urlToImage: null,
           publishedAt: new Date().toISOString(),
@@ -156,10 +176,10 @@ export default async function handler(req, res) {
       page: parseInt(page) || 1,
       language: language || 'en',
       error: true,
-      message: error.response?.status === 429 ? 'Too many requests. Please try again later.' : 'Unable to fetch news at this time',
+      message: errorMessage,
       timestamp: new Date().toISOString()
     };
 
-    res.status(error.response?.status === 429 ? 429 : 500).json(mockData);
+    res.status(statusCode).json(mockData);
   }
 }
