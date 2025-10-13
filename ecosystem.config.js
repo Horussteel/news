@@ -2,18 +2,18 @@ module.exports = {
   apps: [{
     name: 'news',
     script: 'server.js',
-    cwd: '/cale/catre/news', // Schimbați cu calea reală pe server
-    instances: 'max',
-    exec_mode: 'cluster',
+    cwd: './', // Schimbați cu calea reală pe server
+    instances: '1',
+    exec_mode: 'fork',
     env: {
       NODE_ENV: 'production',
       PORT: 3008,
-      HOSTNAME: '0.0.0.0'
+      HOSTNAME: '127.0.0.1'
     },
     env_production: {
       NODE_ENV: 'production',
       PORT: 3008,
-      HOSTNAME: '0.0.0.0'
+      HOSTNAME: '127.0.0.1'
     },
     error_file: '/var/log/news-error.log',
     out_file: '/var/log/news-out.log',
