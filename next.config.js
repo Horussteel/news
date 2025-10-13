@@ -11,11 +11,6 @@ const nextConfig = {
   distDir: '.next', // Default Next.js build directory
   assetPrefix: '',
   
-  // Environment variables
-  env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-  },
-  
   // API rewrites for production
   async rewrites() {
     return [

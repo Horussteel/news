@@ -2,7 +2,28 @@ import axios from 'axios';
 
 // Cache simplu în memorie
 const cache = new Map();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minute
+const CACHE_TTL = 15 * 60 * 1000; // 15 minute
+
+// Retry logic with exponential backoff
+async function fetchWithRetry(url, params, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await axios.get(url, { 
+        params,
+        timeout: 10000 // 10 secunde timeout
+      });
+      return response;
+    } catch (error) {
+      if (error.response?.status === 429 && attempt < maxRetries) {
+        const delay = Math.pow(2, attempt) * 1000; // Exponential backoff: 2s, 4s, 8s
+        console.log(`Rate limited. Retrying in ${delay}ms... (Attempt ${attempt}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+      throw error;
+    }
+  }
+}
 
 function getCacheKey(query) {
   return JSON.stringify(query);
@@ -79,7 +100,7 @@ export default async function handler(req, res) {
     } else {
       // Știri internaționale
       url = `${baseUrl}/everything`;
-      params.q = search || 'AI OR artificial intelligence OR machine learning OR "deep learning" OR "neural networks" OR robotics';
+      params.q = search || 'artificial intelligence OR machine learning';
       params.sortBy = 'publishedAt';
       params.from = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // Ultimele 7 zile
       
@@ -88,10 +109,7 @@ export default async function handler(req, res) {
       }
     }
 
-    const response = await axios.get(url, { 
-      params,
-      timeout: 10000 // 10 secunde timeout
-    });
+    const response = await fetchWithRetry(url, params);
     
     const result = {
       articles: response.data.articles || [],
@@ -110,7 +128,15 @@ export default async function handler(req, res) {
     res.status(200).json(result);
 
   } catch (error) {
-    console.error('News API Error:', error);
+    // Log error without exposing sensitive data
+    const sanitizedError = {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      code: error.code,
+      url: error.config?.url
+    };
+    console.error('News API Error:', sanitizedError);
     
     // Returnăm date mock în caz de eroare
     const mockData = {
@@ -130,10 +156,10 @@ export default async function handler(req, res) {
       page: parseInt(page) || 1,
       language: language || 'en',
       error: true,
-      message: 'Unable to fetch news at this time',
+      message: error.response?.status === 429 ? 'Too many requests. Please try again later.' : 'Unable to fetch news at this time',
       timestamp: new Date().toISOString()
     };
 
-    res.status(500).json(mockData);
+    res.status(error.response?.status === 429 ? 429 : 500).json(mockData);
   }
 }

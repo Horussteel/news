@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
     name: 'news',
-    script: 'server.js',
+    script: '.next/standalone/server.js',
     cwd: './', // Schimbați cu calea reală pe server
     instances: '1',
     exec_mode: 'fork',
