@@ -67,11 +67,9 @@ jobs:
 
       - name: Create .env file
         run: |
-          cat > .env << EOF
-NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-AUTH_SECRET=${{ secrets.AUTH_SECRET }}
-AUTH_TRUST_HOST=true
-EOF
+          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" > .env
+          echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
+          echo "AUTH_TRUST_HOST=true" >> .env
 
       - name: Deploy to production
         run: |
