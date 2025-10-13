@@ -1,4 +1,4 @@
-# Deploy Money Tracker to Production
+# Deploy news to Production
 # Triggers on push to main branch
 
 name: Deploy to Production
@@ -56,15 +56,10 @@ jobs:
           rm -rf "${{ env.DEPLOY_DIR }}"/*
           # copy standalone build output and runtime files
           cp -r .next/standalone/* "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
-          # copy the entire .next directory structure needed for standalone mode
-          mkdir -p "${{ env.DEPLOY_DIR }}/.next"
-          cp -r .next/static "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
-          # copy essential .next build files
-          cp .next/BUILD_ID "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
-          cp .next/routes-manifest.json "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
-          cp .next/prerender-manifest.json "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
-          cp .next/html-pages-manifest.json "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
-          cp -r .next/server "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
+          # copy the entire .next directory (except standalone which is already copied)
+          cp -r .next/* "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
+          # remove standalone from .next since it's already copied to root
+          rm -rf "${{ env.DEPLOY_DIR }}/.next/standalone" 2>/dev/null || true
           cp package.json "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
           cp package-lock.json "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
           cp ecosystem.config.js "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
