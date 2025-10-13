@@ -61,6 +61,9 @@ jobs:
           cp -r .next/static "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
           # copy essential .next build files
           cp .next/BUILD_ID "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
+          cp .next/routes-manifest.json "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
+          cp .next/prerender-manifest.json "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
+          cp .next/html-pages-manifest.json "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
           cp -r .next/server "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
           cp package.json "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
           cp package-lock.json "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
