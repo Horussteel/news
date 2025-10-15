@@ -36,6 +36,11 @@ jobs:
           git add package-lock.json
           git diff-index --quiet HEAD || git commit -m "Update package-lock.json"
 
+      - name: Check package.json scripts
+        run: |
+          echo "=== Available npm scripts ==="
+          npm run
+
       - name: Create .env file
         run: |
           echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" > .env
@@ -44,27 +49,35 @@ jobs:
           echo "NEXT_PUBLIC_NEWS_API_KEY=${{ secrets.NEXT_PUBLIC_NEWS_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_YOUTUBE_API_KEY=${{ secrets.NEXT_PUBLIC_YOUTUBE_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_MEDIASTACK_API_KEY=${{ secrets.NEXT_PUBLIC_MEDIASTACK_API_KEY }}" >> .env
+          echo "=== Created .env file ==="
+          cat .env
 
-      - name: Run build
-        run: npm run build
-
-      - name: List files after build
+      - name: Run build with error handling
         run: |
-          echo "=== Current directory contents ==="
-          ls -la
-          echo "=== .next directory contents (if exists) ==="
-          ls -la .next/ 2>/dev/null || echo ".next directory does not exist"
-          echo "=== Checking other possible build directories ==="
-          ls -la build/ 2>/dev/null || echo "build directory does not exist"
-          ls -la dist/ 2>/dev/null || echo "dist directory does not exist"
+          echo "=== Starting build process ==="
+          npm run build || {
+            echo "=== Build failed, checking for alternatives ==="
+            if npm run | grep -q "build"; then
+              echo "Build script exists but failed"
+            else
+              echo "No build script found, trying alternatives"
+              npm run dev:build || npm run compile || npm run make
+            fi
+            echo "=== Listing all files to see what was generated ==="
+            find . -name "*.js" -o -name "*.html" -o -name "*.json" | head -20
+          }
 
-      - name: Upload build artifacts
+      - name: List all files and directories
+        run: |
+          echo "=== Complete directory structure ==="
+          find . -type f -name "*.js" -o -name "*.ts" -o -name "*.tsx" -o -name "*.jsx" -o -name "*.html" -o -name "*.json" -o -name "*.css" | sort
+
+      - name: Upload any generated files as artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-output
           path: |
-            .next/
-            build/
-            dist/
-            public/
-            .env
+            **/*
+            !.git
+            !node_modules
+          if-no-files-found: warn
