@@ -35,7 +35,9 @@ jobs:
         run: |
           git add package-lock.json
           git diff-index --quiet HEAD || git commit -m "Update package-lock.json"
-  run build
+
+      - name: Run build
+        run: npm run build
 
       - name: Create .env file
         run: |
