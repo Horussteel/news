@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import Head from 'next/head';
 import NewsCard from '../components/NewsCard';
 import SearchBar from '../components/SearchBar';
+import UserMenu from '../components/UserMenu';
+import Layout from '../components/Layout';
 
 export default function Home() {
   const [articles, setArticles] = useState([]);
@@ -13,10 +14,27 @@ export default function Home() {
   const [language, setLanguage] = useState('en');
   const [activeTab, setActiveTab] = useState('news');
 
+  // Reset category to default when language changes
+  useEffect(() => {
+    if (language === 'en') {
+      setCategory('Toate');
+    }
+  }, [language]);
+
   const categories = [
     'Toate', 'Technology', 'Business', 'Science', 'Health', 
     'Sports', 'Entertainment', 'General', 'AI', 'Machine Learning'
   ];
+
+  const getLocalizedCategories = () => {
+    if (language === 'ro') {
+      return [
+        'Toate', 'Tehnologie', 'Business', 'Știință', 'Sănătate', 
+        'Sport', 'Divertisment', 'General', 'AI', 'Machine Learning'
+      ];
+    }
+    return categories;
+  };
 
   const fetchNews = async () => {
     try {
@@ -29,7 +47,9 @@ export default function Home() {
         language
       });
 
-      const response = await fetch(`/api/news?${params}`);
+      // Folosim API-ul de știri românești când limba e română
+      const apiUrl = language === 'ro' ? '/api/romanian-news' : '/api/news';
+      const response = await fetch(`${apiUrl}?${params}`);
       const data = await response.json();
 
       if (data.error) {
@@ -51,7 +71,8 @@ export default function Home() {
       setError(null);
       
       const params = new URLSearchParams({
-        search: searchTerm
+        search: searchTerm,
+        language
       });
 
       const response = await fetch(`/api/youtube?${params}`);
@@ -105,20 +126,8 @@ export default function Home() {
   );
 
   return (
-    <>
-      <Head>
-        <title>AI News - Latest Artificial Intelligence News</title>
-        <meta name="description" content="Latest AI and machine learning news from around the world" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
+    <Layout title="AI News" description="Latest AI and machine learning news from around the world">
       <div className="container">
-        <header className="header">
-          <h1 className="title">🤖 NEWS ERDEROM</h1>
-          <p className="subtitle">Latest Artificial Intelligence & Technology News</p>
-        </header>
-
         <div className="controls">
           <SearchBar onSearch={handleSearch} />
           
@@ -128,7 +137,7 @@ export default function Home() {
               onChange={(e) => setCategory(e.target.value)}
               className="filter-select"
             >
-              {categories.map(cat => (
+              {getLocalizedCategories().map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
@@ -198,10 +207,6 @@ export default function Home() {
             </div>
           )}
         </main>
-
-        <footer className="footer">
-          <p>&copy; 2025 AI News Hub. Powered by erderom.ro</p>
-        </footer>
       </div>
 
       <style jsx>{`
@@ -210,25 +215,6 @@ export default function Home() {
           margin: 0 auto;
           padding: 20px;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
-        .header {
-          text-align: center;
-          margin-bottom: 40px;
-        }
-
-        .title {
-          font-size: 3rem;
-          margin-bottom: 10px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .subtitle {
-          font-size: 1.2rem;
-          color: #666;
         }
 
         .controls {
@@ -244,17 +230,18 @@ export default function Home() {
 
         .filter-select {
           padding: 10px 15px;
-          border: 2px solid #e1e5e9;
+          border: 2px solid var(--border-color);
           border-radius: 8px;
           font-size: 16px;
-          background: white;
+          background: var(--bg-primary);
+          color: var(--text-primary);
           cursor: pointer;
         }
 
         .tabs {
           display: flex;
           margin-bottom: 30px;
-          border-bottom: 2px solid #e1e5e9;
+          border-bottom: 2px solid var(--border-color);
         }
 
         .tab {
@@ -265,11 +252,12 @@ export default function Home() {
           cursor: pointer;
           border-bottom: 3px solid transparent;
           transition: all 0.3s ease;
+          color: var(--text-secondary);
         }
 
         .tab.active {
-          border-bottom-color: #667eea;
-          color: #667eea;
+          border-bottom-color: var(--accent-color);
+          color: var(--accent-color);
           font-weight: bold;
         }
 
@@ -279,8 +267,8 @@ export default function Home() {
         }
 
         .spinner {
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #667eea;
+          border: 4px solid var(--bg-secondary);
+          border-top: 4px solid var(--accent-color);
           border-radius: 50%;
           width: 40px;
           height: 40px;
@@ -302,7 +290,7 @@ export default function Home() {
         .error button {
           margin-top: 15px;
           padding: 10px 20px;
-          background: #667eea;
+          background: var(--accent-color);
           color: white;
           border: none;
           border-radius: 5px;
@@ -318,22 +306,22 @@ export default function Home() {
         .no-content {
           text-align: center;
           padding: 60px 20px;
-          color: #666;
+          color: var(--text-secondary);
           font-size: 1.1rem;
         }
 
         .video-card {
-          border: 1px solid #e1e5e9;
+          border: 1px solid var(--border-color);
           border-radius: 12px;
           overflow: hidden;
-          background: white;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          background: var(--bg-primary);
+          box-shadow: 0 2px 8px var(--shadow-color);
           transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .video-card:hover {
           transform: translateY(-5px);
-          box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+          box-shadow: 0 8px 25px var(--shadow-color);
         }
 
         .video-thumbnail img {
@@ -353,16 +341,16 @@ export default function Home() {
         }
 
         .video-title a {
-          color: #333;
+          color: var(--text-primary);
           text-decoration: none;
         }
 
         .video-title a:hover {
-          color: #667eea;
+          color: var(--accent-color);
         }
 
         .video-channel {
-          color: #666;
+          color: var(--text-secondary);
           font-size: 0.9rem;
           margin: 5px 0;
         }
@@ -374,27 +362,15 @@ export default function Home() {
         }
 
         .video-description {
-          color: #666;
+          color: var(--text-secondary);
           font-size: 0.9rem;
           line-height: 1.4;
           margin-top: 10px;
         }
 
-        .footer {
-          text-align: center;
-          margin-top: 60px;
-          padding-top: 30px;
-          border-top: 1px solid #e1e5e9;
-          color: #666;
-        }
-
         @media (max-width: 768px) {
           .container {
             padding: 10px;
-          }
-
-          .title {
-            font-size: 2rem;
           }
 
           .content-grid {
@@ -411,6 +387,6 @@ export default function Home() {
           }
         }
       `}</style>
-    </>
+    </Layout>
   );
 }

@@ -58,13 +58,15 @@ export default async function handler(req, res) {
     }
 
     // Construim query-ul pentru căutare
-    const query = search || 'artificial intelligence OR machine learning OR AI technology OR deep learning';
+    const defaultQuery = 'artificial intelligence OR machine learning OR AI technology OR deep learning';
+    const romanianQuery = 'inteligență artificială OR AI OR tehnologie OR machine learning OR deep learning';
+    const query = search || (req.query.language === 'ro' ? romanianQuery : defaultQuery);
     
     const params = {
       part: 'snippet',
       q: query,
       type: 'video',
-      maxResults: Math.min(parseInt(maxResults), 50), // Maxim 50 rezultate
+      maxResults: Math.min(parseInt(maxResults), 25), // Maxim 25 rezultate
       order: 'relevance',
       videoDefinition: 'any',
       videoDuration: 'any',

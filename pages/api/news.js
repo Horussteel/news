@@ -88,14 +88,47 @@ export default async function handler(req, res) {
     };
 
     if (language === 'ro') {
-      // Știri românești
+      // Știri românești - surse multiple
       url = `${baseUrl}/top-headlines`;
       params.country = 'ro';
-      if (category && category !== 'Toate') {
-        params.category = category.toLowerCase();
+      
+      // Surse românești valide disponibile în NewsAPI
+      const romanianSources = [
+        'adevarul.ro', 
+        'libertatea.ro', 
+        'gandul.ro', 
+        'hotnews.ro', 
+        'protv.ro', 
+        'digisport.ro'
+      ];
+      
+      // Selectăm surse în funcție de categorie (doar surse disponibile)
+      let selectedSources = romanianSources;
+      
+      if (category === 'Technology' || category === 'AI' || category === 'Machine Learning') {
+        selectedSources = romanianSources; // Folosim toate sursele pentru tech
+      } else if (category === 'Business') {
+        selectedSources = romanianSources; // Folosim toate sursele pentru business
+      } else if (category === 'Sports') {
+        selectedSources = ['digisport.ro']; // Doar surse sportive
+      } else if (category === 'Entertainment') {
+        selectedSources = romanianSources; // Folosim toate sursele pentru entertainment
       }
+      
+      // Dacă avem categorie specifică, folosim sursele respectivele
+      if (category && category !== 'Toate') {
+        params.sources = selectedSources.join(',');
+        delete params.country; // Nu folosim country când avem surse specifice
+      }
+      
       if (search) {
         params.q = search;
+      }
+      
+      // Dacă nu avem rezultate cu surse specifice, cădem fără surse
+      if (!search && (!category || category === 'Toate')) {
+        delete params.sources;
+        params.country = 'ro';
       }
     } else {
       // Știri internaționale
