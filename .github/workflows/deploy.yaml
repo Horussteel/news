@@ -59,6 +59,7 @@ jobs:
           cp package.json ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp package-lock.json ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp ecosystem.config.js ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
+          cp server.js ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp .env ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
 
       - name: Install production dependencies
