@@ -36,9 +36,6 @@ jobs:
           git add package-lock.json
           git diff-index --quiet HEAD || git commit -m "Update package-lock.json"
 
-      - name: Run build
-        run: npm run build
-
       - name: Create .env file
         run: |
           echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" > .env
@@ -48,10 +45,26 @@ jobs:
           echo "NEXT_PUBLIC_YOUTUBE_API_KEY=${{ secrets.NEXT_PUBLIC_YOUTUBE_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_MEDIASTACK_API_KEY=${{ secrets.NEXT_PUBLIC_MEDIASTACK_API_KEY }}" >> .env
 
+      - name: Run build
+        run: npm run build
+
+      - name: List files after build
+        run: |
+          echo "=== Current directory contents ==="
+          ls -la
+          echo "=== .next directory contents (if exists) ==="
+          ls -la .next/ 2>/dev/null || echo ".next directory does not exist"
+          echo "=== Checking other possible build directories ==="
+          ls -la build/ 2>/dev/null || echo "build directory does not exist"
+          ls -la dist/ 2>/dev/null || echo "dist directory does not exist"
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-output
           path: |
             .next/
+            build/
+            dist/
             public/
+            .env
