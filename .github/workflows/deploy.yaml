@@ -48,27 +48,10 @@ jobs:
           echo "NEXT_PUBLIC_YOUTUBE_API_KEY=${{ secrets.NEXT_PUBLIC_YOUTUBE_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_MEDIASTACK_API_KEY=${{ secrets.NEXT_PUBLIC_MEDIASTACK_API_KEY }}" >> .env
 
-      - name: Deploy to production
-        run: |
-          echo "Deploying to ${{ env.DEPLOY_DIR }}..."
-          mkdir -p "${{ env.DEPLOY_DIR }}"
-          rm -rf "${{ env.DEPLOY_DIR }}"/*
-          # copy standalone build output and runtime files
-          cp -r .next/standalone/* "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
-          # copy the entire .next directory (except standalone which is already copied)
-          cp -r .next/* "${{ env.DEPLOY_DIR }}/.next/" 2>/dev/null || true
-          # remove standalone from .next since it's already copied to root
-          rm -rf "${{ env.DEPLOY_DIR }}/.next/standalone" 2>/dev/null || true
-          cp package.json "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
-          cp package-lock.json "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
-          cp ecosystem.config.js "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
-          cp .env "${{ env.DEPLOY_DIR }}/" 2>/dev/null || true
-
-      - name: Install production dependencies
-        run: npm install --omit=dev
-        working-directory: ${{ env.DEPLOY_DIR }}
-        
-      - name: Restart application
-        run: |
-          cd ${{ env.DEPLOY_DIR }}
-          pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: |
+            .next/
+            public/
