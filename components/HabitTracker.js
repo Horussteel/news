@@ -291,9 +291,9 @@ const HabitTracker = () => {
       {/* View Modes */}
       {viewMode === 'week' && renderWeekView()}
 
-      {/* Habits List for Today View */}
+      {/* Habits Grid for Today View */}
       {viewMode === 'today' && (
-        <div className="habits-list">
+        <div className="habits-section">
           <h3>
             {new Date(selectedDate).toLocaleDateString('en-US', { 
               weekday: 'long', 
@@ -307,7 +307,9 @@ const HabitTracker = () => {
               <p>No habits yet. Click "Add Habit" to get started!</p>
             </div>
           ) : (
-            habits.map(habit => renderHabitCard(habit))
+            <div className="habits-grid">
+              {habits.map(habit => renderHabitCard(habit))}
+            </div>
           )}
         </div>
       )}
@@ -554,109 +556,196 @@ const HabitTracker = () => {
           color: var(--text-primary);
         }
 
+        .habits-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 20px;
+          margin-bottom: 30px;
+        }
+
         .habit-card {
           background: var(--bg-secondary);
           border: 1px solid var(--border-color);
-          border-radius: 12px;
+          border-radius: 16px;
           padding: 20px;
-          margin-bottom: 15px;
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+          aspect-ratio: 1;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .habit-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+          border-color: var(--accent-color);
+        }
+
+        .habit-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, var(--accent-color), var(--accent-color-light, #8b9dc3));
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        .habit-card:hover::before {
+          opacity: 1;
         }
 
         .habit-header {
           display: flex;
-          justify-content: space-between;
+          flex-direction: column;
           align-items: center;
+          text-align: center;
           margin-bottom: 15px;
+          flex: 1;
         }
 
         .habit-info {
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 15px;
+          gap: 12px;
+          width: 100%;
         }
 
         .habit-icon {
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          border-radius: 16px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 24px;
+          font-size: 28px;
           color: white;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          transition: transform 0.3s ease;
+        }
+
+        .habit-card:hover .habit-icon {
+          transform: scale(1.1);
         }
 
         .habit-details h3 {
-          margin: 0 0 5px 0;
+          margin: 0 0 8px 0;
           color: var(--text-primary);
+          font-size: 1.1rem;
+          font-weight: 600;
         }
 
         .habit-details p {
           margin: 0;
           color: var(--text-secondary);
-          font-size: 0.9rem;
+          font-size: 0.85rem;
+          line-height: 1.4;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
 
         .habit-actions {
           display: flex;
-          gap: 8px;
+          justify-content: center;
+          gap: 10px;
+          margin-top: auto;
         }
 
         .complete-btn {
-          width: 40px;
-          height: 40px;
+          width: 50px;
+          height: 50px;
           border: 2px solid var(--accent-color);
-          border-radius: 50%;
+          border-radius: 12px;
           background: transparent;
           color: var(--accent-color);
-          font-size: 20px;
+          font-size: 22px;
           cursor: pointer;
           transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .complete-btn:hover {
+          transform: scale(1.05);
         }
 
         .complete-btn.completed {
           background: var(--accent-color);
           color: white;
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
         .edit-btn, .delete-btn {
-          width: 35px;
-          height: 35px;
+          width: 36px;
+          height: 36px;
           border: 1px solid var(--border-color);
-          border-radius: 50%;
+          border-radius: 8px;
           background: transparent;
           cursor: pointer;
-          font-size: 16px;
+          font-size: 14px;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .edit-btn:hover {
           border-color: var(--accent-color);
+          color: var(--accent-color);
+          transform: scale(1.05);
         }
 
         .delete-btn:hover {
           border-color: #ef4444;
+          color: #ef4444;
+          transform: scale(1.05);
         }
 
         .habit-stats {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-          gap: 15px;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          margin-top: 15px;
+          padding-top: 15px;
+          border-top: 1px solid var(--border-color);
         }
 
         .stat {
           text-align: center;
+          padding: 8px;
+          background: var(--bg-primary);
+          border-radius: 8px;
+          transition: background 0.3s ease;
+        }
+
+        .stat:hover {
+          background: var(--accent-color);
+        }
+
+        .stat:hover .label,
+        .stat:hover .value {
+          color: white;
         }
 
         .stat .label {
           display: block;
-          font-size: 0.8rem;
+          font-size: 0.7rem;
           color: var(--text-secondary);
-          margin-bottom: 5px;
+          margin-bottom: 3px;
+          font-weight: 500;
         }
 
         .stat .value {
           font-weight: bold;
           color: var(--text-primary);
+          font-size: 0.9rem;
         }
 
         .empty-state {
@@ -798,17 +887,56 @@ const HabitTracker = () => {
             padding: 5px;
           }
 
-          .habit-header {
-            flex-direction: column;
+          .habits-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 15px;
           }
 
-          .habit-info {
-            width: 100%;
+          .habit-card {
+            padding: 15px;
+          }
+
+          .habit-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+          }
+
+          .habit-details h3 {
+            font-size: 1rem;
+          }
+
+          .habit-details p {
+            font-size: 0.8rem;
+          }
+
+          .complete-btn {
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+          }
+
+          .edit-btn, .delete-btn {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
           }
 
           .habit-stats {
             grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+          }
+
+          .stat {
+            padding: 6px;
+          }
+
+          .stat .label {
+            font-size: 0.65rem;
+          }
+
+          .stat .value {
+            font-size: 0.8rem;
           }
 
           .form-row {
@@ -817,6 +945,61 @@ const HabitTracker = () => {
 
           .icon-selector {
             grid-template-columns: repeat(4, 1fr);
+          }
+        }
+
+        @media (max-width: 480px) {
+          .habits-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+          }
+
+          .habit-card {
+            padding: 12px;
+          }
+
+          .habit-icon {
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+          }
+
+          .habit-details h3 {
+            font-size: 0.9rem;
+          }
+
+          .habit-details p {
+            font-size: 0.75rem;
+          }
+
+          .complete-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+          }
+
+          .edit-btn, .delete-btn {
+            width: 28px;
+            height: 28px;
+            font-size: 11px;
+          }
+
+          .habit-stats {
+            margin-top: 12px;
+            padding-top: 12px;
+            gap: 6px;
+          }
+
+          .stat {
+            padding: 4px;
+          }
+
+          .stat .label {
+            font-size: 0.6rem;
+          }
+
+          .stat .value {
+            font-size: 0.75rem;
           }
         }
       `}</style>
