@@ -16,10 +16,6 @@ jobs:
         working-directory: ${{ github.workspace }}
 
     env:
-      NEXT_PUBLIC_NEWS_API_KEY: ${{ secrets.NEXT_PUBLIC_NEWS_API_KEY }}
-      NEXT_PUBLIC_YOUTUBE_API_KEY: ${{ secrets.NEXT_PUBLIC_YOUTUBE_API_KEY }}
-      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
       DEPLOY_DIR: /var/www/news
 
     steps:
@@ -46,6 +42,9 @@ jobs:
           echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" > .env
           echo "AUTH_SECRET=${{ secrets.AUTH_SECRET }}" >> .env
           echo "AUTH_TRUST_HOST=true" >> .env
+          echo "NEXT_PUBLIC_NEWS_API_KEY=${{ secrets.NEXT_PUBLIC_NEWS_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_YOUTUBE_API_KEY=${{ secrets.NEXT_PUBLIC_YOUTUBE_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_MEDIASTACK_API_KEY=${{ secrets.NEXT_PUBLIC_MEDIASTACK_API_KEY }}" >> .env
 
       - name: Deploy to production
         run: |
