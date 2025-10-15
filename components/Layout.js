@@ -34,6 +34,13 @@ const Layout = ({ children, title, description }) => {
                 </a>
               </h1>
               <p className="subtitle">Latest Artificial Intelligence & Technology News</p>
+              <nav className="main-nav">
+                <a href="/" className="nav-link">📰 News</a>
+                <a href="/bookmarks" className="nav-link">📚 Bookmarks</a>
+                <a href="/history" className="nav-link">📖 History</a>
+                <a href="/habits" className="nav-link">🎯 Habits</a>
+                <a href="/settings" className="nav-link">⚙️ Settings</a>
+              </nav>
             </div>
             <div className="header-right">
               <UserMenu />
@@ -138,6 +145,35 @@ const Layout = ({ children, title, description }) => {
           margin: 0;
         }
 
+        .main-nav {
+          display: flex;
+          gap: 1rem;
+          margin-top: 1rem;
+          flex-wrap: wrap;
+        }
+
+        .nav-link {
+          padding: 0.5rem 1rem;
+          background: var(--bg-secondary);
+          border: 1px solid var(--border-color);
+          border-radius: 20px;
+          text-decoration: none;
+          color: var(--text-primary);
+          font-size: 0.9rem;
+          transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+          background: var(--accent-color);
+          color: white;
+          border-color: var(--accent-color);
+          transform: translateY(-2px);
+        }
+
+        .nav-link:active {
+          transform: translateY(0);
+        }
+
         .layout-main {
           flex: 1;
           max-width: 1200px;
@@ -195,6 +231,16 @@ const Layout = ({ children, title, description }) => {
             font-size: 0.9rem;
           }
 
+          .main-nav {
+            justify-content: center;
+            gap: 0.5rem;
+          }
+
+          .nav-link {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+          }
+
           .layout-main {
             padding: 0 1rem;
           }
@@ -202,6 +248,17 @@ const Layout = ({ children, title, description }) => {
           .layout-footer {
             padding: 1rem;
             font-size: 0.9rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .main-nav {
+            gap: 0.3rem;
+          }
+
+          .nav-link {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.75rem;
           }
         }
       `}</style>
