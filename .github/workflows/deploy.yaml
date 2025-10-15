@@ -66,6 +66,11 @@ jobs:
           # copy build output
           cp -r .next/* ${{ env.DEPLOY_DIR }}/.next/ 2>/dev/null || true
           cp -r public/* ${{ env.DEPLOY_DIR }}/public/ 2>/dev/null || true
+          cp -r components ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
+          cp -r pages ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
+          cp -r lib ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
+          cp -r contexts ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
+          cp -r styles ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp package.json ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp package-lock.json ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp ecosystem.config.js ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
