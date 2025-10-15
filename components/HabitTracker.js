@@ -16,7 +16,9 @@ const HabitTracker = () => {
     color: '#3B82F6',
     frequency: 'daily',
     targetCount: 1,
-    unit: ''
+    unit: '',
+    type: 'positive',
+    startDate: ''
   });
 
   const categories = [
@@ -69,7 +71,9 @@ const HabitTracker = () => {
       color: '#3B82F6',
       frequency: 'daily',
       targetCount: 1,
-      unit: ''
+      unit: '',
+      type: 'positive',
+      startDate: ''
     });
     setShowAddForm(false);
     loadData();
@@ -85,7 +89,9 @@ const HabitTracker = () => {
       color: habit.color,
       frequency: habit.frequency,
       targetCount: habit.targetCount,
-      unit: habit.unit
+      unit: habit.unit,
+      type: habit.type || 'positive',
+      startDate: habit.startDate || ''
     });
     setShowAddForm(true);
   };
@@ -130,9 +136,10 @@ const HabitTracker = () => {
   const renderHabitCard = (habit) => {
     const stat = statistics.find(s => s.habit.id === habit.id);
     const isCompleted = storageService.isHabitCompleted(habit.id, selectedDate);
+    const negativeTime = habit.type === 'negative' ? storageService.getNegativeHabitTime(habit.id) : null;
     
     return (
-      <div key={habit.id} className="habit-card">
+      <div key={habit.id} className={`habit-card ${habit.type === 'negative' ? 'negative-habit' : ''}`}>
         <div className="habit-header">
           <div className="habit-info">
             <div className="habit-icon" style={{ backgroundColor: habit.color }}>
@@ -141,15 +148,34 @@ const HabitTracker = () => {
             <div className="habit-details">
               <h3>{habit.name}</h3>
               <p>{habit.description}</p>
+              {habit.type === 'negative' && (
+                <div className="habit-type-badge">🚫 Negative Habit</div>
+              )}
             </div>
           </div>
           <div className="habit-actions">
-            <button 
-              className={`complete-btn ${isCompleted ? 'completed' : ''}`}
-              onClick={() => handleCompleteHabit(habit.id)}
-            >
-              {isCompleted ? '✓' : '○'}
-            </button>
+            {habit.type === 'positive' && (
+              <button 
+                className={`complete-btn ${isCompleted ? 'completed' : ''}`}
+                onClick={() => handleCompleteHabit(habit.id)}
+              >
+                {isCompleted ? '✓' : '○'}
+              </button>
+            )}
+            {habit.type === 'negative' && (
+              <button 
+                className="reset-btn"
+                onClick={() => {
+                  if (confirm('Are you sure you want to reset this negative habit counter? This will start counting from today.')) {
+                    storageService.resetNegativeHabit(habit.id);
+                    loadData();
+                  }
+                }}
+                title="Reset counter"
+              >
+                🔄
+              </button>
+            )}
             <button 
               className="edit-btn"
               onClick={() => handleEditHabit(habit)}
@@ -164,6 +190,19 @@ const HabitTracker = () => {
             </button>
           </div>
         </div>
+        
+        {/* Negative habit time display */}
+        {habit.type === 'negative' && negativeTime && (
+          <div className="negative-time-display">
+            <div className="time-counter">
+              <span className="time-label">Time Clean:</span>
+              <span className="time-value">{negativeTime.formatted}</span>
+            </div>
+            <div className="time-details">
+              <span>Started: {new Date(negativeTime.startDate).toLocaleDateString()}</span>
+            </div>
+          </div>
+        )}
         
         {stat && (
           <div className="habit-stats">
@@ -369,6 +408,30 @@ const HabitTracker = () => {
                 </div>
               </div>
             </div>
+
+            <div className="form-group">
+              <label>Habit Type</label>
+              <select
+                value={newHabit.type}
+                onChange={(e) => setNewHabit({...newHabit, type: e.target.value})}
+              >
+                <option value="positive">✅ Positive Habit (Build good habits)</option>
+                <option value="negative">🚫 Negative Habit (Break bad habits)</option>
+              </select>
+            </div>
+
+            {newHabit.type === 'negative' && (
+              <div className="form-group">
+                <label>Start Date *</label>
+                <input
+                  type="date"
+                  value={newHabit.startDate}
+                  onChange={(e) => setNewHabit({...newHabit, startDate: e.target.value})}
+                  max={new Date().toISOString().split('T')[0]}
+                />
+                <small>When did you start this negative habit tracking?</small>
+              </div>
+            )}
 
             <div className="form-row">
               <div className="form-group">
@@ -658,13 +721,13 @@ const HabitTracker = () => {
         }
 
         .complete-btn {
-          width: 50px;
-          height: 50px;
+          width: 65px;
+          height: 65px;
           border: 2px solid var(--accent-color);
           border-radius: 12px;
           background: transparent;
           color: var(--accent-color);
-          font-size: 22px;
+          font-size: 28px;
           cursor: pointer;
           transition: all 0.3s ease;
           display: flex;
@@ -683,13 +746,13 @@ const HabitTracker = () => {
         }
 
         .edit-btn, .delete-btn {
-          width: 36px;
-          height: 36px;
+          width: 48px;
+          height: 48px;
           border: 1px solid var(--border-color);
           border-radius: 8px;
           background: transparent;
           cursor: pointer;
-          font-size: 14px;
+          font-size: 18px;
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
@@ -864,6 +927,82 @@ const HabitTracker = () => {
           cursor: not-allowed;
         }
 
+        /* Negative Habits Styles */
+        .negative-habit {
+          border-left: 4px solid #ef4444;
+        }
+
+        .negative-habit:hover::before {
+          background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        .habit-type-badge {
+          background: #ef4444;
+          color: white;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-size: 0.7rem;
+          font-weight: 500;
+          margin-top: 5px;
+          display: inline-block;
+        }
+
+        .negative-time-display {
+          background: linear-gradient(135deg, #ef4444, #dc2626);
+          color: white;
+          padding: 12px;
+          border-radius: 8px;
+          margin: 10px 0;
+          text-align: center;
+        }
+
+        .time-counter {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 5px;
+        }
+
+        .time-label {
+          font-size: 0.8rem;
+          opacity: 0.9;
+        }
+
+        .time-value {
+          font-size: 1.1rem;
+          font-weight: bold;
+        }
+
+        .time-details {
+          font-size: 0.7rem;
+          opacity: 0.8;
+        }
+
+        .reset-btn {
+          width: 48px;
+          height: 48px;
+          border: 2px solid #f59e0b;
+          border-radius: 8px;
+          background: transparent;
+          color: #f59e0b;
+          font-size: 18px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .reset-btn:hover {
+          background: #f59e0b;
+          color: white;
+          transform: scale(1.05);
+        }
+
+        .reset-btn:active {
+          transform: scale(0.95);
+        }
+
         @media (max-width: 768px) {
           .tracker-header {
             flex-direction: column;
@@ -911,15 +1050,15 @@ const HabitTracker = () => {
           }
 
           .complete-btn {
-            width: 45px;
-            height: 45px;
-            font-size: 20px;
+            width: 60px;
+            height: 60px;
+            font-size: 26px;
           }
 
           .edit-btn, .delete-btn {
-            width: 32px;
-            height: 32px;
-            font-size: 12px;
+            width: 44px;
+            height: 44px;
+            font-size: 16px;
           }
 
           .habit-stats {
