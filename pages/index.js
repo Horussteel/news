@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import NewsCard from '../components/NewsCard';
 import SearchBar from '../components/SearchBar';
 import UserMenu from '../components/UserMenu';
+import YouTubePlayer from '../components/YouTubePlayer';
 import Layout from '../components/Layout';
 
 export default function Home() {
@@ -13,6 +14,8 @@ export default function Home() {
   const [category, setCategory] = useState('Toate');
   const [language, setLanguage] = useState('en');
   const [activeTab, setActiveTab] = useState('news');
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [isPlayerOpen, setIsPlayerOpen] = useState(false);
 
   // Reset category to default when language changes
   useEffect(() => {
@@ -103,12 +106,29 @@ export default function Home() {
     setSearchTerm(term);
   };
 
+  const handlePlayVideo = (video) => {
+    setSelectedVideo(video);
+    setIsPlayerOpen(true);
+  };
+
+  const handleClosePlayer = () => {
+    setIsPlayerOpen(false);
+    setSelectedVideo(null);
+  };
+
   const VideoCard = ({ video }) => (
     <div className="video-card">
       <div className="video-thumbnail">
         {video.thumbnail && (
           <img src={video.thumbnail} alt={video.title} />
         )}
+        <button 
+          className="play-button" 
+          onClick={() => handlePlayVideo(video)}
+          aria-label="Play video"
+        >
+          ▶
+        </button>
       </div>
       <div className="video-content">
         <h3 className="video-title">
@@ -208,6 +228,12 @@ export default function Home() {
           )}
         </main>
       </div>
+
+      <YouTubePlayer 
+        video={selectedVideo} 
+        isOpen={isPlayerOpen} 
+        onClose={handleClosePlayer} 
+      />
 
       <style jsx>{`
         .container {
@@ -324,10 +350,43 @@ export default function Home() {
           box-shadow: 0 8px 25px var(--shadow-color);
         }
 
+        .video-thumbnail {
+          position: relative;
+        }
+
         .video-thumbnail img {
           width: 100%;
           height: 200px;
           object-fit: cover;
+        }
+
+        .play-button {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 60px;
+          height: 60px;
+          background: rgba(0, 0, 0, 0.7);
+          border: none;
+          border-radius: 50%;
+          color: white;
+          font-size: 24px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(5px);
+        }
+
+        .play-button:hover {
+          background: rgba(0, 0, 0, 0.9);
+          transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .play-button:active {
+          transform: translate(-50%, -50%) scale(0.95);
         }
 
         .video-content {
@@ -384,6 +443,12 @@ export default function Home() {
 
           .tabs {
             justify-content: center;
+          }
+
+          .play-button {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
           }
         }
       `}</style>
