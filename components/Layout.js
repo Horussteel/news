@@ -39,6 +39,8 @@ const Layout = ({ children, title, description }) => {
                 <a href="/bookmarks" className="nav-link">📚 Bookmarks</a>
                 <a href="/history" className="nav-link">📖 History</a>
                 <a href="/habits" className="nav-link">🎯 Habits</a>
+                <a href="/reading" className="nav-link">📚 Reading</a>
+                <a href="/todo" className="nav-link">✅ To-Do</a>
                 <a href="/settings" className="nav-link">⚙️ Settings</a>
               </nav>
             </div>
@@ -169,6 +171,7 @@ const Layout = ({ children, title, description }) => {
           border-color: var(--accent-color);
           transform: translateY(-2px);
         }
+
 
         .nav-link:active {
           transform: translateY(0);
