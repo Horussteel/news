@@ -24,6 +24,8 @@ jobs:
       NEXT_PUBLIC_YOUTUBE_API_KEY: ${{ secrets.NEXT_PUBLIC_YOUTUBE_API_KEY }}
       NEXT_PUBLIC_MEDIASTACK_API_KEY: ${{ secrets.NEXT_PUBLIC_MEDIASTACK_API_KEY }}
       NEXTAUTH_URL: https://news.erderom.ro
+      FORCE_HTTPS: true
+      NODE_ENV: production
       DEPLOY_DIR: /var/www/news
 
     steps:
@@ -50,6 +52,8 @@ jobs:
           echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
           echo "AUTH_TRUST_HOST=true" >> .env
           echo "NEXTAUTH_URL=https://news.erderom.ro" >> .env
+          echo "FORCE_HTTPS=true" >> .env
+          echo "NODE_ENV=production" >> .env
           echo "NEXT_PUBLIC_NEWS_API_KEY=${{ secrets.NEXT_PUBLIC_NEWS_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_YOUTUBE_API_KEY=${{ secrets.NEXT_PUBLIC_YOUTUBE_API_KEY }}" >> .env
           echo "NEXT_PUBLIC_MEDIASTACK_API_KEY=${{ secrets.NEXT_PUBLIC_MEDIASTACK_API_KEY }}" >> .env
