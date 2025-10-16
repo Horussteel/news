@@ -41,6 +41,7 @@ const Layout = ({ children, title, description }) => {
                 <a href="/habits" className="nav-link">🎯 Habits</a>
                 <a href="/reading" className="nav-link">📚 Reading</a>
                 <a href="/todo" className="nav-link">✅ To-Do</a>
+                <a href="/pomodoro" className="nav-link">🍅 Pomodoro</a>
                 <a href="/dashboard" className="nav-link">📊 Dashboard</a>
                 <a href="/settings" className="nav-link">⚙️ Settings</a>
               </nav>
