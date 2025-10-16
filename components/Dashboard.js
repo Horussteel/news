@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import analyticsService from '../lib/analyticsService';
+import DataExportManager from './DataExportManager';
 
 const Dashboard = () => {
   const [analyticsData, setAnalyticsData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('week');
   const [activeTab, setActiveTab] = useState('overview');
+  const [showDataExport, setShowDataExport] = useState(false);
 
   useEffect(() => {
     loadAnalytics();
@@ -281,19 +283,20 @@ const Dashboard = () => {
             🔄 Refresh
           </button>
           <button 
-            className="export-btn" 
-            onClick={() => handleExportData('json')}
+            className="data-export-btn" 
+            onClick={() => setShowDataExport(!showDataExport)}
           >
-            📊 Export JSON
-          </button>
-          <button 
-            className="export-btn" 
-            onClick={() => handleExportData('csv')}
-          >
-            📈 Export CSV
+            📦 Export/Import Date
           </button>
         </div>
       </div>
+
+      {/* Data Export Manager */}
+      {showDataExport && (
+        <div className="data-export-section">
+          <DataExportManager />
+        </div>
+      )}
 
       {/* Overview Section */}
       <div className="overview-section">
@@ -553,7 +556,7 @@ const Dashboard = () => {
           gap: 10px;
         }
 
-        .refresh-btn, .export-btn {
+        .refresh-btn, .data-export-btn {
           background: white;
           color: #667EEA;
           border: none;
@@ -564,9 +567,13 @@ const Dashboard = () => {
           transition: all 0.3s ease;
         }
 
-        .refresh-btn:hover, .export-btn:hover {
+        .refresh-btn:hover, .data-export-btn:hover {
           background: #f0f4ff;
           transform: translateY(-2px);
+        }
+
+        .data-export-section {
+          margin-bottom: 30px;
         }
 
         .overview-section {

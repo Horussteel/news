@@ -1,11 +1,23 @@
 import { useState, useEffect } from 'react';
 import UserMenu from './UserMenu';
 import Head from 'next/head';
+import storageService from '../lib/storageService';
+import todoService from '../lib/todoService';
+import readingService from '../lib/readingService';
+import pomodoroService from '../lib/pomodoroService';
 
 const Layout = ({ children, title, description }) => {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
+    // Make services available globally for data export
+    if (typeof window !== 'undefined') {
+      window.storageService = storageService;
+      window.todoService = todoService;
+      window.readingService = readingService;
+      window.pomodoroService = pomodoroService;
+    }
+
     if (darkMode) {
       document.body.classList.add('dark-mode');
       document.body.classList.remove('light-mode');
