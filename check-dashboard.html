@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Check</title>
+</head>
+<body>
+    <h1>🔍 Dashboard Status Check</h1>
+    <div id="status"></div>
+    <script>
+        // Check if dashboard is working
+        setTimeout(() => {
+            const statusDiv = document.getElementById('status');
+            
+            // Check if we're on the dashboard page
+            if (window.location.href.includes('/dashboard')) {
+                statusDiv.innerHTML = `
+                    <h2>✅ Dashboard Page Loaded</h2>
+                    <p>Page: ${window.location.href}</p>
+                    <p>Ready to check console logs...</p>
+                    <h3>📊 Next Steps:</h3>
+                    <ol>
+                        <li>Open Developer Console (F12)</li>
+                        <li>Look for log messages starting with:</li>
+                        <ul>
+                            <li>📊 AnalyticsService: getDashboardData() called</li>
+                            <li>📋 TodoService: getTodos() called</li>
+                            <li>🎯 HabitService: getHabits() called</li>
+                            <li>📚 ReadingService: getBooks() called</li>
+                        </ul>
+                        <li>Check if data is being loaded correctly</li>
+                        <li>Verify dashboard displays statistics</li>
+                    </ol>
+                    <p><strong>If all data shows 0, the issue is in localStorage data loading.</strong></p>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <h2>❌ Not on Dashboard Page</h2>
+                    <p>Current page: ${window.location.href}</p>
+                    <p>Please navigate to: <a href="http://localhost:3000/dashboard">http://localhost:3000/dashboard</a></p>
+                `;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

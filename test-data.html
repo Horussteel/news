@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Test Data</title>
+</head>
+<body>
+    <h1>Adding Test Data...</h1>
+    <script>
+        // Add test todos
+        const todos = [
+            { id: '1', title: 'Test Task 1', completed: true, priority: 'high', category: 'work', createdAt: new Date().toISOString(), completedAt: new Date().toISOString() },
+            { id: '2', title: 'Test Task 2', completed: false, priority: 'medium', category: 'personal', createdAt: new Date().toISOString() },
+            { id: '3', title: 'Test Task 3', completed: true, priority: 'low', category: 'work', createdAt: new Date().toISOString(), completedAt: new Date(Date.now() - 86400000).toISOString() }
+        ];
+        localStorage.setItem('todos', JSON.stringify(todos));
+        console.log('✅ Todos added:', todos.length);
+
+        // Add test habits
+        const habits = [
+            { id: '1', name: 'Morning Meditation', category: 'wellness', type: 'positive', isArchived: false, createdAt: new Date().toISOString(), startDate: new Date().toISOString() },
+            { id: '2', name: 'Exercise', category: 'health', type: 'positive', isArchived: false, createdAt: new Date().toISOString(), startDate: new Date().toISOString() }
+        ];
+        localStorage.setItem('habits', JSON.stringify(habits));
+        console.log('✅ Habits added:', habits.length);
+
+        // Add test reading
+        const reading = [
+            { id: '1', title: 'React Book', author: 'John Doe', totalPages: 300, currentPage: 150, progress: 50, completed: false, category: 'tech', createdAt: new Date().toISOString(), startDate: new Date().toISOString() },
+            { id: '2', title: 'JavaScript Guide', author: 'Jane Smith', totalPages: 200, currentPage: 200, progress: 100, completed: true, category: 'tech', createdAt: new Date().toISOString(), startDate: new Date(Date.now() - 86400000).toISOString(), endDate: new Date().toISOString() }
+        ];
+        localStorage.setItem('reading', JSON.stringify(reading));
+        console.log('✅ Reading added:', reading.length);
+
+        // Add habit completions
+        const habitCompletions = {
+            '1': [new Date().toISOString().split('T')[0], new Date(Date.now() - 86400000).toISOString().split('T')[0]],
+            '2': [new Date().toISOString().split('T')[0]]
+        };
+        localStorage.setItem('habitCompletions', JSON.stringify(habitCompletions));
+        console.log('✅ Habit completions added');
+
+        document.body.innerHTML = '<h1>✅ Test data added successfully!</h1><p>Close this tab and refresh the dashboard.</p>';
+        
+        // Log what was added
+        console.log('📊 Test Data Summary:');
+        console.log('- Todos:', todos.length);
+        console.log('- Habits:', habits.length);
+        console.log('- Reading:', reading.length);
+        console.log('- Habit Completions:', Object.keys(habitCompletions).length);
+    </script>
+</body>
+</html>
