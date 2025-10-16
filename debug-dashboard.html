@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Dashboard</title>
+</head>
+<body>
+    <h1>🔍 Dashboard Debug Tool</h1>
+    <div id="localStorage-data"></div>
+    <div id="dashboard-data"></div>
+    <script>
+        // Check localStorage data
+        function checkLocalStorage() {
+            const dataDiv = document.getElementById('localStorage-data');
+            
+            const todos = localStorage.getItem('todos');
+            const habits = localStorage.getItem('habits');
+            const reading = localStorage.getItem('reading');
+            const habitCompletions = localStorage.getItem('habitCompletions');
+            
+            dataDiv.innerHTML = `
+                <h2>📦 LocalStorage Data:</h2>
+                <h3>📋 Todos:</h3>
+                <p>Items: ${todos ? JSON.parse(todos).length : 0}</p>
+                <pre>${todos ? JSON.stringify(JSON.parse(todos), null, 2) : 'null'}</pre>
+                
+                <h3>🎯 Habits:</h3>
+                <p>Items: ${habits ? JSON.parse(habits).length : 0}</p>
+                <pre>${habits ? JSON.stringify(JSON.parse(habits), null, 2) : 'null'}</pre>
+                
+                <h3>📚 Reading:</h3>
+                <p>Items: ${reading ? JSON.parse(reading).length : 0}</p>
+                <pre>${reading ? JSON.stringify(JSON.parse(reading), null, 2) : 'null'}</pre>
+                
+                <h3>🔥 Habit Completions:</h3>
+                <pre>${habitCompletions ? JSON.stringify(JSON.parse(habitCompletions), null, 2) : 'null'}</pre>
+            `;
+        }
+        
+        // Test if we're on dashboard
+        function testDashboard() {
+            const dashboardDiv = document.getElementById('dashboard-data');
+            
+            if (window.location.href.includes('/dashboard')) {
+                dashboardDiv.innerHTML = `
+                    <h2>📊 Dashboard Page Detected</h2>
+                    <h3>🔍 Debug Steps:</h3>
+                    <ol>
+                        <li>Open Developer Console (F12)</li>
+                        <li>Look for these log messages:</li>
+                        <ul>
+                            <li>🔄 Dashboard: loadAnalytics() called</li>
+                            <li>📊 AnalyticsService: getDashboardData() called</li>
+                            <li>📋 TodoService: getTodos() called</li>
+                            <li>🎯 HabitService: getHabits() called</li>
+                            <li>📚 ReadingService: getBooks() called</li>
+                        </ul>
+                        <li>Check if data is loaded correctly</li>
+                        <li>Verify if dashboard displays statistics</li>
+                    </ol>
+                    <p><strong>Expected:</strong> Dashboard should show real data from localStorage</p>
+                    <p><strong>If all shows 0:</strong> Bug in analytics data reading</p>
+                    <p><strong>If data shows correctly:</strong> Bug in dashboard display</p>
+                `;
+            } else {
+                dashboardDiv.innerHTML = `
+                    <h2>❌ Not on Dashboard Page</h2>
+                    <p>Current: ${window.location.href}</p>
+                    <p>Please navigate to: <a href="http://localhost:3000/dashboard">http://localhost:3000/dashboard</a></p>
+                `;
+            }
+        }
+        
+        // Run checks
+        checkLocalStorage();
+        testDashboard();
+        
+        // Auto-refresh every 5 seconds
+        setInterval(() => {
+            checkLocalStorage();
+        }, 5000);
+    </script>
+</body>
+</html>

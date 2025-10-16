@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Analytics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .success {
+            color: green;
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            color: red;
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+            border: 1px solid #e9ecef;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Analytics Service Test</h1>
+        
+        <div class="section">
+            <h2>📊 Test Controls</h2>
+            <button class="btn" onclick="addTestData()">✅ Add Test Data</button>
+            <button class="btn btn-secondary" onclick="clearData()">🗑️ Clear Data</button>
+            <button class="btn" onclick="testAnalytics()">🔍 Test Analytics</button>
+            <div id="result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>📈 Dashboard Data</h2>
+            <div id="dashboard-result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>🔍 Raw Data</h2>
+            <div id="raw-result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Mock services for testing
+        class TodoService {
+            constructor() {
+                this.TODOS_KEY = 'todos';
+            }
+            
+            getTodos() {
+                try {
+                    const todos = localStorage.getItem(this.TODOS_KEY);
+                    return todos ? JSON.parse(todos) : [];
+                } catch (error) {
+                    console.error('Error getting todos:', error);
+                    return [];
+                }
+            }
+        }
+        
+        class HabitService {
+            constructor() {
+                this.initializeStorage();
+            }
+            
+            initializeStorage() {
+                if (!localStorage.getItem('habits')) {
+                    localStorage.setItem('habits', JSON.stringify([]));
+                }
+                if (!localStorage.getItem('habitCompletions')) {
+                    localStorage.setItem('habitCompletions', JSON.stringify({}));
+                }
+            }
+            
+            getHabits() {
+                try {
+                    const habits = localStorage.getItem('habits');
+                    return habits ? JSON.parse(habits) : [];
+                } catch (error) {
+                    return [];
+                }
+            }
+            
+            getHabitCompletions() {
+                try {
+                    const completions = localStorage.getItem('habitCompletions');
+                    return completions ? JSON.parse(completions) : {};
+                } catch (error) {
+                    return {};
+                }
+            }
+            
+            getHabitStats(habitId) {
+                const completions = this.getHabitCompletions()[habitId] || [];
+                
+                // Calculate current streak
+                const today = new Date().toISOString().split('T')[0];
+                let currentStreak = 0;
+                let checkDate = new Date(today);
+                
+                for (let i = 0; i < 30; i++) {
+                    const dateStr = checkDate.toISOString().split('T')[0];
+                    if (completions.includes(dateStr)) {
+                        currentStreak++;
+                        checkDate.setDate(checkDate.getDate() - 1);
+                    } else {
+                        break;
+                    }
+                }
+                
+                return {
+                    currentStreak,
+                    bestStreak: currentStreak,
+                    totalCompletions: completions.length,
+                    completionRate: completions.length > 0 ? Math.round((completions.length / 30) * 100) : 0,
+                    completionHistory: completions
+                };
+            }
+        }
+        
+        class ReadingService {
+            constructor() {
+                this.BOOKS_KEY = 'readingBooks';
+            }
+            
+            getBooks() {
+                try {
+                    const books = localStorage.getItem(this.BOOKS_KEY);
+                    return books ? JSON.parse(books) : [];
+                } catch (error) {
+                    return [];
+                }
+            }
+            
+            getReadingProgress() {
+                const books = this.getBooks();
+                return books.map(book => ({
+                    ...book,
+                    progress: this.calculateBookProgress(book),
+                    completed: book.status === 'completed' || book.completed || false
+                }));
+            }
+            
+            calculateBookProgress(book) {
+                if (!book.totalPages || book.totalPages === 0) return 0;
+                return Math.round((book.currentPage || 0) / book.totalPages * 100);
+            }
+        }
+        
+        class AnalyticsService {
+            constructor() {
+                this.todoService = new TodoService();
+                this.habitService = new HabitService();
+                this.readingService = new ReadingService();
+            }
+            
+            getOverviewStats() {
+                try {
+                    const todos = this.todoService.getTodos();
+                    const habits = this.habitService.getHabits();
+                    const reading = this.readingService.getReadingProgress();
+                    
+                    console.log('📊 Raw data:', { todos, habits, reading });
+                    
+                    const completedTodos = todos.filter(t => t.completed).length;
+                    const activeHabits = habits.filter(h => !h.isArchived).length;
+                    const completedReading = reading.filter(r => r.completed).length;
+                    
+                    const completionRate = todos.length > 0 ? Math.round((completedTodos / todos.length) * 100) : 0;
+                    const readingCompletionRate = reading.length > 0 ? Math.round((completedReading / reading.length) * 100) : 0;
+                    
+                    // Calculate overall productivity
+                    const todoScore = (completionRate / 100) * 0.4;
+                    const habitScore = (activeHabits > 0 && habits.length > 0 ? (activeHabits / habits.length) * 100 / 100 : 0) * 0.3;
+                    const readingScore = (readingCompletionRate / 100) * 0.3;
+                    const overallProductivity = Math.round(Math.min((todoScore + habitScore + readingScore) * 100, 100));
+                    
+                    const stats = {
+                        totalTodos: todos.length,
+                        completedTodos,
+                        completionRate,
+                        totalHabits: habits.length,
+                        activeHabits,
+                        totalReading: reading.length,
+                        completedReading,
+                        readingCompletionRate,
+                        overallProductivity
+                    };
+                    
+                    console.log('📊 Calculated stats:', stats);
+                    return stats;
+                } catch (error) {
+                    console.error('❌ Error in getOverviewStats():', error);
+                    return {
+                        totalTodos: 0,
+                        completedTodos: 0,
+                        completionRate: 0,
+                        totalHabits: 0,
+                        activeHabits: 0,
+                        totalReading: 0,
+                        completedReading: 0,
+                        readingCompletionRate: 0,
+                        overallProductivity: 0
+                    };
+                }
+            }
+            
+            getQuickStats() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                const todos = this.todoService.getTodos();
+                const habits = this.habitService.getHabits();
+                const reading = this.readingService.getReadingProgress();
+                
+                const todayTodos = todos.filter(todo => {
+                    if (!todo.completed) return false;
+                    return new Date(todo.completedAt) >= today && new Date(todo.completedAt) < tomorrow;
+                }).length;
+                
+                const todayHabits = habits.reduce((count, habit) => {
+                    const stats = this.habitService.getHabitStats(habit.id);
+                    const todayCompletions = stats.completionHistory.filter(date => {
+                        const completionDate = new Date(date);
+                        return completionDate >= today && completionDate < tomorrow;
+                    });
+                    return count + todayCompletions.length;
+                }, 0);
+                
+                const todayReading = reading.filter(book => {
+                    if (!book.completed) return false;
+                    return new Date(book.endDate) >= today && new Date(book.endDate) < tomorrow;
+                }).length;
+                
+                return {
+                    todayTodos,
+                    todayHabits,
+                    todayReading,
+                    todayProductivity: (todayTodos * 2) + (todayHabits * 1) + (todayReading * 3)
+                };
+            }
+            
+            getDashboardData() {
+                const overview = this.getOverviewStats();
+                const quickStats = this.getQuickStats();
+                
+                return {
+                    overview,
+                    quickStats,
+                    recentActivity: [],
+                    topMetrics: {}
+                };
+            }
+        }
+        
+        // Create service instances
+        const todoService = new TodoService();
+        const habitService = new HabitService();
+        const readingService = new ReadingService();
+        const analyticsService = new AnalyticsService();
+        
+        function showMessage(message, isSuccess = true) {
+            const result = document.getElementById('result');
+            result.innerHTML = `<div class="${isSuccess ? 'success' : 'error'}">${message}</div>`;
+        }
+        
+        function addTestData() {
+            try {
+                // Clear existing data
+                localStorage.removeItem('todos');
+                localStorage.removeItem('habits');
+                localStorage.removeItem('habitCompletions');
+                localStorage.removeItem('readingBooks');
+                
+                // Add sample todos
+                const todos = [
+                    {
+                        id: '1',
+                        title: 'Complete project presentation',
+                        completed: true,
+                        priority: 'high',
+                        category: 'work',
+                        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                        completedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: '2',
+                        title: 'Send weekly report',
+                        completed: true,
+                        priority: 'medium',
+                        category: 'work',
+                        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                        completedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: '3',
+                        title: 'Review pull requests',
+                        completed: false,
+                        priority: 'medium',
+                        category: 'work',
+                        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+                    }
+                ];
+                localStorage.setItem('todos', JSON.stringify(todos));
+                
+                // Add sample habits
+                const habits = [
+                    {
+                        id: '1',
+                        name: 'Morning Exercise',
+                        category: 'health',
+                        isArchived: false,
+                        createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: '2',
+                        name: 'Read for 30 minutes',
+                        category: 'learning',
+                        isArchived: false,
+                        createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
+                    }
+                ];
+                localStorage.setItem('habits', JSON.stringify(habits));
+                
+                // Add habit completions
+                const today = new Date().toISOString().split('T')[0];
+                const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                
+                const habitCompletions = {
+                    '1': [yesterday, today],
+                    '2': [today]
+                };
+                localStorage.setItem('habitCompletions', JSON.stringify(habitCompletions));
+                
+                // Add sample reading books
+                const books = [
+                    {
+                        id: '1',
+                        title: 'The Great Gatsby',
+                        author: 'F. Scott Fitzgerald',
+                        totalPages: 180,
+                        currentPage: 180,
+                        status: 'completed',
+                        completed: true,
+                        progress: 100,
+                        endDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                        category: 'fiction'
+                    },
+                    {
+                        id: '2',
+                        title: 'Atomic Habits',
+                        author: 'James Clear',
+                        totalPages: 320,
+                        currentPage: 150,
+                        status: 'reading',
+                        completed: false,
+                        progress: 47,
+                        category: 'self-help'
+                    }
+                ];
+                localStorage.setItem('readingBooks', JSON.stringify(books));
+                
+                showMessage('✅ Test data added successfully!', true);
+                setTimeout(testAnalytics, 500);
+                
+            } catch (error) {
+                showMessage('❌ Error adding test data: ' + error.message, false);
+            }
+        }
+        
+        function clearData() {
+            try {
+                localStorage.removeItem('todos');
+                localStorage.removeItem('habits');
+                localStorage.removeItem('habitCompletions');
+                localStorage.removeItem('readingBooks');
+                showMessage('🗑️ All data cleared successfully!', true);
+                document.getElementById('dashboard-result').innerHTML = '';
+                document.getElementById('raw-result').innerHTML = '';
+            } catch (error) {
+                showMessage('❌ Error clearing data: ' + error.message, false);
+            }
+        }
+        
+        function testAnalytics() {
+            try {
+                const dashboardData = analyticsService.getDashboardData();
+                
+                // Display dashboard data
+                const dashboardHtml = `
+                    <h3>📊 Overview Statistics</h3>
+                    <div class="stat-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.overview.totalTodos}</div>
+                            <div class="stat-label">Total Tasks</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.overview.completedTodos}</div>
+                            <div class="stat-label">Completed Tasks</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.overview.completionRate}%</div>
+                            <div class="stat-label">Completion Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.overview.totalHabits}</div>
+                            <div class="stat-label">Total Habits</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.overview.activeHabits}</div>
+                            <div class="stat-label">Active Habits</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.overview.totalReading}</div>
+                            <div class="stat-label">Total Books</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.overview.completedReading}</div>
+                            <div class="stat-label">Completed Books</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.overview.readingCompletionRate}%</div>
+                            <div class="stat-label">Reading Completion</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.overview.overallProductivity}%</div>
+                            <div class="stat-label">Overall Productivity</div>
+                        </div>
+                    </div>
+                    
+                    <h3>⚡ Today's Activity</h3>
+                    <div class="stat-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.quickStats.todayTodos}</div>
+                            <div class="stat-label">Today's Tasks</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.quickStats.todayHabits}</div>
+                            <div class="stat-label">Today's Habits</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.quickStats.todayReading}</div>
+                            <div class="stat-label">Today's Reading</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${dashboardData.quickStats.todayProductivity}</div>
+                            <div class="stat-label">Today's Productivity</div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('dashboard-result').innerHTML = dashboardHtml;
+                
+                // Display raw data
+                const rawHtml = `
+                    <h3>📋 Raw Data</h3>
+                    <pre>${JSON.stringify(dashboardData, null, 2)}</pre>
+                `;
+                
+                document.getElementById('raw-result').innerHTML = rawHtml;
+                
+                showMessage('✅ Analytics test completed successfully!', true);
+                
+            } catch (error) {
+                showMessage('❌ Error testing analytics: ' + error.message, false);
+                console.error('Analytics test error:', error);
+            }
+        }
+        
+        // Auto-test on load
+        window.onload = function() {
+            testAnalytics();
+        };
+    </script>
+</body>
+</html>

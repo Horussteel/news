@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Services</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .error {
+            color: red;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Services</h1>
+    
+    <div class="section">
+        <h2>📋 Todo Service Debug</h2>
+        <button onclick="debugTodos()">Debug Todos</button>
+        <button onclick="addSampleTodos()">Add Sample Todos</button>
+        <div id="todos-result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>🎯 Habit Service Debug</h2>
+        <button onclick="debugHabits()">Debug Habits</button>
+        <button onclick="addSampleHabits()">Add Sample Habits</button>
+        <div id="habits-result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>📚 Reading Service Debug</h2>
+        <button onclick="debugReading()">Debug Reading</button>
+        <button onclick="addSampleReading()">Add Sample Reading</button>
+        <div id="reading-result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>📊 Analytics Service Debug</h2>
+        <button onclick="debugAnalytics()">Debug Analytics</button>
+        <div id="analytics-result"></div>
+    </div>
+
+    <script>
+        // Simple mock services for testing
+        class TodoService {
+            constructor() {
+                this.TODOS_KEY = 'todos';
+            }
+            
+            getTodos() {
+                try {
+                    const todos = localStorage.getItem(this.TODOS_KEY);
+                    const parsedTodos = todos ? JSON.parse(todos) : this.getDefaultTodos();
+                    console.log('📋 TodoService: Todos loaded:', parsedTodos.length, 'items');
+                    return parsedTodos;
+                } catch (error) {
+                    console.error('❌ TodoService: Error getting todos:', error);
+                    return this.getDefaultTodos();
+                }
+            }
+            
+            addTodo(todo) {
+                try {
+                    const todos = this.getTodos();
+                    const newTodo = {
+                        id: Date.now().toString(),
+                        title: todo.title || '',
+                        description: todo.description || '',
+                        completed: todo.completed || false,
+                        priority: todo.priority || 'medium',
+                        dueDate: todo.dueDate || null,
+                        category: todo.category || 'personal',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        completedAt: todo.completed ? new Date().toISOString() : null
+                    };
+                    
+                    todos.unshift(newTodo);
+                    localStorage.setItem(this.TODOS_KEY, JSON.stringify(todos));
+                    return newTodo;
+                } catch (error) {
+                    console.error('Error adding todo:', error);
+                    return null;
+                }
+            }
+            
+            getDefaultTodos() {
+                return [
+                    {
+                        id: '1',
+                        title: 'Complete project documentation',
+                        description: 'Write comprehensive documentation for the project',
+                        completed: true,
+                        priority: 'high',
+                        dueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                        category: 'work',
+                        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                        completedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: '2',
+                        title: 'Review pull requests',
+                        description: 'Review and merge pending pull requests',
+                        completed: false,
+                        priority: 'medium',
+                        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+                        category: 'work',
+                        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                        completedAt: null
+                    }
+                ];
+            }
+        }
+        
+        class HabitService {
+            constructor() {
+                this.initializeStorage();
+            }
+            
+            initializeStorage() {
+                if (!localStorage.getItem('habits')) {
+                    localStorage.setItem('habits', JSON.stringify([]));
+                }
+                if (!localStorage.getItem('habitCompletions')) {
+                    localStorage.setItem('habitCompletions', JSON.stringify({}));
+                }
+            }
+            
+            getHabits() {
+                try {
+                    const habits = localStorage.getItem('habits');
+                    const parsedHabits = habits ? JSON.parse(habits) : [];
+                    console.log('🎯 HabitService: Habits loaded:', parsedHabits.length, 'items');
+                    return parsedHabits;
+                } catch (error) {
+                    console.error('❌ HabitService: Error getting habits:', error);
+                    return [];
+                }
+            }
+            
+            addHabit(habitData) {
+                const habits = this.getHabits();
+                const newHabit = {
+                    id: Date.now().toString(),
+                    name: habitData.name,
+                    description: habitData.description || '',
+                    category: habitData.category || 'personal',
+                    frequency: habitData.frequency || 'daily',
+                    createdAt: new Date().toISOString(),
+                    type: habitData.type || 'positive',
+                    isArchived: false,
+                    icon: habitData.icon || '🎯',
+                    color: habitData.color || '#3B82F6'
+                };
+
+                habits.push(newHabit);
+                localStorage.setItem('habits', JSON.stringify(habits));
+                return newHabit;
+            }
+            
+            getHabitCompletions() {
+                try {
+                    const completions = localStorage.getItem('habitCompletions');
+                    return completions ? JSON.parse(completions) : {};
+                } catch (error) {
+                    return {};
+                }
+            }
+        }
+        
+        class ReadingService {
+            constructor() {
+                this.BOOKS_KEY = 'readingBooks';
+            }
+            
+            getBooks() {
+                try {
+                    const books = localStorage.getItem(this.BOOKS_KEY);
+                    const parsedBooks = books ? JSON.parse(books) : this.getDefaultBooks();
+                    console.log('📚 ReadingService: Books loaded:', parsedBooks.length, 'items');
+                    return parsedBooks;
+                } catch (error) {
+                    console.error('❌ ReadingService: Error getting books:', error);
+                    return this.getDefaultBooks();
+                }
+            }
+            
+            addBook(book) {
+                try {
+                    const books = this.getBooks();
+                    const newBook = {
+                        id: Date.now().toString(),
+                        title: book.title,
+                        author: book.author || 'Unknown Author',
+                        totalPages: book.totalPages || 0,
+                        currentPage: book.currentPage || 0,
+                        status: book.status || 'reading',
+                        progress: book.progress || 0,
+                        completed: book.completed || false,
+                        startDate: book.startDate || new Date().toISOString(),
+                        endDate: book.endDate || null,
+                        category: book.category || 'fiction',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    books.unshift(newBook);
+                    localStorage.setItem(this.BOOKS_KEY, JSON.stringify(books));
+                    return newBook;
+                } catch (error) {
+                    console.error('Error adding book:', error);
+                    return null;
+                }
+            }
+            
+            getDefaultBooks() {
+                return [];
+            }
+        }
+        
+        // Create service instances
+        const todoService = new TodoService();
+        const habitService = new HabitService();
+        const readingService = new ReadingService();
+        
+        // Debug functions
+        function debugTodos() {
+            const result = document.getElementById('todos-result');
+            const todos = todoService.getTodos();
+            
+            let html = '<h3>📋 Todos Debug Results</h3>';
+            html += `<p><strong>Total todos:</strong> ${todos.length}</p>`;
+            html += `<p><strong>Completed todos:</strong> ${todos.filter(t => t.completed).length}</p>`;
+            html += `<p><strong>Pending todos:</strong> ${todos.filter(t => !t.completed).length}</p>`;
+            html += '<h4>Todo Items:</h4>';
+            html += '<pre>' + JSON.stringify(todos, null, 2) + '</pre>';
+            
+            result.innerHTML = html;
+        }
+        
+        function debugHabits() {
+            const result = document.getElementById('habits-result');
+            const habits = habitService.getHabits();
+            const completions = habitService.getHabitCompletions();
+            
+            let html = '<h3>🎯 Habits Debug Results</h3>';
+            html += `<p><strong>Total habits:</strong> ${habits.length}</p>`;
+            html += `<p><strong>Active habits:</strong> ${habits.filter(h => !h.isArchived).length}</p>`;
+            html += `<p><strong>Archived habits:</strong> ${habits.filter(h => h.isArchived).length}</p>`;
+            html += '<h4>Habit Items:</h4>';
+            html += '<pre>' + JSON.stringify(habits, null, 2) + '</pre>';
+            html += '<h4>Habit Completions:</h4>';
+            html += '<pre>' + JSON.stringify(completions, null, 2) + '</pre>';
+            
+            result.innerHTML = html;
+        }
+        
+        function debugReading() {
+            const result = document.getElementById('reading-result');
+            const books = readingService.getBooks();
+            
+            let html = '<h3>📚 Reading Debug Results</h3>';
+            html += `<p><strong>Total books:</strong> ${books.length}</p>`;
+            html += `<p><strong>Completed books:</strong> ${books.filter(b => b.completed || b.status === 'completed').length}</p>`;
+            html += `<p><strong>Currently reading:</strong> ${books.filter(b => b.status === 'reading').length}</p>`;
+            html += '<h4>Book Items:</h4>';
+            html += '<pre>' + JSON.stringify(books, null, 2) + '</pre>';
+            
+            result.innerHTML = html;
+        }
+        
+        function debugAnalytics() {
+            const result = document.getElementById('analytics-result');
+            
+            const todos = todoService.getTodos();
+            const habits = habitService.getHabits();
+            const books = readingService.getBooks();
+            
+            const completedTodos = todos.filter(t => t.completed).length;
+            const activeHabits = habits.filter(h => !h.isArchived).length;
+            const completedBooks = books.filter(b => b.completed || b.status === 'completed').length;
+            
+            const analytics = {
+                overview: {
+                    totalTodos: todos.length,
+                    completedTodos,
+                    completionRate: todos.length > 0 ? Math.round((completedTodos / todos.length) * 100) : 0,
+                    totalHabits: habits.length,
+                    activeHabits,
+                    totalReading: books.length,
+                    completedReading: completedBooks,
+                    readingCompletionRate: books.length > 0 ? Math.round((completedBooks / books.length) * 100) : 0,
+                    overallProductivity: Math.round((completedTodos * 40 + activeHabits * 30 + completedBooks * 30) / Math.max(1, todos.length + habits.length + books.length))
+                }
+            };
+            
+            let html = '<h3>📊 Analytics Debug Results</h3>';
+            html += '<h4>Calculated Analytics:</h4>';
+            html += '<pre>' + JSON.stringify(analytics, null, 2) + '</pre>';
+            
+            result.innerHTML = html;
+        }
+        
+        function addSampleTodos() {
+            const result = document.getElementById('todos-result');
+            
+            // Add some completed todos
+            todoService.addTodo({
+                title: 'Complete project presentation',
+                description: 'Prepare slides for the project presentation',
+                completed: true,
+                priority: 'high',
+                category: 'work'
+            });
+            
+            todoService.addTodo({
+                title: 'Send weekly report',
+                description: 'Send the weekly progress report to the team',
+                completed: true,
+                priority: 'medium',
+                category: 'work'
+            });
+            
+            // Add some pending todos
+            todoService.addTodo({
+                title: 'Schedule team meeting',
+                description: 'Schedule the weekly team sync meeting',
+                completed: false,
+                priority: 'medium',
+                category: 'work'
+            });
+            
+            result.innerHTML = '<div class="success">✅ Sample todos added successfully!</div>';
+            setTimeout(debugTodos, 500);
+        }
+        
+        function addSampleHabits() {
+            const result = document.getElementById('habits-result');
+            
+            // Add some habits
+            const habit1 = habitService.addHabit({
+                name: 'Morning Exercise',
+                description: '30 minutes of morning exercise',
+                category: 'health',
+                type: 'positive',
+                icon: '🏃'
+            });
+            
+            const habit2 = habitService.addHabit({
+                name: 'Read for 30 minutes',
+                description: 'Read a book for 30 minutes before bed',
+                category: 'learning',
+                type: 'positive',
+                icon: '📚'
+            });
+            
+            // Add some completions
+            const completions = habitService.getHabitCompletions();
+            const today = new Date().toISOString().split('T')[0];
+            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            
+            completions[habit1.id] = [yesterday, today];
+            completions[habit2.id] = [yesterday];
+            
+            localStorage.setItem('habitCompletions', JSON.stringify(completions));
+            
+            result.innerHTML = '<div class="success">✅ Sample habits added successfully!</div>';
+            setTimeout(debugHabits, 500);
+        }
+        
+        function addSampleReading() {
+            const result = document.getElementById('reading-result');
+            
+            // Add some books
+            readingService.addBook({
+                title: 'The Great Gatsby',
+                author: 'F. Scott Fitzgerald',
+                totalPages: 180,
+                currentPage: 180,
+                status: 'completed',
+                completed: true,
+                progress: 100,
+                endDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                category: 'fiction'
+            });
+            
+            readingService.addBook({
+                title: 'Atomic Habits',
+                author: 'James Clear',
+                totalPages: 320,
+                currentPage: 150,
+                status: 'reading',
+                completed: false,
+                progress: 47,
+                category: 'self-help'
+            });
+            
+            readingService.addBook({
+                title: 'The Lean Startup',
+                author: 'Eric Ries',
+                totalPages: 250,
+                currentPage: 250,
+                status: 'completed',
+                completed: true,
+                progress: 100,
+                endDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                category: 'business'
+            });
+            
+            result.innerHTML = '<div class="success">✅ Sample reading data added successfully!</div>';
+            setTimeout(debugReading, 500);
+        }
+        
+        // Auto-debug on load
+        window.onload = function() {
+            debugTodos();
+            debugHabits();
+            debugReading();
+            debugAnalytics();
+        };
+    </script>
+</body>
+</html>

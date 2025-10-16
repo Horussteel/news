@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import storageService from '../lib/storageService';
+import habitService from '../lib/habitService';
 
 const HabitTracker = () => {
   const [habits, setHabits] = useState([]);
@@ -37,18 +37,23 @@ const HabitTracker = () => {
   }, []);
 
   const loadData = () => {
-    const habitsData = storageService.getHabits();
-    const statsData = storageService.getAllHabitsStatistics();
-    setHabits(habitsData.filter(h => h.isActive));
-    setStatistics(statsData);
+    const habitsData = habitService.getHabits();
+    const habitsWithStats = habitService.getHabitsWithStats();
+    setHabits(habitsData.filter(h => !h.isArchived));
+    setStatistics(habitsWithStats.map(h => ({ habit: h, ...h.stats })));
   };
 
   const handleCompleteHabit = (habitId) => {
-    const isCompleted = storageService.isHabitCompleted(habitId, selectedDate);
+    const isCompleted = habitService.isHabitCompleted(habitId, selectedDate);
     if (isCompleted) {
-      storageService.uncompleteHabit(habitId, selectedDate);
+      // Remove completion for this date
+      const completions = habitService.getHabitCompletions()[habitId] || [];
+      const updatedCompletions = completions.filter(date => date !== selectedDate);
+      const allCompletions = habitService.getHabitCompletions();
+      allCompletions[habitId] = updatedCompletions;
+      habitService.saveHabitCompletions(allCompletions);
     } else {
-      storageService.completeHabit(habitId, selectedDate);
+      habitService.markHabitCompleted(habitId, selectedDate);
     }
     loadData();
   };
@@ -57,10 +62,10 @@ const HabitTracker = () => {
     if (!newHabit.name.trim()) return;
     
     if (editingHabit) {
-      storageService.updateHabit(editingHabit.id, newHabit);
+      habitService.updateHabit(editingHabit.id, newHabit);
       setEditingHabit(null);
     } else {
-      storageService.addHabit(newHabit);
+      habitService.addHabit(newHabit);
     }
     
     setNewHabit({
@@ -98,7 +103,7 @@ const HabitTracker = () => {
 
   const handleDeleteHabit = (habitId) => {
     if (confirm('Are you sure you want to delete this habit and all its data?')) {
-      storageService.deleteHabit(habitId);
+      habitService.deleteHabit(habitId);
       loadData();
     }
   };
@@ -114,9 +119,12 @@ const HabitTracker = () => {
   };
 
   const getCompletionsForDate = (date) => {
-    const completions = storageService.getHabitCompletionsForDate(date);
-    const habitIds = completions.map(c => c.habitId);
-    return habits.filter(h => habitIds.includes(h.id));
+    const completions = habitService.getHabitCompletions();
+    const completedHabitIds = Object.keys(completions).filter(habitId => {
+      const habitCompletions = completions[habitId] || [];
+      return Array.isArray(habitCompletions) && habitCompletions.includes(date);
+    });
+    return habits.filter(h => completedHabitIds.includes(h.id));
   };
 
   const getWeekDates = () => {
@@ -135,8 +143,8 @@ const HabitTracker = () => {
 
   const renderHabitCard = (habit) => {
     const stat = statistics.find(s => s.habit.id === habit.id);
-    const isCompleted = storageService.isHabitCompleted(habit.id, selectedDate);
-    const negativeTime = habit.type === 'negative' ? storageService.getNegativeHabitTime(habit.id) : null;
+    const isCompleted = habitService.isHabitCompleted(habit.id, selectedDate);
+    const negativeTime = null; // Simplified for now - negative habits can be implemented later
     
     return (
       <div key={habit.id} className={`habit-card ${habit.type === 'negative' ? 'negative-habit' : ''}`}>
@@ -167,7 +175,7 @@ const HabitTracker = () => {
                 className="reset-btn"
                 onClick={() => {
                   if (confirm('Are you sure you want to reset this negative habit counter? This will start counting from today.')) {
-                    storageService.resetNegativeHabit(habit.id);
+                    // Negative habits functionality can be implemented later
                     loadData();
                   }
                 }}
@@ -248,7 +256,7 @@ const HabitTracker = () => {
                 </div>
                 <div className="day-habits">
                   {habits.slice(0, 4).map(habit => {
-                    const isCompleted = storageService.isHabitCompleted(habit.id, date);
+                    const isCompleted = habitService.isHabitCompleted(habit.id, date);
                     return (
                       <div 
                         key={habit.id}

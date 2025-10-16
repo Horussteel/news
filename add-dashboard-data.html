@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Dashboard Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success {
+            color: green;
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            display: block;
+            width: 100%;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Add Sample Dashboard Data</h1>
+        <p>This will add sample todos, habits, and reading data to test the dashboard.</p>
+        
+        <button class="btn" onclick="addSampleData()">✅ Add Sample Data</button>
+        <button class="btn btn-secondary" onclick="clearData()">🗑️ Clear All Data</button>
+        <button class="btn btn-secondary" onclick="checkData()">🔍 Check Current Data</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function showMessage(message, isSuccess = true) {
+            const result = document.getElementById('result');
+            result.innerHTML = `<div class="${isSuccess ? 'success' : 'error'}">${message}</div>`;
+        }
+
+        function addSampleData() {
+            try {
+                // Clear existing data first
+                localStorage.removeItem('todos');
+                localStorage.removeItem('habits');
+                localStorage.removeItem('habitCompletions');
+                localStorage.removeItem('readingBooks');
+                
+                // Add sample todos
+                const todos = [
+                    {
+                        id: '1',
+                        title: 'Complete project presentation',
+                        description: 'Prepare slides for the project presentation',
+                        completed: true,
+                        priority: 'high',
+                        dueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                        category: 'work',
+                        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                        completedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: '2',
+                        title: 'Send weekly report',
+                        description: 'Send the weekly progress report to the team',
+                        completed: true,
+                        priority: 'medium',
+                        dueDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                        category: 'work',
+                        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                        completedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: '3',
+                        title: 'Review pull requests',
+                        description: 'Review and merge pending pull requests',
+                        completed: false,
+                        priority: 'medium',
+                        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+                        category: 'work',
+                        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                        completedAt: null
+                    },
+                    {
+                        id: '4',
+                        title: 'Buy groceries',
+                        description: 'Get groceries for the week',
+                        completed: true,
+                        priority: 'high',
+                        dueDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                        category: 'personal',
+                        createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                        completedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: '5',
+                        title: 'Schedule team meeting',
+                        description: 'Schedule the weekly team sync meeting',
+                        completed: false,
+                        priority: 'medium',
+                        dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+                        category: 'work',
+                        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                        completedAt: null
+                    }
+                ];
+                localStorage.setItem('todos', JSON.stringify(todos));
+                
+                // Add sample habits
+                const habits = [
+                    {
+                        id: '1',
+                        name: 'Morning Exercise',
+                        description: '30 minutes of morning exercise',
+                        category: 'health',
+                        frequency: 'daily',
+                        createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+                        type: 'positive',
+                        isArchived: false,
+                        icon: '🏃',
+                        color: '#3B82F6'
+                    },
+                    {
+                        id: '2',
+                        name: 'Read for 30 minutes',
+                        description: 'Read a book for 30 minutes before bed',
+                        category: 'learning',
+                        frequency: 'daily',
+                        createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+                        type: 'positive',
+                        isArchived: false,
+                        icon: '📚',
+                        color: '#10B981'
+                    },
+                    {
+                        id: '3',
+                        name: 'Meditation',
+                        description: '10 minutes of meditation',
+                        category: 'health',
+                        frequency: 'daily',
+                        createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+                        type: 'positive',
+                        isArchived: false,
+                        icon: '🧘',
+                        color: '#8B5CF6'
+                    }
+                ];
+                localStorage.setItem('habits', JSON.stringify(habits));
+                
+                // Add habit completions
+                const today = new Date().toISOString().split('T')[0];
+                const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                
+                const habitCompletions = {
+                    '1': [twoDaysAgo, yesterday, today], // Morning exercise - 3 day streak
+                    '2': [yesterday, today], // Reading - 2 day streak
+                    '3': [today] // Meditation - 1 day streak
+                };
+                localStorage.setItem('habitCompletions', JSON.stringify(habitCompletions));
+                
+                // Add sample reading books
+                const books = [
+                    {
+                        id: '1',
+                        title: 'The Great Gatsby',
+                        author: 'F. Scott Fitzgerald',
+                        totalPages: 180,
+                        currentPage: 180,
+                        status: 'completed',
+                        completed: true,
+                        progress: 100,
+                        startDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+                        endDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                        category: 'fiction',
+                        createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: '2',
+                        title: 'Atomic Habits',
+                        author: 'James Clear',
+                        totalPages: 320,
+                        currentPage: 150,
+                        status: 'reading',
+                        completed: false,
+                        progress: 47,
+                        startDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+                        endDate: null,
+                        category: 'self-help',
+                        createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: '3',
+                        title: 'The Lean Startup',
+                        author: 'Eric Ries',
+                        totalPages: 250,
+                        currentPage: 250,
+                        status: 'completed',
+                        completed: true,
+                        progress: 100,
+                        startDate: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
+                        endDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                        category: 'business',
+                        createdAt: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+                    }
+                ];
+                localStorage.setItem('readingBooks', JSON.stringify(books));
+                
+                showMessage('✅ Sample data added successfully! You can now check the dashboard.', true);
+                
+            } catch (error) {
+                showMessage('❌ Error adding sample data: ' + error.message, false);
+            }
+        }
+        
+        function clearData() {
+            try {
+                localStorage.removeItem('todos');
+                localStorage.removeItem('habits');
+                localStorage.removeItem('habitCompletions');
+                localStorage.removeItem('readingBooks');
+                showMessage('🗑️ All data cleared successfully!', true);
+            } catch (error) {
+                showMessage('❌ Error clearing data: ' + error.message, false);
+            }
+        }
+        
+        function checkData() {
+            try {
+                const todos = JSON.parse(localStorage.getItem('todos') || '[]');
+                const habits = JSON.parse(localStorage.getItem('habits') || '[]');
+                const books = JSON.parse(localStorage.getItem('readingBooks') || '[]');
+                const completions = JSON.parse(localStorage.getItem('habitCompletions') || '{}');
+                
+                const message = `
+                    📊 Current Data Status:<br><br>
+                    📋 Todos: ${todos.length} total, ${todos.filter(t => t.completed).length} completed<br>
+                    🎯 Habits: ${habits.length} total, ${habits.filter(h => !h.isArchived).length} active<br>
+                    📚 Books: ${books.length} total, ${books.filter(b => b.completed).length} completed<br>
+                    🔥 Habit completions: ${Object.keys(completions).length} habits with data
+                `;
+                
+                showMessage(message, true);
+            } catch (error) {
+                showMessage('❌ Error checking data: ' + error.message, false);
+            }
+        }
+    </script>
+</body>
+</html>
