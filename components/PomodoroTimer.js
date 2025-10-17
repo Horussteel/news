@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from '../contexts/LanguageContext';
 import pomodoroService from '../lib/pomodoroService';
 import todoService from '../lib/todoService';
 
 const PomodoroTimer = () => {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState(pomodoroService.getSettings());
   const [stats, setStats] = useState(pomodoroService.getStats());
   const [isRunning, setIsRunning] = useState(false);
@@ -201,10 +203,10 @@ const PomodoroTimer = () => {
 
   const getSessionType = () => {
     switch (currentSession) {
-      case 'work': return { label: 'Work', emoji: '🍅', color: '#ef4444' };
-      case 'shortBreak': return { label: 'Short Break', emoji: '☕', color: '#3b82f6' };
-      case 'longBreak': return { label: 'Long Break', emoji: '🌴', color: '#10b981' };
-      default: return { label: 'Work', emoji: '🍅', color: '#ef4444' };
+      case 'work': return { label: t('pomodoro.workSession'), emoji: '🍅', color: '#ef4444' };
+      case 'shortBreak': return { label: t('pomodoro.shortBreak'), emoji: '☕', color: '#3b82f6' };
+      case 'longBreak': return { label: t('pomodoro.longBreak'), emoji: '🌴', color: '#10b981' };
+      default: return { label: t('pomodoro.workSession'), emoji: '🍅', color: '#ef4444' };
     }
   };
 
@@ -233,10 +235,10 @@ const PomodoroTimer = () => {
       </audio>
 
       <div className="timer-header">
-        <h2>🍅 Pomodoro Timer</h2>
+        <h2>🍅 {t('pomodoro.title')}</h2>
         <div className="header-actions">
           <button onClick={() => setShowSettings(!showSettings)} className="settings-btn">
-            ⚙️ Settings
+            ⚙️ {t('pomodoro.settings')}
           </button>
         </div>
       </div>
@@ -244,40 +246,40 @@ const PomodoroTimer = () => {
       {/* Statistics Overview */}
       <div className="stats-overview">
         <div className="stat-card">
-          <h3>Today</h3>
+          <h3>{t('pomodoro.today')}</h3>
           <div className="stat-value">{stats.todayPomodoros}</div>
-          <p>Pomodoros</p>
+          <p>{t('pomodoro.pomodoros')}</p>
         </div>
         <div className="stat-card">
-          <h3>Focus Time</h3>
+          <h3>{t('pomodoro.focusTime')}</h3>
           <div className="stat-value">{Math.floor(stats.todayWorkTime / 60)}h {stats.todayWorkTime % 60}m</div>
-          <p>Today</p>
+          <p>{t('pomodoro.today')}</p>
         </div>
         <div className="stat-card">
-          <h3>Total</h3>
+          <h3>{t('pomodoro.total')}</h3>
           <div className="stat-value">{stats.totalPomodoros}</div>
-          <p>All Time</p>
+          <p>{t('pomodoro.allTime')}</p>
         </div>
         <div className="stat-card">
-          <h3>Streak</h3>
+          <h3>{t('pomodoro.streak')}</h3>
           <div className="stat-value">{stats.streak} 🔥</div>
-          <p>Days</p>
+          <p>{t('pomodoro.days')}</p>
         </div>
       </div>
 
       {/* Task Integration */}
       {settings.taskIntegration && (
         <div className="task-integration">
-          <h3>Current Task</h3>
+          <h3>{t('pomodoro.currentTask')}</h3>
           <select 
             value={selectedTask || ''} 
             onChange={(e) => setSelectedTask(e.target.value || null)}
             className="task-select"
           >
-            <option value="">No task selected</option>
+            <option value="">{t('pomodoro.noTaskSelected')}</option>
             {todos.map(todo => (
               <option key={todo.id} value={todo.id}>
-                {todo.title} ({todo.pomodoroCount || 0} pomodoros)
+                {todo.title} ({todo.pomodoroCount || 0} {t('pomodoro.pomodorosCount')})
               </option>
             ))}
           </select>
@@ -332,13 +334,13 @@ const PomodoroTimer = () => {
             onClick={toggleTimer} 
             className={`control-btn primary ${isRunning ? 'pause' : 'start'}`}
           >
-            {isRunning ? '⏸️ Pause' : '▶️ Start'}
+            {isRunning ? `⏸️ ${t('pomodoro.pause')}` : `▶️ ${t('pomodoro.start')}`}
           </button>
           <button onClick={resetTimer} className="control-btn secondary">
-            🔄 Reset
+            🔄 {t('pomodoro.reset')}
           </button>
           <button onClick={skipSession} className="control-btn secondary">
-            ⏭️ Skip
+            ⏭️ {t('pomodoro.skip')}
           </button>
         </div>
       </div>

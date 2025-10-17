@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from '../contexts/LanguageContext';
 import Layout from '../components/Layout';
 import PomodoroTimer from '../components/PomodoroTimer';
 
 export default function PomodoroPage() {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -11,7 +13,7 @@ export default function PomodoroPage() {
 
   if (!mounted) {
     return (
-      <Layout title="Pomodoro Timer - AI News" description="Boost your productivity with the Pomodoro technique">
+      <Layout title={`${t('pomodoro.title')} - AI News`} description={t('pomodoro.description') || "Boost your productivity with the Pomodoro technique"}>
         <div className="loading-container">
           <div className="spinner"></div>
         </div>
@@ -41,7 +43,7 @@ export default function PomodoroPage() {
 
   return (
     <Layout 
-      title="🍅 Pomodoro Timer - AI News" 
+      title={`🍅 ${t('pomodoro.title')} - AI News`} 
       description="Boost your productivity with the Pomodoro technique. Focus on your tasks and track your progress with our timer."
       keywords="pomodoro, timer, productivity, focus, time management, work sessions"
     >
