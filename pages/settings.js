@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { useSession } from 'next-auth/react';
 import { useTranslation } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import Layout from '../components/Layout';
 
 const Settings = () => {
@@ -17,6 +18,17 @@ const Settings = () => {
     isAuthenticated 
   } = useUser();
   const { data: session } = useSession();
+  const {
+    theme,
+    fontSize,
+    compactMode,
+    accentColor,
+    updateTheme,
+    updateFontSize,
+    updateCompactMode,
+    updateAccentColor,
+    resetToDefaults
+  } = useTheme();
   
   const [formData, setFormData] = useState({});
   const [statistics, setStatistics] = useState(null);
@@ -339,8 +351,8 @@ const Settings = () => {
                           type="radio"
                           name="theme"
                           value={theme.value}
-                          checked={formData.theme === theme.value}
-                          onChange={handleInputChange}
+                          checked={theme === theme.value}
+                          onChange={() => updateTheme(theme.value)}
                           id={`theme-${theme.value}`}
                         />
                         <label htmlFor={`theme-${theme.value}`} className="theme-label">
@@ -362,8 +374,8 @@ const Settings = () => {
                   </div>
                   <select 
                     name="fontSize" 
-                    value={formData.fontSize || 'medium'}
-                    onChange={handleInputChange}
+                    value={fontSize}
+                    onChange={(e) => updateFontSize(e.target.value)}
                     className="setting-select"
                   >
                     <option value="small">Small</option>
@@ -385,8 +397,8 @@ const Settings = () => {
                     <input
                       type="checkbox"
                       name="compactMode"
-                      checked={formData.compactMode || false}
-                      onChange={handleInputChange}
+                      checked={compactMode}
+                      onChange={(e) => updateCompactMode(e.target.checked)}
                     />
                     <span className="slider"></span>
                   </label>
@@ -404,9 +416,9 @@ const Settings = () => {
                     {['#667eea', '#f56565', '#48bb78', '#ed8936', '#9f7aea'].map(color => (
                       <button
                         key={color}
-                        className={`color-option ${formData.accentColor === color ? 'active' : ''}`}
+                        className={`color-option ${accentColor === color ? 'active' : ''}`}
                         style={{ backgroundColor: color }}
-                        onClick={() => setFormData(prev => ({ ...prev, accentColor: color }))}
+                        onClick={() => updateAccentColor(color)}
                       />
                     ))}
                   </div>
@@ -744,7 +756,7 @@ const Settings = () => {
           align-items: center;
           margin-bottom: 2rem;
           padding: 2rem;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, var(--accent-color) 0%, #764ba2 100%);
           border-radius: 16px;
           color: white;
         }
@@ -797,10 +809,10 @@ const Settings = () => {
           display: flex;
           gap: 0.5rem;
           margin-bottom: 2rem;
-          background: white;
+          background: var(--bg-secondary);
           padding: 0.5rem;
           border-radius: 12px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          box-shadow: var(--shadow);
           overflow-x: auto;
         }
 
@@ -814,18 +826,18 @@ const Settings = () => {
           border-radius: 8px;
           cursor: pointer;
           transition: all 0.3s ease;
-          color: #666;
+          color: var(--text-secondary);
           font-weight: 500;
           white-space: nowrap;
         }
 
         .nav-tab:hover {
-          background: #f3f4f6;
-          color: #333;
+          background: var(--bg-tertiary);
+          color: var(--text-primary);
         }
 
         .nav-tab.active {
-          background: #667eea;
+          background: var(--accent-color);
           color: white;
         }
 
@@ -839,9 +851,9 @@ const Settings = () => {
 
         /* Content */
         .settings-content {
-          background: white;
+          background: var(--bg-primary);
           border-radius: 12px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          box-shadow: var(--shadow);
           overflow: hidden;
         }
 
@@ -850,7 +862,7 @@ const Settings = () => {
         }
 
         .tab-content h2 {
-          color: #333;
+          color: var(--text-primary);
           margin-bottom: 2rem;
           font-size: 1.8rem;
           font-weight: 600;
@@ -865,15 +877,15 @@ const Settings = () => {
         }
 
         .setting-card {
-          background: #f8f9fa;
+          background: var(--bg-secondary);
           border-radius: 12px;
           padding: 1.5rem;
-          border: 1px solid #e1e5e9;
+          border: 1px solid var(--border-color);
           transition: all 0.3s ease;
         }
 
         .setting-card:hover {
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          box-shadow: var(--shadow-lg);
           transform: translateY(-2px);
         }
 
@@ -895,21 +907,21 @@ const Settings = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: white;
+          background: var(--bg-primary);
           border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          box-shadow: var(--shadow);
         }
 
         .setting-header h3 {
           margin: 0;
-          color: #333;
+          color: var(--text-primary);
           font-size: 1.1rem;
           font-weight: 600;
         }
 
         .setting-header p {
           margin: 0.25rem 0 0 0;
-          color: #666;
+          color: var(--text-secondary);
           font-size: 0.9rem;
         }
 
@@ -917,17 +929,18 @@ const Settings = () => {
         .setting-input {
           width: 100%;
           padding: 0.75rem;
-          border: 2px solid #e1e5e9;
+          border: 2px solid var(--border-color);
           border-radius: 8px;
           font-size: 1rem;
           transition: border-color 0.3s ease;
-          background: white;
+          background: var(--bg-primary);
+          color: var(--text-primary);
         }
 
         .setting-select:focus,
         .setting-input:focus {
           outline: none;
-          border-color: #667eea;
+          border-color: var(--accent-color);
         }
 
         /* Theme Selector */
@@ -1037,7 +1050,7 @@ const Settings = () => {
         }
 
         input:checked + .slider {
-          background-color: #667eea;
+          background-color: var(--accent-color);
         }
 
         input:checked + .slider:before {
@@ -1045,7 +1058,7 @@ const Settings = () => {
         }
 
         .slider.disabled {
-          background-color: #e1e5e9;
+          background-color: var(--border-color);
           cursor: not-allowed;
         }
 
@@ -1055,7 +1068,7 @@ const Settings = () => {
           gap: 1rem;
           margin-top: 2rem;
           padding-top: 2rem;
-          border-top: 1px solid #e1e5e9;
+          border-top: 1px solid var(--border-color);
         }
 
         .btn-primary,
@@ -1072,22 +1085,22 @@ const Settings = () => {
         }
 
         .btn-primary {
-          background: #667eea;
+          background: var(--accent-color);
           color: white;
         }
 
         .btn-primary:hover {
-          background: #5a67d8;
+          background: var(--accent-hover);
           transform: translateY(-1px);
         }
 
         .btn-secondary {
-          background: #e1e5e9;
-          color: #333;
+          background: var(--bg-tertiary);
+          color: var(--text-primary);
         }
 
         .btn-secondary:hover {
-          background: #d1d5d9;
+          background: var(--border-color);
         }
 
         .btn-success {
@@ -1112,13 +1125,13 @@ const Settings = () => {
         .stats-section {
           margin-bottom: 2rem;
           padding: 1.5rem;
-          background: #f8f9fa;
+          background: var(--bg-secondary);
           border-radius: 12px;
         }
 
         .stats-section h3 {
           margin-bottom: 1rem;
-          color: #333;
+          color: var(--text-primary);
         }
 
         .stats-grid {
@@ -1130,21 +1143,21 @@ const Settings = () => {
         .stat-card {
           text-align: center;
           padding: 1.5rem;
-          background: white;
+          background: var(--bg-primary);
           border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          box-shadow: var(--shadow);
         }
 
         .stat-number {
           display: block;
           font-size: 2rem;
           font-weight: bold;
-          color: #667eea;
+          color: var(--accent-color);
         }
 
         .stat-label {
           font-size: 0.9rem;
-          color: #666;
+          color: var(--text-secondary);
           margin-top: 0.5rem;
         }
 
