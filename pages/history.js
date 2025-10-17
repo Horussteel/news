@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
+import { useTranslation } from '../contexts/LanguageContext';
 import NewsCard from '../components/NewsCard';
 import Layout from '../components/Layout';
 
 const History = () => {
   const { readHistory, isLoading, removeFromHistory, clearHistory, hasHistory } = useUser();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredHistory, setFilteredHistory] = useState([]);
   const [selectedDate, setSelectedDate] = useState('');
@@ -32,13 +34,13 @@ const History = () => {
   }, [readHistory, searchTerm, selectedDate]);
 
   const handleRemoveFromHistory = (url) => {
-    if (window.confirm('Are you sure you want to remove this item from your history?')) {
+    if (window.confirm(t('history.removeConfirm'))) {
       removeFromHistory(url);
     }
   };
 
   const handleClearHistory = () => {
-    if (window.confirm('Are you sure you want to clear your entire reading history? This action cannot be undone.')) {
+    if (window.confirm(t('history.clearHistoryConfirm'))) {
       clearHistory();
     }
   };
@@ -55,11 +57,11 @@ const History = () => {
 
   if (isLoading) {
     return (
-      <Layout title="Reading History" description="Your reading history and previously viewed articles">
+      <Layout title={t('history.title')} description={t('history.description')}>
         <div className="history-page">
           <div className="loading-container">
             <div className="loading-spinner"></div>
-            <p>Loading reading history...</p>
+            <p>{t('history.loading')}</p>
           </div>
         </div>
       </Layout>
@@ -67,16 +69,16 @@ const History = () => {
   }
 
   return (
-    <Layout title="Reading History" description="Your reading history and previously viewed articles">
+    <Layout title={t('history.title')} description={t('history.description')}>
       <div className="history-page">
         <div className="history-header">
           <div className="header-left">
-            <h1>Reading History</h1>
-            <span className="history-count">{readHistory.length} articles read</span>
+            <h1>{t('history.title')}</h1>
+            <span className="history-count">{readHistory.length} {t('history.articlesRead')}</span>
           </div>
           {hasHistory && (
             <button className="clear-history-btn" onClick={handleClearHistory}>
-              Clear All History
+              {t('history.clearAllHistory')}
             </button>
           )}
         </div>
@@ -85,7 +87,7 @@ const History = () => {
           <div className="search-bar">
             <input
               type="text"
-              placeholder="Search history..."
+              placeholder={t('history.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
@@ -101,7 +103,7 @@ const History = () => {
               onChange={(e) => setSelectedDate(e.target.value)}
               className="date-select"
             >
-              <option value="">All dates</option>
+              <option value="">{t('history.allDates')}</option>
               {getUniqueDates().map(date => (
                 <option key={date} value={new Date(date).toISOString().split('T')[0]}>
                   {new Date(date).toLocaleDateString()}
@@ -116,16 +118,16 @@ const History = () => {
             <svg className="empty-icon" viewBox="0 0 24 24">
               <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
             </svg>
-            <h2>No reading history yet</h2>
-            <p>Start reading articles to build your reading history. Articles you read will automatically appear here.</p>
+            <h2>{t('history.noHistory')}</h2>
+            <p>{t('history.noHistoryDescription')}</p>
           </div>
         ) : filteredHistory.length === 0 ? (
           <div className="empty-state">
             <svg className="empty-icon" viewBox="0 0 24 24">
               <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
             </svg>
-            <h2>No history found</h2>
-            <p>Try adjusting your search terms or date filter to find what you're looking for.</p>
+            <h2>{t('history.noHistoryFound')}</h2>
+            <p>{t('history.noHistoryFoundDescription')}</p>
           </div>
         ) : (
           <div className="history-timeline">
@@ -134,7 +136,7 @@ const History = () => {
                 <div className="history-content">
                   <div className="history-meta">
                     <span className="read-time">
-                      Read {formatDate(item.readAt)}
+                      {t('history.readAt')} {formatDate(item.readAt)}
                     </span>
                     {item.source?.name && (
                       <span className="source-name">• {item.source.name}</span>

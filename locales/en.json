@@ -293,6 +293,34 @@
     "takeBreak": "Time for a break!",
     "backToWork": "Time to get back to work!"
   },
+  "bookmarks": {
+    "title": "Bookmarks",
+    "description": "Your saved news articles and bookmarks",
+    "loading": "Loading bookmarks...",
+    "savedArticles": "saved articles",
+    "searchPlaceholder": "Search bookmarks...",
+    "removeConfirm": "Are you sure you want to remove this bookmark?",
+    "noBookmarks": "No bookmarks yet",
+    "noBookmarksDescription": "Save interesting articles by clicking the bookmark icon on any news article.",
+    "noBookmarksFound": "No bookmarks found",
+    "noBookmarksFoundDescription": "Try adjusting your search terms to find what you're looking for."
+  },
+  "history": {
+    "title": "Reading History",
+    "description": "Your reading history and previously viewed articles",
+    "loading": "Loading reading history...",
+    "articlesRead": "articles read",
+    "clearAllHistory": "Clear All History",
+    "searchPlaceholder": "Search history...",
+    "allDates": "All dates",
+    "removeConfirm": "Are you sure you want to remove this item from your history?",
+    "clearHistoryConfirm": "Are you sure you want to clear your entire reading history? This action cannot be undone.",
+    "noHistory": "No reading history yet",
+    "noHistoryDescription": "Start reading articles to build your reading history. Articles you read will automatically appear here.",
+    "noHistoryFound": "No history found",
+    "noHistoryFoundDescription": "Try adjusting your search terms or date filter to find what you're looking for.",
+    "readAt": "Read"
+  },
   "errors": {
     "generic": "Something went wrong. Please try again.",
     "network": "Network error. Please check your connection.",

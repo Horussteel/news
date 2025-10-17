@@ -291,11 +291,39 @@
     "takeBreak": "Timp pentru o pauză!",
     "backToWork": "Timp să te întorci la muncă!"
   },
+  "bookmarks": {
+    "title": "Semne de carte",
+    "description": "Articolele de știri salvate și semnele de carte",
+    "loading": "Se încarcă semnele de carte...",
+    "savedArticles": "articole salvate",
+    "searchPlaceholder": "Caută semne de carte...",
+    "removeConfirm": "Sigur doriți să eliminați acest semn de carte?",
+    "noBookmarks": "Nu există semne de carte încă",
+    "noBookmarksDescription": "Salvați articole interesante dând click pe iconița semnului de carte la orice articol de știri.",
+    "noBookmarksFound": "Nu s-au găsit semne de carte",
+    "noBookmarksFoundDescription": "Încercați să ajustați termenii de căutare pentru a găsi ceea ce căutați."
+  },
+  "history": {
+    "title": "Istoric Citit",
+    "description": "Istoricul de citit și articolele vizualizate anterior",
+    "loading": "Se încarcă istoricul de citit...",
+    "articlesRead": "articole citite",
+    "clearAllHistory": "Șterge Tot Istoricul",
+    "searchPlaceholder": "Caută în istoric...",
+    "allDates": "Toate datele",
+    "removeConfirm": "Sigur doriți să eliminați acest element din istoric?",
+    "clearHistoryConfirm": "Sigur doriți să ștergeți întregul istoric de citit? Această acțiune nu poate fi anulată.",
+    "noHistory": "Nu există istoric de citit încă",
+    "noHistoryDescription": "Începeți să citiți articole pentru a vă construi istoricul de citit. Articolele citite vor apărea automat aici.",
+    "noHistoryFound": "Nu s-a găsit istoric",
+    "noHistoryFoundDescription": "Încercați să ajustați termenii de căutare sau filtrul de date pentru a găsi ceea ce căutați.",
+    "readAt": "Citit"
+  },
   "errors": {
-    "generic": "Ceva nu a funcționat corect. Încearcă din nou.",
-    "network": "Eroare de rețea. Verifică conexiunea ta.",
-    "validation": "Verifică input-ul și încearcă din nou.",
-    "notFound": "Resursa cerută nu a fost găsită.",
-    "unauthorized": "Nu ești autorizat să efectuezi această acțiune."
+    "generic": "Ceva nu a funcționat corect. Vă rugăm încercați din nou.",
+    "network": "Eroare de rețea. Vă rugăm verificați conexiunea.",
+    "validation": "Vă rugăm verificați datele introduse și încercați din nou.",
+    "notFound": "Resursa solicitată nu a fost găsită.",
+    "unauthorized": "Nu sunteți autorizat să efectuați această acțiune."
   }
 }
