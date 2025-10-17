@@ -70,8 +70,21 @@ jobs:
           cp -r pages ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r lib ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           # Create contexts directory and copy files explicitly
+          echo "=== DEBUGGING CONTEXTS FOLDER ==="
+          echo "Contents of source contexts folder:"
+          ls -la contexts/
+          echo "Checking if LanguageContext.js exists in source:"
+          if [ -f "contexts/LanguageContext.js" ]; then
+            echo "✅ LanguageContext.js FOUND in source"
+            ls -la contexts/LanguageContext.js
+          else
+            echo "❌ LanguageContext.js MISSING in source"
+          fi
           mkdir -p ${{ env.DEPLOY_DIR }}/contexts
           cp contexts/* ${{ env.DEPLOY_DIR }}/contexts/ 2>/dev/null || true
+          # Double-check: copy LanguageContext.js explicitly
+          echo "Copying LanguageContext.js explicitly..."
+          cp contexts/LanguageContext.js ${{ env.DEPLOY_DIR }}/contexts/LanguageContext.js 2>/dev/null || echo "Failed to copy LanguageContext.js"
           cp -r styles ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r locales ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp package.json ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
