@@ -69,9 +69,9 @@ jobs:
           cp -r components ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r pages ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r lib ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
-          cp -r contexts ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
-          # Ensure LanguageContext.js is explicitly copied
-          cp contexts/LanguageContext.js ${{ env.DEPLOY_DIR }}/contexts/ 2>/dev/null || true
+          # Create contexts directory and copy files explicitly
+          mkdir -p ${{ env.DEPLOY_DIR }}/contexts
+          cp contexts/* ${{ env.DEPLOY_DIR }}/contexts/ 2>/dev/null || true
           cp -r styles ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r locales ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp package.json ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
