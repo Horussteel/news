@@ -79,15 +79,6 @@ jobs:
           cp ecosystem.config.js ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp server.js ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp .env ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
-          
-          # Verify LanguageContext.js was copied
-          echo "=== VERIFYING LANGUAGE CONTEXT ==="
-          if [ -f "${{ env.DEPLOY_DIR }}/contexts/LanguageContext.js" ]; then
-            echo "✅ LanguageContext.js FOUND on server"
-            ls -la ${{ env.DEPLOY_DIR }}/contexts/LanguageContext.js
-          else
-            echo "❌ LanguageContext.js MISSING on server"
-          fi
 
       - name: Install production dependencies
         run: npm install --omit=dev
@@ -96,4 +87,14 @@ jobs:
       - name: Restart application
         run: |
           cd ${{ env.DEPLOY_DIR }}
+          # Verify LanguageContext.js was copied
+          echo "=== VERIFYING LANGUAGE CONTEXT ==="
+          if [ -f "contexts/LanguageContext.js" ]; then
+            echo "✅ LanguageContext.js FOUND on server"
+            ls -la contexts/LanguageContext.js
+          else
+            echo "❌ LanguageContext.js MISSING on server"
+            echo "Contents of contexts folder:"
+            ls -la contexts/
+          fi
           pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
