@@ -62,11 +62,6 @@ jobs:
         run: |
           echo "Deploying to ${{ env.DEPLOY_DIR }}..."
           mkdir -p ${{ env.DEPLOY_DIR }}
-          # Stop the application if it exists
-          if [ -f "${{ env.DEPLOY_DIR }}/ecosystem.config.js" ]; then
-            cd ${{ env.DEPLOY_DIR }} && pm2 stop ecosystem.config.js 2>/dev/null || true
-          fi
-          # Clean deployment directory (but keep it)
           rm -rf ${{ env.DEPLOY_DIR }}/*
           # copy build output
           cp -r .next/* ${{ env.DEPLOY_DIR }}/.next/ 2>/dev/null || true
@@ -76,16 +71,7 @@ jobs:
           cp -r lib ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r contexts ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r styles ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
-          # Ensure locales are copied - this is critical for translations
-          echo "Copying locales folder..."
           cp -r locales ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
-          # Verify locales were copied
-          if [ -d "${{ env.DEPLOY_DIR }}/locales" ]; then
-            echo "SUCCESS: Locales folder copied successfully"
-            ls ${{ env.DEPLOY_DIR }}/locales/
-          else
-            echo "ERROR: Locales folder not found after copy"
-          fi
           cp package.json ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp package-lock.json ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp ecosystem.config.js ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
