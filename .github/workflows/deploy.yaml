@@ -62,7 +62,12 @@ jobs:
         run: |
           echo "Deploying to ${{ env.DEPLOY_DIR }}..."
           mkdir -p ${{ env.DEPLOY_DIR }}
+          # Force stop any running processes
+          cd ${{ env.DEPLOY_DIR }} && pm2 kill 2>/dev/null || true
+          # Completely clean deployment directory
           rm -rf ${{ env.DEPLOY_DIR }}/*
+          # Remove any potential cache
+          rm -rf ${{ env.DEPLOY_DIR }}/.next/cache 2>/dev/null || true
           # copy build output
           cp -r .next/* ${{ env.DEPLOY_DIR }}/.next/ 2>/dev/null || true
           cp -r public/* ${{ env.DEPLOY_DIR }}/public/ 2>/dev/null || true
@@ -77,6 +82,23 @@ jobs:
           cp ecosystem.config.js ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp server.js ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp .env ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
+          
+          # Verify critical files are deployed
+          echo "=== DEPLOYMENT VERIFICATION ==="
+          echo "Checking if locales folder exists:"
+          if [ -d "${{ env.DEPLOY_DIR }}/locales" ]; then
+            echo "✅ LOCALES FOLDER FOUND"
+            ls -la ${{ env.DEPLOY_DIR }}/locales/
+          else
+            echo "❌ LOCALES FOLDER MISSING"
+          fi
+          echo "Checking if contexts folder exists:"
+          if [ -d "${{ env.DEPLOY_DIR }}/contexts" ]; then
+            echo "✅ CONTEXTS FOLDER FOUND"
+            ls -la ${{ env.DEPLOY_DIR }}/contexts/
+          else
+            echo "❌ CONTEXTS FOLDER MISSING"
+          fi
 
       - name: Install production dependencies
         run: npm install --omit=dev
