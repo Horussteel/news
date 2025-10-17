@@ -70,6 +70,8 @@ jobs:
           cp -r pages ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r lib ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r contexts ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
+          # Ensure LanguageContext.js is explicitly copied
+          cp contexts/LanguageContext.js ${{ env.DEPLOY_DIR }}/contexts/ 2>/dev/null || true
           cp -r styles ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r locales ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp package.json ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
@@ -77,6 +79,15 @@ jobs:
           cp ecosystem.config.js ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp server.js ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp .env ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
+          
+          # Verify LanguageContext.js was copied
+          echo "=== VERIFYING LANGUAGE CONTEXT ==="
+          if [ -f "${{ env.DEPLOY_DIR }}/contexts/LanguageContext.js" ]; then
+            echo "✅ LanguageContext.js FOUND on server"
+            ls -la ${{ env.DEPLOY_DIR }}/contexts/LanguageContext.js
+          else
+            echo "❌ LanguageContext.js MISSING on server"
+          fi
 
       - name: Install production dependencies
         run: npm install --omit=dev
