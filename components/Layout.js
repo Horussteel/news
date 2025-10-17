@@ -46,6 +46,7 @@ const Layout = ({ children, title, description }) => {
                 <a href="/" className="nav-link">📰 {t('navigation.news')}</a>
                 <a href="/bookmarks" className="nav-link">📚 {t('navigation.bookmarks')}</a>
                 <a href="/history" className="nav-link">📖 {t('navigation.history')}</a>
+                <a href="/radio" className="nav-link">🎵 Radio</a>
                 <a href="/habits" className="nav-link">🎯 {t('navigation.habits')}</a>
                 <a href="/reading" className="nav-link">📚 {t('navigation.reading')}</a>
                 <a href="/todo" className="nav-link">✅ {t('navigation.todo')}</a>
