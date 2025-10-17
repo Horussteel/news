@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import todoService from '../lib/todoService';
+import { useTranslation } from '../contexts/LanguageContext';
 
 const TodoList = () => {
+  const { t } = useTranslation();
   const [todos, setTodos] = useState([]);
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
@@ -369,7 +371,7 @@ const TodoList = () => {
         {isExpanded && todo.subtasks && todo.subtasks.length > 0 && (
           <div className="todo-subtasks">
             <div className="subtasks-header">
-              <h4>Subtasks</h4>
+              <h4>{t('todo.subtasks')}</h4>
               <div className="subtasks-progress">
                 <div className="progress-bar">
                   <div 
@@ -402,7 +404,7 @@ const TodoList = () => {
               ))}
             </div>
             <button className="add-subtask-btn" onClick={() => handleAddSubtask(todo.id)}>
-              + Add Subtask
+              + {t('todo.addSubtask')}
             </button>
           </div>
         )}
@@ -471,13 +473,13 @@ const TodoList = () => {
   return (
     <div className="todo-list">
       <div className="tracker-header">
-        <h2>✅ To-Do List</h2>
+        <h2>✅ {t('todo.title')}</h2>
         <div className="header-actions">
           <button
             onClick={() => setShowAddTodoForm(true)}
             className="add-todo-btn"
           >
-            + Add Todo
+            + {t('todo.addTodo')}
           </button>
         </div>
       </div>
@@ -486,24 +488,24 @@ const TodoList = () => {
       {statistics && (
         <div className="stats-overview">
           <div className="stat-card">
-            <h3>Total Tasks</h3>
+            <h3>{t('todo.totalTasks')}</h3>
             <div className="stat-value">{statistics.totalTodos}</div>
-            <p>All tasks</p>
+            <p>{t('todo.allTasks')}</p>
           </div>
           <div className="stat-card">
-            <h3>Completed</h3>
+            <h3>{t('todo.completed')}</h3>
             <div className="stat-value">{statistics.completedTodos}</div>
-            <p>Done</p>
+            <p>{t('todo.done')}</p>
           </div>
           <div className="stat-card">
-            <h3>Productivity</h3>
+            <h3>{t('todo.productivity')}</h3>
             <div className="stat-value">{statistics.productivityScore}%</div>
-            <p>Completion rate</p>
+            <p>{t('todo.completionRate')}</p>
           </div>
           <div className="stat-card">
-            <h3>Overdue</h3>
+            <h3>{t('todo.overdue')}</h3>
             <div className="stat-value">{statistics.overdueTodos}</div>
-            <p>Need attention</p>
+            <p>{t('todo.needAttention')}</p>
           </div>
         </div>
       )}
@@ -514,25 +516,25 @@ const TodoList = () => {
           className={`tab ${activeTab === 'todos' ? 'active' : ''}`}
           onClick={() => setActiveTab('todos')}
         >
-          ✅ Tasks ({filteredTodos.length})
+          ✅ {t('todo.tasks')} ({filteredTodos.length})
         </button>
         <button
           className={`tab ${activeTab === 'categories' ? 'active' : ''}`}
           onClick={() => setActiveTab('categories')}
         >
-          📁 Categories ({categories.length})
+          📁 {t('todo.categories')} ({categories.length})
         </button>
         <button
           className={`tab ${activeTab === 'tags' ? 'active' : ''}`}
           onClick={() => setActiveTab('tags')}
         >
-          🏷️ Tags ({tags.length})
+          🏷️ {t('todo.tags')} ({tags.length})
         </button>
         <button
           className={`tab ${activeTab === 'stats' ? 'active' : ''}`}
           onClick={() => setActiveTab('stats')}
         >
-          📊 Statistics
+          📊 {t('todo.statistics')}
         </button>
       </div>
 
@@ -541,11 +543,11 @@ const TodoList = () => {
         {activeTab === 'todos' && (
           <div className="todos-section">
             <div className="section-header">
-              <h3>Your Tasks</h3>
+              <h3>{t('todo.yourTasks')}</h3>
               <div className="filters-actions">
                 <input
                   type="text"
-                  placeholder="Search todos..."
+                  placeholder={t('todo.searchTodos')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="search-input"
@@ -555,16 +557,16 @@ const TodoList = () => {
                   onChange={(e) => setFilter({...filter, completed: e.target.value === '' ? null : e.target.value === 'true'})}
                   className="filter-select"
                 >
-                  <option value="">All Status</option>
-                  <option value="false">Pending</option>
-                  <option value="true">Completed</option>
+                  <option value="">{t('todo.allStatus')}</option>
+                  <option value="false">{t('todo.pending')}</option>
+                  <option value="true">{t('todo.completed')}</option>
                 </select>
                 <select
                   value={filter.priority}
                   onChange={(e) => setFilter({...filter, priority: e.target.value === '' ? '' : e.target.value})}
                   className="filter-select"
                 >
-                  <option value="">All Priorities</option>
+                  <option value="">{t('todo.allPriorities')}</option>
                   {priorities.map(priority => (
                     <option key={priority.value} value={priority.value}>{priority.label}</option>
                   ))}
@@ -574,7 +576,7 @@ const TodoList = () => {
                   onChange={(e) => setFilter({...filter, category: e.target.value === '' ? '' : e.target.value})}
                   className="filter-select"
                 >
-                  <option value="">All Categories</option>
+                  <option value="">{t('todo.allCategories')}</option>
                   {categories.map(category => (
                     <option key={category.id} value={category.name}>{category.name}</option>
                   ))}
@@ -583,13 +585,13 @@ const TodoList = () => {
                   className={`filter-toggle ${filter.overdue ? 'active' : ''}`}
                   onClick={() => setFilter({...filter, overdue: !filter.overdue})}
                 >
-                  🚨 Overdue
+                  🚨 {t('todo.overdue')}
                 </button>
               </div>
             </div>
             {filteredTodos.length === 0 ? (
               <div className="empty-state">
-                <p>No todos found. Click "Add Todo" to get started!</p>
+                <p>{t('todo.noTodosFound')}</p>
               </div>
             ) : (
               <div className="todos-list">
@@ -678,31 +680,31 @@ const TodoList = () => {
       {showAddTodoForm && (
         <div className="modal-overlay" onClick={() => setShowAddTodoForm(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>{editingTodo ? 'Edit Todo' : 'Add New Todo'}</h3>
+            <h3>{editingTodo ? t('todo.editTodo') : t('todo.addNewTodo')}</h3>
             
             <div className="form-group">
-              <label>Title *</label>
+              <label>{t('todo.titleRequired')}</label>
               <input
                 type="text"
                 value={newTodo.title}
                 onChange={(e) => setNewTodo({...newTodo, title: e.target.value})}
-                placeholder="Enter task title"
+                placeholder={t('todo.description')}
               />
             </div>
 
             <div className="form-group">
-              <label>Description</label>
+              <label>{t('todo.description')}</label>
               <textarea
                 value={newTodo.description}
                 onChange={(e) => setNewTodo({...newTodo, description: e.target.value})}
-                placeholder="Enter task description"
+                placeholder={t('todo.descriptionPlaceholder')}
                 rows={3}
               />
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label>Priority</label>
+                <label>{t('todo.priority')}</label>
                 <select
                   value={newTodo.priority}
                   onChange={(e) => setNewTodo({...newTodo, priority: e.target.value})}
@@ -714,7 +716,7 @@ const TodoList = () => {
               </div>
 
               <div className="form-group">
-                <label>Category</label>
+                <label>{t('todo.category')}</label>
                 <select
                   value={newTodo.category}
                   onChange={(e) => setNewTodo({...newTodo, category: e.target.value})}
@@ -728,7 +730,7 @@ const TodoList = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label>Due Date</label>
+                <label>{t('todo.dueDate')}</label>
                 <input
                   type="date"
                   value={newTodo.dueDate}
@@ -737,7 +739,7 @@ const TodoList = () => {
               </div>
 
               <div className="form-group">
-                <label>Due Time</label>
+                <label>{t('todo.dueTime')}</label>
                 <input
                   type="time"
                   value={newTodo.dueTime}
@@ -747,7 +749,7 @@ const TodoList = () => {
             </div>
 
             <div className="form-group">
-              <label>Estimated Time (minutes)</label>
+              <label>{t('todo.estimatedTime')}</label>
               <input
                 type="number"
                 value={newTodo.estimatedTime}
@@ -757,12 +759,12 @@ const TodoList = () => {
             </div>
 
             <div className="form-group">
-              <label>Tags</label>
+              <label>{t('todo.tags')}</label>
               <input
                 type="text"
                 value={newTodo.tags.join(', ')}
                 onChange={(e) => setNewTodo({...newTodo, tags: e.target.value.split(',').map(tag => tag.trim()).filter(Boolean)})}
-                placeholder="Enter tags separated by commas"
+                placeholder={t('todo.tagsPlaceholder')}
               />
             </div>
 
@@ -773,7 +775,7 @@ const TodoList = () => {
                   checked={newTodo.isRecurring}
                   onChange={(e) => setNewTodo({...newTodo, isRecurring: e.target.checked})}
                 />
-                Recurring Task
+                {t('todo.recurringTask')}
               </label>
               {newTodo.isRecurring && (
                 <select
@@ -789,9 +791,9 @@ const TodoList = () => {
             </div>
 
             <div className="form-actions">
-              <button onClick={() => setShowAddTodoForm(false)}>Cancel</button>
+              <button onClick={() => setShowAddTodoForm(false)}>{t('todo.cancel')}</button>
               <button onClick={handleAddTodo} disabled={!newTodo.title.trim()}>
-                {editingTodo ? 'Update' : 'Add'}
+                {editingTodo ? t('todo.update') : t('todo.add')}
               </button>
             </div>
           </div>

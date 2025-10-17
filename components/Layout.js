@@ -5,9 +5,12 @@ import storageService from '../lib/storageService';
 import todoService from '../lib/todoService';
 import readingService from '../lib/readingService';
 import pomodoroService from '../lib/pomodoroService';
+import { useLanguage, useTranslation } from '../contexts/LanguageContext';
 
 const Layout = ({ children, title, description }) => {
   const [darkMode, setDarkMode] = useState(false);
+  const { language, changeLanguage, availableLanguages } = useLanguage();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Make services available globally for data export
@@ -30,8 +33,8 @@ const Layout = ({ children, title, description }) => {
   return (
     <>
       <Head>
-        <title>{title || 'AI News Platform'}</title>
-        <meta name="description" content={description || 'Latest AI and technology news'} />
+        <title>{title || t('layout.title')}</title>
+        <meta name="description" content={description || t('layout.subtitle')} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -45,25 +48,32 @@ const Layout = ({ children, title, description }) => {
                   🤖 NEWS ERDEROM
                 </a>
               </h1>
-              <p className="subtitle">Latest Artificial Intelligence & Technology News</p>
+              <p className="subtitle">{t('layout.subtitle')}</p>
               <nav className="main-nav">
-                <a href="/" className="nav-link">📰 News</a>
-                <a href="/bookmarks" className="nav-link">📚 Bookmarks</a>
-                <a href="/history" className="nav-link">📖 History</a>
-                <a href="/habits" className="nav-link">🎯 Habits</a>
-                <a href="/reading" className="nav-link">📚 Reading</a>
-                <a href="/todo" className="nav-link">✅ To-Do</a>
-                <a href="/pomodoro" className="nav-link">🍅 Pomodoro</a>
-                <a href="/dashboard" className="nav-link">📊 Dashboard</a>
-                <a href="/settings" className="nav-link">⚙️ Settings</a>
+                <a href="/" className="nav-link">📰 {t('navigation.news')}</a>
+                <a href="/bookmarks" className="nav-link">📚 {t('navigation.bookmarks')}</a>
+                <a href="/history" className="nav-link">📖 {t('navigation.history')}</a>
+                <a href="/habits" className="nav-link">🎯 {t('navigation.habits')}</a>
+                <a href="/reading" className="nav-link">📚 {t('navigation.reading')}</a>
+                <a href="/todo" className="nav-link">✅ {t('navigation.todo')}</a>
+                <a href="/pomodoro" className="nav-link">🍅 {t('navigation.pomodoro')}</a>
+                <a href="/dashboard" className="nav-link">📊 {t('navigation.dashboard')}</a>
+                <a href="/settings" className="nav-link">⚙️ {t('navigation.settings')}</a>
               </nav>
             </div>
             <div className="header-right">
               <UserMenu />
               <button 
+                className="language-toggle"
+                onClick={() => changeLanguage(language === 'en' ? 'ro' : 'en')}
+                title={t('layout.language.switch')}
+              >
+                {language === 'en' ? "🇷🇴" : "🇬🇧"}
+              </button>
+              <button 
                 className="theme-toggle"
                 onClick={() => setDarkMode(!darkMode)}
-                title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                title={darkMode ? t('layout.themeToggle.dark') : t('layout.themeToggle.light')}
               >
                 {darkMode ? "☀️" : "🌙"}
               </button>
@@ -76,7 +86,7 @@ const Layout = ({ children, title, description }) => {
         </main>
 
         <footer className="layout-footer">
-          <p>&copy; 2025 AI News Hub. Powered by erderom.ro</p>
+          <p>{t('layout.footer')}</p>
         </footer>
       </div>
 
@@ -207,6 +217,25 @@ const Layout = ({ children, title, description }) => {
           color: var(--text-secondary);
           margin-top: auto;
           transition: all 0.3s ease;
+        }
+
+        .language-toggle {
+          background: var(--bg-secondary);
+          border: 2px solid var(--border-color);
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-size: 1.2rem;
+        }
+
+        .language-toggle:hover {
+          transform: scale(1.1);
+          border-color: var(--accent-color);
         }
 
         .theme-toggle {

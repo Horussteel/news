@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import readingService from '../lib/readingService';
+import { useTranslation } from '../contexts/LanguageContext';
 
 const ReadingTracker = () => {
+  const { t } = useTranslation();
   const [books, setBooks] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [notes, setNotes] = useState([]);
   const [goals, setGoals] = useState([]);
   const [statistics, setStatistics] = useState(null);
   const [activeTab, setActiveTab] = useState('books'); // books, sessions, notes, goals, stats
+  const [bookFilter, setBookFilter] = useState('all'); // all, reading, completed, paused, abandoned
   const [showAddBookForm, setShowAddBookForm] = useState(false);
   const [showAddSessionForm, setShowAddSessionForm] = useState(false);
   const [showAddNoteForm, setShowAddNoteForm] = useState(false);
@@ -226,6 +229,17 @@ const ReadingTracker = () => {
     }
   };
 
+  const getFilteredBooks = () => {
+    return books.filter(book => {
+      if (bookFilter === 'all') return true;
+      return book.status === bookFilter;
+    });
+  };
+
+  const handleFilterChange = (filter) => {
+    setBookFilter(filter);
+  };
+
   const formatDuration = (minutes) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -256,9 +270,9 @@ const ReadingTracker = () => {
               <p className="book-author">by {book.author}</p>
               <div className="book-meta">
                 <span className="book-genre">{book.genre}</span>
-                <span className="book-status" style={{ color: getStatusColor(book.status) }}>
-                  {book.status}
-                </span>
+              <span className="book-status" style={{ color: getStatusColor(book.status) }}>
+                {t(`reading.status.${book.status.toLowerCase()}`, book.status)}
+              </span>
               </div>
             </div>
           </div>
@@ -482,13 +496,13 @@ const ReadingTracker = () => {
   return (
     <div className="reading-tracker">
       <div className="tracker-header">
-        <h2>📚 Reading Tracker</h2>
+        <h2>📚 {t('reading.title')}</h2>
         <div className="header-actions">
           <button
             onClick={() => setShowAddBookForm(true)}
             className="add-book-btn"
           >
-            + Add Book
+            + {t('reading.addBook')}
           </button>
         </div>
       </div>
@@ -497,24 +511,24 @@ const ReadingTracker = () => {
       {statistics && (
         <div className="stats-overview">
           <div className="stat-card">
-            <h3>Total Books</h3>
+            <h3>{t('reading.totalBooks')}</h3>
             <div className="stat-value">{statistics.totalBooks}</div>
-            <p>In your library</p>
+            <p>{t('reading.inYourLibrary')}</p>
           </div>
           <div className="stat-card">
-            <h3>Completed</h3>
+            <h3>{t('reading.completed')}</h3>
             <div className="stat-value">{statistics.completedBooks}</div>
-            <p>Books finished</p>
+            <p>{t('reading.booksFinished')}</p>
           </div>
           <div className="stat-card">
-            <h3>Reading Time</h3>
+            <h3>{t('reading.readingTime')}</h3>
             <div className="stat-value">{formatDuration(statistics.totalReadingTime)}</div>
-            <p>Total time</p>
+            <p>{t('reading.totalTime')}</p>
           </div>
           <div className="stat-card">
-            <h3>Current Streak</h3>
+            <h3>{t('reading.currentStreak')}</h3>
             <div className="stat-value">{statistics.readingStreak} 🔥</div>
-            <p>Days in a row</p>
+            <p>{t('reading.daysInARow')}</p>
           </div>
         </div>
       )}
@@ -525,31 +539,31 @@ const ReadingTracker = () => {
           className={`tab ${activeTab === 'books' ? 'active' : ''}`}
           onClick={() => setActiveTab('books')}
         >
-          📚 Books ({books.length})
+          📚 {t('reading.books')} ({books.length})
         </button>
         <button
           className={`tab ${activeTab === 'sessions' ? 'active' : ''}`}
           onClick={() => setActiveTab('sessions')}
         >
-          ⏱️ Sessions ({sessions.length})
+          ⏱️ {t('reading.sessions')} ({sessions.length})
         </button>
         <button
           className={`tab ${activeTab === 'notes' ? 'active' : ''}`}
           onClick={() => setActiveTab('notes')}
         >
-          📝 Notes ({notes.length})
+          📝 {t('reading.notes')} ({notes.length})
         </button>
         <button
           className={`tab ${activeTab === 'goals' ? 'active' : ''}`}
           onClick={() => setActiveTab('goals')}
         >
-          🎯 Goals ({goals.filter(g => g.isActive).length})
+          🎯 {t('reading.goals')} ({goals.filter(g => g.isActive).length})
         </button>
         <button
           className={`tab ${activeTab === 'stats' ? 'active' : ''}`}
           onClick={() => setActiveTab('stats')}
         >
-          📊 Statistics
+          📊 {t('reading.statistics')}
         </button>
       </div>
 
@@ -558,21 +572,41 @@ const ReadingTracker = () => {
         {activeTab === 'books' && (
           <div className="books-section">
             <div className="section-header">
-              <h3>Your Books</h3>
+              <h3>{t('reading.yourBooks')}</h3>
               <div className="filter-buttons">
-                <button className="filter-btn active">All</button>
-                <button className="filter-btn">Reading</button>
-                <button className="filter-btn">Completed</button>
-                <button className="filter-btn">Paused</button>
+                <button 
+                  className={`filter-btn ${bookFilter === 'all' ? 'active' : ''}`}
+                  onClick={() => handleFilterChange('all')}
+                >
+                  {t('reading.all')}
+                </button>
+                <button 
+                  className={`filter-btn ${bookFilter === 'reading' ? 'active' : ''}`}
+                  onClick={() => handleFilterChange('reading')}
+                >
+                  {t('reading.reading')}
+                </button>
+                <button 
+                  className={`filter-btn ${bookFilter === 'completed' ? 'active' : ''}`}
+                  onClick={() => handleFilterChange('completed')}
+                >
+                  {t('reading.completed')}
+                </button>
+                <button 
+                  className={`filter-btn ${bookFilter === 'paused' ? 'active' : ''}`}
+                  onClick={() => handleFilterChange('paused')}
+                >
+                  {t('reading.paused')}
+                </button>
               </div>
             </div>
-            {books.length === 0 ? (
+            {getFilteredBooks().length === 0 ? (
               <div className="empty-state">
-                <p>No books yet. Click "Add Book" to get started!</p>
+                <p>{t('reading.noBooksFound')}</p>
               </div>
             ) : (
               <div className="books-grid">
-                {books.map(renderBookCard)}
+                {getFilteredBooks().map(renderBookCard)}
               </div>
             )}
           </div>
@@ -581,17 +615,17 @@ const ReadingTracker = () => {
         {activeTab === 'sessions' && (
           <div className="sessions-section">
             <div className="section-header">
-              <h3>Reading Sessions</h3>
+              <h3>{t('reading.readingSessions')}</h3>
               <button
                 onClick={() => setShowAddSessionForm(true)}
                 className="add-session-btn"
               >
-                + Add Session
+                + {t('reading.addSession')}
               </button>
             </div>
             {sessions.length === 0 ? (
               <div className="empty-state">
-                <p>No reading sessions yet. Start a reading session to track your progress!</p>
+                <p>{t('reading.noSessionsFound')}</p>
               </div>
             ) : (
               <div className="sessions-list">
@@ -604,17 +638,17 @@ const ReadingTracker = () => {
         {activeTab === 'notes' && (
           <div className="notes-section">
             <div className="section-header">
-              <h3>Reading Notes</h3>
+              <h3>{t('reading.readingNotes')}</h3>
               <button
                 onClick={() => setShowAddNoteForm(true)}
                 className="add-note-btn"
               >
-                + Add Note
+                + {t('reading.addNote')}
               </button>
             </div>
             {notes.length === 0 ? (
               <div className="empty-state">
-                <p>No notes yet. Take notes while reading to remember important insights!</p>
+                <p>{t('reading.noNotesFound')}</p>
               </div>
             ) : (
               <div className="notes-list">
@@ -627,12 +661,12 @@ const ReadingTracker = () => {
         {activeTab === 'goals' && (
           <div className="goals-section">
             <div className="section-header">
-              <h3>Reading Goals</h3>
+              <h3>{t('reading.readingGoals')}</h3>
               <button
                 onClick={() => {/* Handle add goal */}}
                 className="add-goal-btn"
               >
-                + Add Goal
+                + {t('reading.addGoal')}
               </button>
             </div>
             <div className="goals-list">
@@ -643,7 +677,7 @@ const ReadingTracker = () => {
 
         {activeTab === 'stats' && statistics && (
           <div className="stats-section">
-            <h3>Reading Statistics</h3>
+            <h3>{t('reading.readingStatistics')}</h3>
             <div className="detailed-stats">
               <div className="stats-grid">
                 <div className="stat-item">
@@ -680,58 +714,58 @@ const ReadingTracker = () => {
       {showAddBookForm && (
         <div className="modal-overlay" onClick={() => setShowAddBookForm(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>{editingBook ? 'Edit Book' : 'Add New Book'}</h3>
+            <h3>{editingBook ? t('reading.editBook') : t('reading.addNewBook')}</h3>
             
             <div className="form-group">
-              <label>Title *</label>
+              <label>{t('reading.titleRequired')}</label>
               <input
                 type="text"
                 value={newBook.title}
                 onChange={(e) => setNewBook({...newBook, title: e.target.value})}
-                placeholder="Enter book title"
+                placeholder={t('reading.bookTitlePlaceholder')}
               />
             </div>
 
             <div className="form-group">
-              <label>Author</label>
+              <label>{t('reading.authorPlaceholder')}</label>
               <input
                 type="text"
                 value={newBook.author}
                 onChange={(e) => setNewBook({...newBook, author: e.target.value})}
-                placeholder="Enter author name"
+                placeholder={t('reading.authorPlaceholder')}
               />
             </div>
 
             <div className="form-row">
-              <div className="form-group">
-                <label>Genre</label>
-                <select
-                  value={newBook.genre}
-                  onChange={(e) => setNewBook({...newBook, genre: e.target.value})}
-                >
-                  {genres.map(genre => (
-                    <option key={genre} value={genre}>{genre}</option>
-                  ))}
-                </select>
-              </div>
+            <div className="form-group">
+              <label>{t('reading.genre')}</label>
+              <select
+                value={newBook.genre}
+                onChange={(e) => setNewBook({...newBook, genre: e.target.value})}
+              >
+                {genres.map(genre => (
+                  <option key={genre} value={genre}>{genre}</option>
+                ))}
+              </select>
+            </div>
 
-              <div className="form-group">
-                <label>Status</label>
-                <select
-                  value={newBook.status}
-                  onChange={(e) => setNewBook({...newBook, status: e.target.value})}
-                >
-                  <option value="reading">Reading</option>
-                  <option value="completed">Completed</option>
-                  <option value="paused">Paused</option>
-                  <option value="abandoned">Abandoned</option>
-                </select>
-              </div>
+            <div className="form-group">
+              <label>{t('reading.status')}</label>
+              <select
+                value={newBook.status}
+                onChange={(e) => setNewBook({...newBook, status: e.target.value})}
+              >
+                <option value="reading">{t('reading.reading')}</option>
+                <option value="completed">{t('reading.completed')}</option>
+                <option value="paused">{t('reading.paused')}</option>
+                <option value="abandoned">{t('reading.status.abandoned')}</option>
+              </select>
+            </div>
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label>Total Pages</label>
+                <label>{t('reading.totalPagesLabel')}</label>
                 <input
                   type="number"
                   value={newBook.totalPages}
@@ -741,7 +775,7 @@ const ReadingTracker = () => {
               </div>
 
               <div className="form-group">
-                <label>Current Page</label>
+                <label>{t('reading.currentPageLabel')}</label>
                 <input
                   type="number"
                   value={newBook.currentPage}
@@ -752,19 +786,19 @@ const ReadingTracker = () => {
             </div>
 
             <div className="form-group">
-              <label>Description</label>
+              <label>{t('reading.description')}</label>
               <textarea
                 value={newBook.description}
                 onChange={(e) => setNewBook({...newBook, description: e.target.value})}
-                placeholder="Enter book description"
+                placeholder={t('reading.description')}
                 rows={3}
               />
             </div>
 
             <div className="form-actions">
-              <button onClick={() => setShowAddBookForm(false)}>Cancel</button>
+              <button onClick={() => setShowAddBookForm(false)}>{t('common.cancel')}</button>
               <button onClick={handleAddBook} disabled={!newBook.title.trim()}>
-                {editingBook ? 'Update' : 'Add'}
+                {editingBook ? t('common.update') : t('common.add')}
               </button>
             </div>
           </div>

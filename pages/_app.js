@@ -1,12 +1,15 @@
 import '../styles/globals.css'
 import { SessionProvider } from 'next-auth/react'
 import { UserProvider } from '../contexts/UserContext'
+import { LanguageProvider } from '../contexts/LanguageContext'
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <SessionProvider session={session}>
       <UserProvider>
-        <Component {...pageProps} />
+        <LanguageProvider>
+          <Component {...pageProps} />
+        </LanguageProvider>
       </UserProvider>
     </SessionProvider>
   )

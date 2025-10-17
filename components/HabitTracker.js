@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import habitService from '../lib/habitService';
+import { useTranslation } from '../contexts/LanguageContext';
 
 const HabitTracker = () => {
+  const { t } = useTranslation();
   const [habits, setHabits] = useState([]);
   const [statistics, setStatistics] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -242,7 +244,7 @@ const HabitTracker = () => {
     
     return (
       <div className="week-view">
-        <h3>This Week</h3>
+        <h3>{t('habits.thisWeek')}</h3>
         <div className="week-grid">
           {weekDates.map((date, index) => {
             const completions = getCompletionsForDate(date);
@@ -283,7 +285,7 @@ const HabitTracker = () => {
   return (
     <div className="habit-tracker">
       <div className="tracker-header">
-        <h2>🎯 Habit Tracker</h2>
+        <h2>🎯 {t('habits.title')}</h2>
         <div className="header-actions">
           <input
             type="date"
@@ -296,15 +298,15 @@ const HabitTracker = () => {
             onChange={(e) => setViewMode(e.target.value)}
             className="view-mode-select"
           >
-            <option value="today">Today</option>
-            <option value="week">Week</option>
-            <option value="month">Month</option>
+            <option value="today">{t('habits.daily')}</option>
+            <option value="week">{t('habits.weekly')}</option>
+            <option value="month">{t('habits.monthly')}</option>
           </select>
           <button
             onClick={() => setShowAddForm(true)}
             className="add-habit-btn"
           >
-            + Add Habit
+            + {t('habits.addHabit')}
           </button>
         </div>
       </div>
@@ -312,26 +314,26 @@ const HabitTracker = () => {
       {/* Statistics Overview */}
       <div className="stats-overview">
         <div className="stat-card">
-          <h3>Overall Performance</h3>
+          <h3>{t('habits.overallPerformance')}</h3>
           <div className="stat-value">{getCompletionRate()}%</div>
-          <p>Completion Rate</p>
+          <p>{t('habits.completionRate')}</p>
         </div>
         <div className="stat-card">
-          <h3>Total Streak</h3>
+          <h3>{t('habits.totalStreak')}</h3>
           <div className="stat-value">{getTotalStreak()} 🔥</div>
-          <p>Active Days</p>
+          <p>{t('habits.activeDays')}</p>
         </div>
         <div className="stat-card">
-          <h3>Active Habits</h3>
+          <h3>{t('habits.activeHabits')}</h3>
           <div className="stat-value">{habits.length}</div>
-          <p>Being Tracked</p>
+          <p>{t('habits.beingTracked')}</p>
         </div>
         <div className="stat-card">
-          <h3>Today's Progress</h3>
+          <h3>{t('habits.todaysProgress')}</h3>
           <div className="stat-value">
             {getCompletionsForDate(selectedDate).length}/{habits.length}
           </div>
-          <p>Completed</p>
+          <p>{t('habits.completed')}</p>
         </div>
       </div>
 
@@ -351,7 +353,7 @@ const HabitTracker = () => {
           </h3>
           {habits.length === 0 ? (
             <div className="empty-state">
-              <p>No habits yet. Click "Add Habit" to get started!</p>
+              <p>{t('habits.noHabitsFound')}</p>
             </div>
           ) : (
             <div className="habits-grid">
@@ -365,30 +367,30 @@ const HabitTracker = () => {
       {showAddForm && (
         <div className="modal-overlay" onClick={() => setShowAddForm(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>{editingHabit ? 'Edit Habit' : 'Add New Habit'}</h3>
+            <h3>{editingHabit ? t('habits.editHabit') : t('habits.addNewHabit')}</h3>
             
             <div className="form-group">
-              <label>Name *</label>
+              <label>{t('habits.name')}</label>
               <input
                 type="text"
                 value={newHabit.name}
                 onChange={(e) => setNewHabit({...newHabit, name: e.target.value})}
-                placeholder="e.g., Exercise"
+                placeholder={t('habits.habitNamePlaceholder')}
               />
             </div>
 
             <div className="form-group">
-              <label>Description</label>
+              <label>{t('habits.description')}</label>
               <textarea
                 value={newHabit.description}
                 onChange={(e) => setNewHabit({...newHabit, description: e.target.value})}
-                placeholder="e.g., 30 minutes of physical activity"
+                placeholder={t('habits.descriptionPlaceholder')}
               />
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label>Category</label>
+                <label>{t('habits.category')}</label>
                 <select
                   value={newHabit.category}
                   onChange={(e) => setNewHabit({...newHabit, category: e.target.value})}
@@ -402,7 +404,7 @@ const HabitTracker = () => {
               </div>
 
               <div className="form-group">
-                <label>Icon</label>
+                <label>{t('habits.icon')}</label>
                 <div className="icon-selector">
                   {icons.map(icon => (
                     <button
@@ -418,7 +420,7 @@ const HabitTracker = () => {
             </div>
 
             <div className="form-group">
-              <label>Habit Type</label>
+              <label>{t('habits.habitType')}</label>
               <select
                 value={newHabit.type}
                 onChange={(e) => setNewHabit({...newHabit, type: e.target.value})}
@@ -430,7 +432,7 @@ const HabitTracker = () => {
 
             {newHabit.type === 'negative' && (
               <div className="form-group">
-                <label>Start Date *</label>
+                <label>{t('habits.startDate')}</label>
                 <input
                   type="date"
                   value={newHabit.startDate}
@@ -443,7 +445,7 @@ const HabitTracker = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label>Color</label>
+                <label>{t('habits.color')}</label>
                 <input
                   type="color"
                   value={newHabit.color}
@@ -452,22 +454,22 @@ const HabitTracker = () => {
               </div>
 
               <div className="form-group">
-                <label>Frequency</label>
+                <label>{t('habits.frequencyLabel')}</label>
                 <select
                   value={newHabit.frequency}
                   onChange={(e) => setNewHabit({...newHabit, frequency: e.target.value})}
                 >
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
+                  <option value="daily">{t('habits.daily')}</option>
+                  <option value="weekly">{t('habits.weekly')}</option>
+                  <option value="monthly">{t('habits.monthly')}</option>
                 </select>
               </div>
             </div>
 
             <div className="form-actions">
-              <button onClick={() => setShowAddForm(false)}>Cancel</button>
+              <button onClick={() => setShowAddForm(false)}>{t('habits.cancel')}</button>
               <button onClick={handleAddHabit} disabled={!newHabit.name.trim()}>
-                {editingHabit ? 'Update' : 'Add'}
+                {editingHabit ? t('habits.update') : t('habits.add')}
               </button>
             </div>
           </div>

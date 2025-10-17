@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import analyticsService from '../lib/analyticsService';
 import DataExportManager from './DataExportManager';
+import { useTranslation } from '../contexts/LanguageContext';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const [analyticsData, setAnalyticsData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('week');
@@ -79,14 +81,14 @@ const Dashboard = () => {
     return (
       <div className="dashboard">
         <div className="dashboard-header">
-          <h2>📊 Analytics Dashboard</h2>
+          <h2>📊 {t('dashboard.title')}</h2>
           <button className="refresh-btn" onClick={handleRefresh}>
-            🔄 Refresh
+            🔄 {t('common.loading')}
           </button>
         </div>
         <div className="loading-state">
           <div className="spinner"></div>
-          <p>Loading analytics data...</p>
+          <p>{t('common.loading')}...</p>
         </div>
         <style jsx>{`
           .dashboard {
@@ -165,15 +167,15 @@ const Dashboard = () => {
     return (
       <div className="dashboard">
         <div className="dashboard-header">
-          <h2>📊 Analytics Dashboard</h2>
+          <h2>📊 {t('dashboard.title')}</h2>
           <button className="refresh-btn" onClick={handleRefresh}>
-            🔄 Refresh
+            🔄 {t('common.loading')}
           </button>
         </div>
         <div className="error-state">
-          <p>❌ Failed to load analytics data</p>
+          <p>❌ {t('errors.generic')}</p>
           <button onClick={loadAnalytics} className="retry-btn">
-            🔄 Retry
+            🔄 {t('common.save')}
           </button>
         </div>
         <style jsx>{`
@@ -275,21 +277,21 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-header">
-        <h2>📊 Analytics Dashboard</h2>
-        <div className="header-actions">
-          <button className="refresh-btn" onClick={handleRefresh}>
-            🔄 Refresh
-          </button>
-          <button 
-            className="data-export-btn" 
-            onClick={() => setShowDataExport(!showDataExport)}
-          >
-            📦 Export/Import Date
-          </button>
+      <div className="dashboard">
+        <div className="dashboard-header">
+          <h2>📊 {t('dashboard.title')}</h2>
+          <div className="header-actions">
+            <button className="refresh-btn" onClick={handleRefresh}>
+              🔄 {t('common.loading')}
+            </button>
+            <button 
+              className="data-export-btn" 
+              onClick={() => setShowDataExport(!showDataExport)}
+            >
+              📦 {t('dashboard.exportImport.title')}
+            </button>
+          </div>
         </div>
-      </div>
 
       {/* Data Export Manager */}
       {showDataExport && (
@@ -300,12 +302,12 @@ const Dashboard = () => {
 
       {/* Overview Section */}
       <div className="overview-section">
-        <h3>📈 Overview</h3>
+        <h3>📈 {t('dashboard.overview')}</h3>
         <div className="overview-cards">
           <div className="stat-card">
             <div className="stat-header">
               <span className="stat-icon">✅</span>
-              <span className="stat-label">Tasks</span>
+              <span className="stat-label">{t('navigation.todo')}</span>
             </div>
             <div className="stat-value">{formatNumber(overview.totalTodos)}</div>
             <div className="stat-subtitle">
@@ -323,7 +325,7 @@ const Dashboard = () => {
           <div className="stat-card">
             <div className="stat-header">
               <span className="stat-icon">🎯</span>
-              <span className="stat-label">Habits</span>
+              <span className="stat-label">{t('navigation.habits')}</span>
             </div>
             <div className="stat-value">{formatNumber(overview.totalHabits)}</div>
             <div className="stat-subtitle">
@@ -345,7 +347,7 @@ const Dashboard = () => {
           <div className="stat-card">
             <div className="stat-header">
               <span className="stat-icon">📚</span>
-              <span className="stat-label">Reading</span>
+              <span className="stat-label">{t('navigation.reading')}</span>
             </div>
             <div className="stat-value">{formatNumber(overview.totalReading)}</div>
             <div className="stat-subtitle">
@@ -386,13 +388,13 @@ const Dashboard = () => {
 
       {/* Today's Stats */}
       <div className="quick-stats-section">
-        <h3>🌟 Today's Activity</h3>
+        <h3>🌟 {t('dashboard.recentActivity')}</h3>
         <div className="quick-stats-grid">
           <div className="quick-stat">
             <div className="quick-stat-icon">✅</div>
             <div className="quick-stat-content">
               <div className="quick-stat-value">{quickStats.todayTodos}</div>
-              <div className="quick-stat-label">Tasks</div>
+              <div className="quick-stat-label">{t('navigation.todo')}</div>
             </div>
           </div>
 
@@ -400,7 +402,7 @@ const Dashboard = () => {
             <div className="quick-stat-icon">🎯</div>
             <div className="quick-stat-content">
               <div className="quick-stat-value">{quickStats.todayHabits}</div>
-              <div className="quick-stat-label">Habits</div>
+              <div className="quick-stat-label">{t('navigation.habits')}</div>
             </div>
           </div>
 
@@ -408,7 +410,7 @@ const Dashboard = () => {
             <div className="quick-stat-icon">📚</div>
             <div className="quick-stat-content">
               <div className="quick-stat-value">{quickStats.todayReading}</div>
-              <div className="quick-stat-label">Books</div>
+              <div className="quick-stat-label">{t('reading.title')}</div>
             </div>
           </div>
 
@@ -424,13 +426,13 @@ const Dashboard = () => {
 
       {/* Top Metrics */}
       <div className="metrics-section">
-        <h3>🏆 Top Metrics</h3>
+        <h3>🏆 {t('dashboard.topMetrics')}</h3>
         <div className="metrics-grid">
           {topMetrics.mostProductiveDay && (
             <div className="metric-card">
               <div className="metric-header">
                 <span className="metric-icon">📅</span>
-                <span className="metric-label">Most Productive Day</span>
+                <span className="metric-label">{t('dashboard.mostProductiveDay')}</span>
               </div>
               <div className="metric-value">{topMetrics.mostProductiveDay.date}</div>
               <div className="metric-subtitle">
@@ -443,7 +445,7 @@ const Dashboard = () => {
             <div className="metric-card">
               <div className="metric-header">
                 <span className="metric-icon">🔥</span>
-                <span className="metric-label">Longest Streak</span>
+                <span className="metric-label">{t('dashboard.longestStreak')}</span>
               </div>
               <div className="metric-value">{topMetrics.longestStreak} days</div>
               <div className="metric-subtitle">Current best</div>
@@ -454,7 +456,7 @@ const Dashboard = () => {
             <div className="metric-card">
               <div className="metric-header">
                 <span className="metric-icon">📖</span>
-                <span className="metric-label">Reading Speed</span>
+                <span className="metric-label">{t('dashboard.readingSpeed')}</span>
               </div>
               <div className="metric-value">{topMetrics.fastestReader.readingSpeed} pages/day</div>
               <div className="metric-subtitle">
@@ -478,7 +480,7 @@ const Dashboard = () => {
 
       {/* Recent Activity */}
       <div className="activity-section">
-        <h3>📋 Recent Activity</h3>
+        <h3>📋 {t('dashboard.recentActivity')}</h3>
         <div className="activity-list">
           {recentActivity.map((activity, index) => (
             <div key={index} className={`activity-item activity-${activity.type}`}>
