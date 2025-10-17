@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { useSession } from 'next-auth/react';
+import { useTranslation } from '../contexts/LanguageContext';
 import Layout from '../components/Layout';
 
 const Settings = () => {
+  const { t } = useTranslation();
   const { 
     preferences, 
     updatePreferences, 
