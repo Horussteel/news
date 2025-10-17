@@ -76,7 +76,16 @@ jobs:
           cp -r lib ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r contexts ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp -r styles ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
+          # Ensure locales are copied - this is critical for translations
+          echo "Copying locales folder..."
           cp -r locales ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
+          # Verify locales were copied
+          if [ -d "${{ env.DEPLOY_DIR }}/locales" ]; then
+            echo "SUCCESS: Locales folder copied successfully"
+            ls ${{ env.DEPLOY_DIR }}/locales/
+          else
+            echo "ERROR: Locales folder not found after copy"
+          fi
           cp package.json ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp package-lock.json ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
           cp ecosystem.config.js ${{ env.DEPLOY_DIR }}/ 2>/dev/null || true
