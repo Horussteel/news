@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import analyticsService from '../lib/analyticsService';
+import financialService from '../lib/financialService';
 import DataExportManager from './DataExportManager';
 import { useTranslation } from '../contexts/LanguageContext';
 
 const Dashboard = () => {
   const { t } = useTranslation();
   const [analyticsData, setAnalyticsData] = useState(null);
+  const [financialStats, setFinancialStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('week');
   const [activeTab, setActiveTab] = useState('overview');
@@ -13,6 +15,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     loadAnalytics();
+    loadFinancialStats();
   }, []);
 
   const loadAnalytics = () => {
@@ -72,9 +75,19 @@ const Dashboard = () => {
     }
   };
 
+  const loadFinancialStats = () => {
+    try {
+      const stats = financialService.getFinancialStatistics();
+      setFinancialStats(stats);
+    } catch (error) {
+      console.error('Error loading financial statistics:', error);
+    }
+  };
+
   const handleRefresh = () => {
     analyticsService.clearCache();
     loadAnalytics();
+    loadFinancialStats();
   };
 
   if (loading) {
@@ -411,6 +424,19 @@ const Dashboard = () => {
             <div className="quick-stat-content">
               <div className="quick-stat-value">{quickStats.todayReading}</div>
               <div className="quick-stat-label">{t('reading.title')}</div>
+            </div>
+          </div>
+
+          <div className="quick-stat">
+            <div className="quick-stat-icon">💰</div>
+            <div className="quick-stat-content">
+              <div className="quick-stat-value">
+                {financialStats?.currentMonth?.netIncome > 0 ? 
+                  new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'RON' }).format(financialStats.currentMonth.netIncome) : 
+                  '0 RON'
+                }
+              </div>
+              <div className="quick-stat-label">Economii</div>
             </div>
           </div>
 
