@@ -629,67 +629,108 @@ const Settings = () => {
           {/* About Tab */}
           {activeTab === 'about' && (
             <div className="tab-content">
-              <h2>{t('settings.aboutTitle')}</h2>
-              
-              <div className="about-grid">
-                <div className="about-card">
-                  <h3>🚀 {t('settings.features')}</h3>
-                  <ul className="feature-list">
-                    <li>📰 Real-time news aggregation</li>
-                    <li>🎥 YouTube video integration</li>
-                    <li>🔖 Smart bookmarking system</li>
-                    <li>📚 Reading progress tracking</li>
-                    <li>✅ Task management</li>
-                    <li>🎯 Habit tracking</li>
-                    <li>🍅 Pomodoro timer</li>
-                    <li>🌐 Multi-language support</li>
-                    <li>🎨 Modern UI/UX design</li>
-                    <li>💾 Local data storage</li>
-                  </ul>
+              <div className="about-hero">
+                <div className="hero-content">
+                  <div className="hero-icon">🚀</div>
+                  <h1 className="hero-title">Despre News ERDEROM</h1>
+                  <p className="hero-subtitle">
+                    Gata, l-am actualizat.
+                  </p>
                 </div>
+              </div>
 
-                <div className="about-card">
-                  <h3>🔒 {t('settings.dataPrivacy')}</h3>
-                  <p>{t('settings.dataPrivacyDescription')}</p>
-                  <div className="privacy-features">
-                    <div className="privacy-item">
-                      <span className="privacy-icon">🔐</span>
-                      <span>All data stored locally</span>
+              <div className="about-content">
+                <div className="privacy-section">
+                  <div className="privacy-card">
+                    <div className="privacy-header">
+                      <div className="privacy-icon-large">🔒</div>
+                      <h2>Bun venit la News ERDEROM</h2>
                     </div>
-                    <div className="privacy-item">
-                      <span className="privacy-icon">🚫</span>
-                      <span>No tracking cookies</span>
-                    </div>
-                    <div className="privacy-item">
-                      <span className="privacy-icon">👤</span>
-                      <span>Anonymous analytics</span>
+                    <div className="privacy-text">
+                      <p className="intro-text">
+                        O aplicație dezvoltată de Erderom pe un principiu fundamental: <strong>datele dumneavoastră vă aparțin în totalitate.</strong>
+                      </p>
+                      
+                      <p className="architecture-text">
+                        Am construit News ERDEROM cu o arhitectură axată pe confidențialitate totală. Aplicația noastră folosește exclusiv stocarea locală (Local Storage) a dispozitivului dumneavoastră.
+                      </p>
+
+                      <div className="what-it-means">
+                        <h3>Ce înseamnă acest lucru pentru tine?</h3>
+                        <p className="highlight-text">
+                          Indiferent cât de sensibile sunt informațiile pe care le salvezi în aplicație, acestea nu părăsesc niciodată dispozitivul tău.
+                        </p>
+                      </div>
+
+                      <div className="privacy-features-modern">
+                        <div className="privacy-feature-item">
+                          <div className="feature-icon">🚫</div>
+                          <div className="feature-content">
+                            <h4>Zero baze de date pe server</h4>
+                            <p>Noi NU stocăm, colectăm sau procesăm datele tale personale pe serverele noastre.</p>
+                          </div>
+                        </div>
+
+                        <div className="privacy-feature-item">
+                          <div className="feature-icon">🔑</div>
+                          <div className="feature-content">
+                            <h4>Acces Exclusiv</h4>
+                            <p>Doar tu ai acces la informațiile tale, direct de pe telefonul sau computerul tău.</p>
+                          </div>
+                        </div>
+
+                        <div className="privacy-feature-item">
+                          <div className="feature-icon">🛡️</div>
+                          <div className="feature-content">
+                            <h4>Siguranță Maximă</h4>
+                            <p>Totul rămâne local, 100% sub controlul tău.</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mission-section">
+                        <h3>Misiunea noastră</h3>
+                        <p>
+                          Misiunea noastră la Erderom este să oferim soluții de digitalizare transparente și sigure, care să îți respecte dreptul la viață privată.
+                        </p>
+                      </div>
+
+                      <div className="cta-section">
+                        <p>
+                          Află mai multe despre cum putem accelera digitalizarea afacerii tale vizitând:
+                        </p>
+                        <a 
+                          href="https://webdevfast.ro/digitalizare.html" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="cta-link"
+                        >
+                          <span className="link-icon">🌐</span>
+                          <span>webdevfast.ro/digitalizare.html</span>
+                          <span className="link-arrow">→</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="about-card">
-                  <h3>⚙️ {t('settings.technologiesUsed')}</h3>
-                  <div className="tech-grid">
-                    <div className="tech-item">Next.js 14</div>
-                    <div className="tech-item">React 18</div>
-                    <div className="tech-item">NextAuth.js</div>
-                    <div className="tech-item">NewsAPI</div>
-                    <div className="tech-item">YouTube API</div>
-                    <div className="tech-item">LocalStorage</div>
-                    <div className="tech-item">CSS3</div>
-                    <div className="tech-item">JavaScript</div>
-                  </div>
-                </div>
-
-                <div className="about-card">
-                  <h3>📱 {t('settings.version')}</h3>
-                  <div className="version-info">
-                    <div className="version-number">v2.0.0</div>
-                    <div className="version-date">Updated: October 2025</div>
-                    <div className="version-features">
-                      <span className="feature-badge">Modern UI</span>
-                      <span className="feature-badge">Multi-language</span>
-                      <span className="feature-badge">Local-first</span>
+                <div className="version-section">
+                  <div className="version-card">
+                    <div className="version-header">
+                      <div className="version-icon">📱</div>
+                      <h3>Informații Versiune</h3>
+                    </div>
+                    <div className="version-details">
+                      <div className="version-info-modern">
+                        <div className="version-number">v2.0.0</div>
+                        <div className="version-date">Actualizat: Octombrie 2025</div>
+                      </div>
+                      <div className="version-features-modern">
+                        <span className="feature-badge-modern">🎨 Modern UI</span>
+                        <span className="feature-badge-modern">🌐 Multi-language</span>
+                        <span className="feature-badge-modern">🔒 Local-first</span>
+                        <span className="feature-badge-modern">📄 PDF Export</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1243,117 +1284,584 @@ const Settings = () => {
           margin: 0;
         }
 
-        /* About Section */
-        .about-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 1.5rem;
+        /* Modern About Section */
+        .about-hero {
+          text-align: center;
+          margin-bottom: 3rem;
+          padding: 3rem 2rem;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 20px;
+          color: white;
+          position: relative;
+          overflow: hidden;
+          animation: heroGradient 8s ease infinite;
         }
 
-        .about-card {
-          background: #f8f9fa;
-          border-radius: 12px;
-          padding: 1.5rem;
-          border: 1px solid #e1e5e9;
+        .about-hero::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+          animation: floatingOrbs 15s ease-in-out infinite;
         }
 
-        .about-card h3 {
-          color: #333;
+        @keyframes heroGradient {
+          0%, 100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+          25% { background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); }
+          50% { background: linear-gradient(135deg, #667eea 0%, #9f7aea 100%); }
+          75% { background: linear-gradient(135deg, #9f7aea 0%, #764ba2 100%); }
+        }
+
+        @keyframes floatingOrbs {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          33% { transform: translate(20px, -20px) rotate(120deg); }
+          66% { transform: translate(-20px, 10px) rotate(240deg); }
+        }
+
+        .hero-content {
+          position: relative;
+          z-index: 1;
+        }
+
+        .hero-icon {
+          font-size: 4rem;
           margin-bottom: 1rem;
+          animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-20px); }
+          60% { transform: translateY(-10px); }
+        }
+
+        .hero-title {
+          font-size: 2.5rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          animation: fadeInUp 0.8s ease;
+        }
+
+        .hero-subtitle {
           font-size: 1.2rem;
-        }
-
-        .feature-list,
-        .tech-list {
-          list-style: none;
-          padding: 0;
+          opacity: 0.9;
           margin: 0;
+          font-style: italic;
+          animation: fadeInUp 0.8s ease 0.2s both;
         }
 
-        .feature-list li,
-        .tech-list li {
-          padding: 0.5rem 0;
-          color: #666;
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .about-content {
+          display: grid;
+          grid-template-columns: 2fr 1fr;
+          gap: 2rem;
+          align-items: start;
+        }
+
+        .privacy-section {
+          animation: slideInLeft 0.8s ease 0.4s both;
+        }
+
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-50px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .privacy-card {
+          background: white;
+          border-radius: 20px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          overflow: hidden;
+          transition: all 0.3s ease;
+        }
+
+        .privacy-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .privacy-header {
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          padding: 2rem;
+          text-align: center;
           border-bottom: 1px solid #e1e5e9;
         }
 
-        .feature-list li:last-child,
-        .tech-list li:last-child {
-          border-bottom: none;
+        .privacy-icon-large {
+          font-size: 3rem;
+          margin-bottom: 1rem;
+          animation: pulse 2s ease-in-out infinite;
         }
 
-        .about-card p {
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+        }
+
+        .privacy-header h2 {
+          margin: 0;
+          color: #333;
+          font-size: 1.8rem;
+          font-weight: 600;
+        }
+
+        .privacy-text {
+          padding: 2rem;
+        }
+
+        .intro-text {
+          font-size: 1.1rem;
+          line-height: 1.6;
+          color: #333;
+          margin-bottom: 1.5rem;
+          animation: fadeIn 1s ease 0.6s both;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .architecture-text {
           color: #666;
           line-height: 1.6;
-          margin-bottom: 1rem;
+          margin-bottom: 2rem;
+          animation: fadeIn 1s ease 0.8s both;
         }
 
-        .privacy-features {
+        .what-it-means {
+          background: #f8f9fa;
+          border-radius: 12px;
+          padding: 1.5rem;
+          margin-bottom: 2rem;
+          border-left: 4px solid #667eea;
+          animation: slideInRight 0.8s ease 1s both;
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(50px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .what-it-means h3 {
+          color: #333;
+          margin-bottom: 1rem;
+          font-size: 1.3rem;
+        }
+
+        .highlight-text {
+          color: #667eea;
+          font-weight: 600;
+          font-size: 1.1rem;
+          line-height: 1.6;
+        }
+
+        .privacy-features-modern {
           display: flex;
           flex-direction: column;
-          gap: 0.75rem;
+          gap: 1rem;
+          margin-bottom: 2rem;
         }
 
-        .privacy-item {
+        .privacy-feature-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 1rem;
+          padding: 1.5rem;
+          background: white;
+          border-radius: 12px;
+          border: 1px solid #e1e5e9;
+          transition: all 0.3s ease;
+          animation: fadeInUp 0.8s ease 1.2s both;
+        }
+
+        .privacy-feature-item:nth-child(1) { animation-delay: 1.2s; }
+        .privacy-feature-item:nth-child(2) { animation-delay: 1.4s; }
+        .privacy-feature-item:nth-child(3) { animation-delay: 1.6s; }
+
+        .privacy-feature-item:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+          border-color: #667eea;
+        }
+
+        .feature-icon {
+          font-size: 2rem;
+          width: 60px;
+          height: 60px;
           display: flex;
           align-items: center;
-          gap: 0.75rem;
-          padding: 0.75rem;
-          background: white;
-          border-radius: 8px;
-          border: 1px solid #e1e5e9;
+          justify-content: center;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 12px;
+          flex-shrink: 0;
+          color: white;
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .privacy-icon {
+        .feature-content h4 {
+          color: #333;
+          margin-bottom: 0.5rem;
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+
+        .feature-content p {
+          color: #666;
+          line-height: 1.5;
+          margin: 0;
+        }
+
+        .mission-section {
+          background: linear-gradient(135deg, #4c51bf 0%, #667eea 100%);
+          border-radius: 12px;
+          padding: 1.5rem;
+          margin-bottom: 2rem;
+          color: white;
+          animation: fadeIn 1s ease 1.8s both;
+          position: relative;
+          box-shadow: 0 8px 25px rgba(76, 29, 149, 0.3);
+        }
+
+        .mission-section::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 12px;
+          z-index: 1;
+        }
+
+        .mission-section::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+          border-radius: 12px;
+          z-index: 1;
+        }
+
+        .mission-section > * {
+          position: relative;
+          z-index: 3;
+        }
+
+        .mission-section h3 {
+          color: #ffffff;
+          margin-bottom: 1rem;
+          font-size: 1.3rem;
+          text-shadow: 
+            0 2px 4px rgba(0, 0, 0, 0.5),
+            0 0 20px rgba(255, 255, 255, 0.3);
+          font-weight: 700;
+          letter-spacing: 0.5px;
+        }
+
+        .mission-section p {
+          line-height: 1.7;
+          margin: 0;
+          color: #ffffff;
+          text-shadow: 
+            0 1px 3px rgba(0, 0, 0, 0.4),
+            0 0 15px rgba(255, 255, 255, 0.2);
+          font-weight: 600;
+          font-size: 1.05rem;
+        }
+
+        /* Force visibility in all themes */
+        .mission-section,
+        .mission-section h3,
+        .mission-section p {
+          color: #ffffff !important;
+        }
+
+        /* Enhanced light mode visibility */
+        @media (prefers-color-scheme: light) {
+          .mission-section {
+            background: linear-gradient(135deg, #3730a3 0%, #4c51bf 100%);
+            box-shadow: 0 8px 30px rgba(55, 48, 163, 0.4);
+          }
+          
+          .mission-section h3 {
+            text-shadow: 
+              0 2px 4px rgba(0, 0, 0, 0.6),
+              0 0 25px rgba(255, 255, 255, 0.4);
+          }
+          
+          .mission-section p {
+            text-shadow: 
+              0 1px 3px rgba(0, 0, 0, 0.5),
+              0 0 20px rgba(255, 255, 255, 0.3);
+          }
+        }
+
+        /* Dark mode enhancement */
+        @media (prefers-color-scheme: dark) {
+          .mission-section {
+            background: linear-gradient(135deg, #4c51bf 0%, #667eea 100%);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+          }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+          .mission-section {
+            background: #000000;
+            border: 2px solid #ffffff;
+          }
+          
+          .mission-section h3,
+          .mission-section p {
+            color: #ffffff !important;
+            text-shadow: none;
+          }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+          .mission-section {
+            animation: none;
+          }
+        }
+
+        .cta-section {
+          text-align: center;
+          padding: 2rem;
+          background: #f8f9fa;
+          border-radius: 12px;
+          animation: fadeIn 1s ease 2s both;
+        }
+
+        .cta-section p {
+          color: #666;
+          margin-bottom: 1rem;
+          font-size: 1.1rem;
+        }
+
+        .cta-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 1rem 2rem;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          text-decoration: none;
+          border-radius: 50px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .cta-link:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .link-icon {
           font-size: 1.2rem;
         }
 
-        .tech-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-          gap: 0.5rem;
+        .link-arrow {
+          transition: transform 0.3s ease;
         }
 
-        .tech-item {
+        .cta-link:hover .link-arrow {
+          transform: translateX(5px);
+        }
+
+        .version-section {
+          animation: slideInRight 0.8s ease 0.6s both;
+        }
+
+        .version-card {
           background: white;
-          padding: 0.5rem;
-          border-radius: 6px;
-          text-align: center;
-          font-size: 0.85rem;
-          color: #666;
-          border: 1px solid #e1e5e9;
+          border-radius: 20px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          overflow: hidden;
+          transition: all 0.3s ease;
+          height: 100%;
         }
 
-        .version-info {
+        .version-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .version-header {
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          padding: 1.5rem;
           text-align: center;
+          border-bottom: 1px solid #e1e5e9;
+        }
+
+        .version-icon {
+          font-size: 2.5rem;
+          margin-bottom: 1rem;
+          animation: rotate 3s ease-in-out infinite;
+        }
+
+        @keyframes rotate {
+          0%, 100% { transform: rotate(0deg); }
+          25% { transform: rotate(10deg); }
+          75% { transform: rotate(-10deg); }
+        }
+
+        .version-header h3 {
+          margin: 0;
+          color: #333;
+          font-size: 1.5rem;
+          font-weight: 600;
+        }
+
+        .version-details {
+          padding: 1.5rem;
+          text-align: center;
+        }
+
+        .version-info-modern {
+          margin-bottom: 1.5rem;
         }
 
         .version-number {
-          font-size: 2rem;
-          font-weight: bold;
+          font-size: 2.5rem;
+          font-weight: 700;
           color: #667eea;
           margin-bottom: 0.5rem;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
 
         .version-date {
           color: #666;
-          margin-bottom: 1rem;
+          font-size: 0.9rem;
         }
 
-        .version-features {
+        .version-features-modern {
           display: flex;
-          justify-content: center;
+          flex-direction: column;
           gap: 0.5rem;
-          flex-wrap: wrap;
         }
 
-        .feature-badge {
-          background: #667eea;
+        .feature-badge-modern {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
-          padding: 0.25rem 0.75rem;
-          border-radius: 12px;
-          font-size: 0.8rem;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-size: 0.85rem;
           font-weight: 500;
+          box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
+          transition: all 0.3s ease;
+        }
+
+        .feature-badge-modern:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Responsive for About Section */
+        @media (max-width: 768px) {
+          .about-hero {
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+          }
+
+          .hero-title {
+            font-size: 2rem;
+          }
+
+          .hero-subtitle {
+            font-size: 1rem;
+          }
+
+          .about-content {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+          }
+
+          .privacy-header,
+          .privacy-text,
+          .cta-section {
+            padding: 1.5rem;
+          }
+
+          .privacy-feature-item {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+          }
+
+          .feature-icon {
+            margin: 0 auto;
+          }
+
+          .version-header,
+          .version-details {
+            padding: 1rem;
+          }
+
+          .version-number {
+            font-size: 2rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .hero-icon {
+            font-size: 3rem;
+          }
+
+          .privacy-header h2 {
+            font-size: 1.5rem;
+          }
+
+          .privacy-feature-item {
+            padding: 1rem;
+          }
+
+          .feature-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+          }
+
+          .cta-link {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+          }
         }
 
         /* Auth Required */
