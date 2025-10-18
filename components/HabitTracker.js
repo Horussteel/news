@@ -20,8 +20,16 @@ const HabitTracker = () => {
     targetCount: 1,
     unit: '',
     type: 'positive',
-    startDate: ''
+    startDate: '',
+    difficulty: 'easy',
+    pointsPerCompletion: 10
   });
+
+  // Gamification state
+  const [userStats, setUserStats] = useState(null);
+  const [showAchievementNotification, setShowAchievementNotification] = useState(null);
+  const [animatingHabits, setAnimatingHabits] = useState(new Set());
+  const [showPointsAnimation, setShowPointsAnimation] = useState(null);
 
   const categories = [
     { value: 'personal', label: 'Personal', icon: '👤' },
@@ -36,7 +44,13 @@ const HabitTracker = () => {
 
   useEffect(() => {
     loadData();
+    loadUserStats();
   }, []);
+
+  const loadUserStats = () => {
+    const stats = habitService.getUserStats();
+    setUserStats(stats);
+  };
 
   const loadData = () => {
     const habitsData = habitService.getHabits();
@@ -46,7 +60,11 @@ const HabitTracker = () => {
   };
 
   const handleCompleteHabit = (habitId) => {
+    const habit = habits.find(h => h.id === habitId);
+    if (!habit) return;
+
     const isCompleted = habitService.isHabitCompleted(habitId, selectedDate);
+    
     if (isCompleted) {
       // Remove completion for this date
       const completions = habitService.getHabitCompletions()[habitId] || [];
@@ -54,10 +72,63 @@ const HabitTracker = () => {
       const allCompletions = habitService.getHabitCompletions();
       allCompletions[habitId] = updatedCompletions;
       habitService.saveHabitCompletions(allCompletions);
+      loadData();
     } else {
-      habitService.markHabitCompleted(habitId, selectedDate);
+      // Mark as completed with gamification
+      const result = habitService.markHabitCompletedWithGamification(habitId, selectedDate);
+      
+      if (result.success) {
+        // Show points animation
+        setShowPointsAnimation({
+          habitId,
+          points: result.pointsEarned,
+          position: { x: 0, y: 0 }
+        });
+        
+        // Add to animating habits
+        setAnimatingHabits(prev => new Set([...prev, habitId]));
+        
+        // Show achievement notification if unlocked
+        if (result.achievement && result.achievement.length > 0) {
+          setShowAchievementNotification(result.achievement[0]);
+        }
+        
+        // Reload data after animation
+        setTimeout(() => {
+          loadData();
+          loadUserStats();
+          setAnimatingHabits(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(habitId);
+            return newSet;
+          });
+        }, 1000);
+      }
     }
-    loadData();
+  };
+
+  const showConfetti = () => {
+    // Simple confetti animation using CSS
+    const confettiContainer = document.createElement('div');
+    confettiContainer.className = 'confetti-container';
+    confettiContainer.innerHTML = `
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+      <div class="confetti-piece"></div>
+    `;
+    
+    document.body.appendChild(confettiContainer);
+    
+    setTimeout(() => {
+      document.body.removeChild(confettiContainer);
+    }, 3000);
   };
 
   const handleAddHabit = () => {
@@ -80,7 +151,9 @@ const HabitTracker = () => {
       targetCount: 1,
       unit: '',
       type: 'positive',
-      startDate: ''
+      startDate: '',
+      difficulty: 'easy',
+      pointsPerCompletion: 10
     });
     setShowAddForm(false);
     loadData();
@@ -98,7 +171,9 @@ const HabitTracker = () => {
       targetCount: habit.targetCount,
       unit: habit.unit,
       type: habit.type || 'positive',
-      startDate: habit.startDate || ''
+      startDate: habit.startDate || '',
+      difficulty: habit.difficulty || 'easy',
+      pointsPerCompletion: habit.pointsPerCompletion || 10
     });
     setShowAddForm(true);
   };
@@ -311,8 +386,43 @@ const HabitTracker = () => {
         </div>
       </div>
 
-      {/* Statistics Overview */}
+      {/* User Stats Overview with Gamification */}
       <div className="stats-overview">
+        {/* User Level and Points */}
+        {userStats && (
+          <div className="user-level-card">
+            <div className="level-info">
+              <div className="level-badge">
+                <span className="level-number">{userStats.level}</span>
+                <span className="level-title">{userStats.levelTitle}</span>
+              </div>
+              <div className="level-progress">
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill" 
+                    style={{ 
+                      width: `${(userStats.xpIntoLevel / (userStats.xpIntoLevel + userStats.xpToNextLevel)) * 100}%` 
+                    }}
+                  ></div>
+                </div>
+                <span className="progress-text">
+                  {userStats.xpIntoLevel}/{userStats.xpIntoLevel + userStats.xpToNextLevel} XP
+                </span>
+              </div>
+            </div>
+            <div className="user-points">
+              <div className="points-display">
+                <span className="points-value">{userStats.totalPoints}</span>
+                <span className="points-label">Total Points</span>
+              </div>
+              <div className="achievements-count">
+                <span className="achievements-value">{userStats.unlockedAchievements.length}</span>
+                <span className="achievements-label">Achievements</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="stat-card">
           <h3>{t('habits.overallPerformance')}</h3>
           <div className="stat-value">{getCompletionRate()}%</div>
@@ -336,6 +446,41 @@ const HabitTracker = () => {
           <p>{t('habits.completed')}</p>
         </div>
       </div>
+
+      {/* Achievement Notification */}
+      {showAchievementNotification && (
+        <div className="achievement-notification">
+          <div className="achievement-content">
+            <div className="achievement-icon">
+              {showAchievementNotification.icon}
+            </div>
+            <div className="achievement-info">
+              <h4>🏆 Achievement Unlocked!</h4>
+              <h5>{showAchievementNotification.name}</h5>
+              <p>{showAchievementNotification.description}</p>
+              <div className="achievement-points">
+                +{showAchievementNotification.points} Points
+              </div>
+            </div>
+            <button 
+              className="achievement-close"
+              onClick={() => setShowAchievementNotification(null)}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Points Animation */}
+      {showPointsAnimation && (
+        <div className="points-animation">
+          <div className="points-popup">
+            <span className="points-value">+{showPointsAnimation.points}</span>
+            <span className="points-label">Points</span>
+          </div>
+        </div>
+      )}
 
       {/* View Modes */}
       {viewMode === 'week' && renderWeekView()}
@@ -464,6 +609,32 @@ const HabitTracker = () => {
                   <option value="monthly">{t('habits.monthly')}</option>
                 </select>
               </div>
+            </div>
+
+            {/* Gamification Settings */}
+            <div className="form-group">
+              <label>Difficulty</label>
+              <select
+                value={newHabit.difficulty}
+                onChange={(e) => setNewHabit({...newHabit, difficulty: e.target.value})}
+              >
+                <option value="easy">🌱 Easy (10 points)</option>
+                <option value="medium">🌿 Medium (15 points)</option>
+                <option value="hard">🔥 Hard (20 points)</option>
+                <option value="expert">⚡ Expert (30 points)</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Points per Completion</label>
+              <input
+                type="number"
+                value={newHabit.pointsPerCompletion}
+                onChange={(e) => setNewHabit({...newHabit, pointsPerCompletion: parseInt(e.target.value) || 10})}
+                min="1"
+                max="100"
+              />
+              <small>Override difficulty settings</small>
             </div>
 
             <div className="form-actions">
@@ -1149,6 +1320,409 @@ const HabitTracker = () => {
 
           .stat .value {
             font-size: 0.75rem;
+          }
+        }
+
+        /* Gamification Styles */
+        .user-level-card {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 16px;
+          padding: 24px;
+          color: white;
+          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+          grid-column: 1 / -1;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .user-level-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+          animation: floatingOrbs 15s ease-in-out infinite;
+        }
+
+        .level-info {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          position: relative;
+          z-index: 1;
+        }
+
+        .level-badge {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          background: rgba(255, 255, 255, 0.1);
+          padding: 12px 20px;
+          border-radius: 12px;
+          backdrop-filter: blur(10px);
+        }
+
+        .level-number {
+          font-size: 2rem;
+          font-weight: bold;
+          color: #fff;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .level-title {
+          font-size: 1.2rem;
+          font-weight: 600;
+          color: #fff;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .level-progress {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .progress-bar {
+          width: 100%;
+          height: 8px;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 4px;
+          overflow: hidden;
+        }
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+          border-radius: 4px;
+          transition: width 0.5s ease;
+        }
+
+        .progress-text {
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.9);
+          text-align: center;
+        }
+
+        .user-points {
+          display: flex;
+          justify-content: space-between;
+          gap: 20px;
+          position: relative;
+          z-index: 1;
+        }
+
+        .points-display, .achievements-count {
+          text-align: center;
+          background: rgba(255, 255, 255, 0.1);
+          padding: 12px 20px;
+          border-radius: 12px;
+          backdrop-filter: blur(10px);
+          flex: 1;
+        }
+
+        .points-value, .achievements-value {
+          display: block;
+          font-size: 1.5rem;
+          font-weight: bold;
+          color: #fff;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .points-label, .achievements-label {
+          font-size: 0.8rem;
+          color: rgba(255, 255, 255, 0.9);
+          margin-top: 4px;
+        }
+
+        /* Achievement Notification */
+        .achievement-notification {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          z-index: 1000;
+          animation: slideInRight 0.5s ease;
+        }
+
+        .achievement-content {
+          background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+          color: white;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          max-width: 400px;
+          position: relative;
+        }
+
+        .achievement-content::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 0%, transparent 70%);
+          border-radius: 12px;
+        }
+
+        .achievement-icon {
+          font-size: 2.5rem;
+          animation: bounce 2s ease-in-out infinite;
+        }
+
+        .achievement-info {
+          flex: 1;
+        }
+
+        .achievement-info h4 {
+          margin: 0 0 8px 0;
+          font-size: 1rem;
+          font-weight: 600;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .achievement-info h5 {
+          margin: 0 0 4px 0;
+          font-size: 1.1rem;
+          font-weight: bold;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .achievement-info p {
+          margin: 0 0 8px 0;
+          font-size: 0.9rem;
+          opacity: 0.9;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .achievement-points {
+          background: rgba(255, 255, 255, 0.2);
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .achievement-close {
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          color: white;
+          font-size: 1.2rem;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
+
+        .achievement-close:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: scale(1.1);
+        }
+
+        /* Points Animation */
+        .points-animation {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 1000;
+          pointer-events: none;
+        }
+
+        .points-popup {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: white;
+          padding: 16px 24px;
+          border-radius: 12px;
+          font-weight: bold;
+          font-size: 1.2rem;
+          box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+          animation: pointsPopup 1s ease-out forwards;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .points-value {
+          font-size: 1.8rem;
+          display: block;
+          margin-bottom: 4px;
+        }
+
+        .points-label {
+          font-size: 0.9rem;
+          opacity: 0.9;
+        }
+
+        @keyframes pointsPopup {
+          0% {
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+          }
+          50% {
+            transform: translate(-50%, -50%) scale(1.2);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1) translateY(-50px);
+            opacity: 0;
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+          }
+          40% {
+            transform: translateY(-10px);
+          }
+          60% {
+            transform: translateY(-5px);
+          }
+        }
+
+        @keyframes floatingOrbs {
+          0%, 100% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+          33% {
+            transform: translate(20px, -20px) rotate(120deg);
+          }
+          66% {
+            transform: translate(-20px, 10px) rotate(240deg);
+          }
+        }
+
+        /* Confetti Animation */
+        .confetti-container {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 9999;
+        }
+
+        .confetti-piece {
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24, #f0932b, #e91e63);
+          animation: confettiFall 3s linear forwards;
+        }
+
+        .confetti-piece:nth-child(1) { left: 10%; animation-delay: 0s; background: #ff6b6b; }
+        .confetti-piece:nth-child(2) { left: 20%; animation-delay: 0.1s; background: #4ecdc4; }
+        .confetti-piece:nth-child(3) { left: 30%; animation-delay: 0.2s; background: #45b7d1; }
+        .confetti-piece:nth-child(4) { left: 40%; animation-delay: 0.3s; background: #f9ca24; }
+        .confetti-piece:nth-child(5) { left: 50%; animation-delay: 0.4s; background: #f0932b; }
+        .confetti-piece:nth-child(6) { left: 60%; animation-delay: 0.5s; background: #e91e63; }
+        .confetti-piece:nth-child(7) { left: 70%; animation-delay: 0.6s; background: #ff6b6b; }
+        .confetti-piece:nth-child(8) { left: 80%; animation-delay: 0.7s; background: #4ecdc4; }
+        .confetti-piece:nth-child(9) { left: 90%; animation-delay: 0.8s; background: #45b7d1; }
+        .confetti-piece:nth-child(10) { left: 95%; animation-delay: 0.9s; background: #f9ca24; }
+
+        @keyframes confettiFall {
+          0% {
+            transform: translateY(-100vh) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(100vh) rotate(720deg);
+            opacity: 0;
+          }
+        }
+
+        /* Animating Habits */
+        .habit-card.animating {
+          animation: habitComplete 1s ease;
+        }
+
+        @keyframes habitComplete {
+          0% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+
+        /* Responsive for Gamification */
+        @media (max-width: 768px) {
+          .user-level-card {
+            padding: 20px;
+          }
+
+          .level-badge {
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+          }
+
+          .user-points {
+            flex-direction: column;
+            gap: 12px;
+          }
+
+          .achievement-notification {
+            right: 10px;
+            left: 10px;
+            max-width: calc(100% - 20px);
+          }
+
+          .achievement-content {
+            flex-direction: column;
+            text-align: center;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .user-level-card {
+            padding: 16px;
+          }
+
+          .level-number {
+            font-size: 1.5rem;
+          }
+
+          .level-title {
+            font-size: 1rem;
+          }
+
+          .points-value, .achievements-value {
+            font-size: 1.2rem;
+          }
+
+          .achievement-content {
+            padding: 16px;
+          }
+
+          .achievement-icon {
+            font-size: 2rem;
           }
         }
       `}</style>
