@@ -220,6 +220,16 @@ const DataExportManager = () => {
                     <span>CSV</span>
                     <small>Format compatibil Excel/Google Sheets</small>
                   </label>
+                  <label className="radio-option">
+                    <input
+                      type="radio"
+                      value="pdf"
+                      checked={selectedFormat === 'pdf'}
+                      onChange={(e) => setSelectedFormat(e.target.value)}
+                    />
+                    <span>PDF</span>
+                    <small>Raport formatat pentru imprimare</small>
+                  </label>
                 </div>
               </div>
 

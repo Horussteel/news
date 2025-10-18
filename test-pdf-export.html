@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test PDF Export</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: linear-gradient(135deg, #667EEA, #4C51BF);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        .message.success {
+            background: #10B981;
+            color: white;
+        }
+        .message.error {
+            background: #EF4444;
+            color: white;
+        }
+        .sample-data {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .sample-data h3 {
+            margin-top: 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Export PDF</h1>
+        <p>Această pagină testează funcționalitatea de export PDF folosind jsPDF.</p>
+
+        <div class="sample-data">
+            <h3>📊 Date de Test</h3>
+            <p><strong>Bookmarks:</strong> 3</p>
+            <p><strong>Todos:</strong> 5</p>
+            <p><strong>Books:</strong> 2</p>
+            <p><strong>Habits:</strong> 4</p>
+            <p><strong>Financial Transactions:</strong> 8</p>
+            <p><strong>Loans:</strong> 2</p>
+        </div>
+
+        <div>
+            <button class="button" onclick="testPDFExport()">📄 Exportă PDF de Test</button>
+            <button class="button" onclick="testJSONExport()">📄 Exportă JSON de Test</button>
+            <button class="button" onclick="testCSVExport()">📄 Exportă CSV de Test</button>
+        </div>
+
+        <div id="message"></div>
+
+        <div class="sample-data">
+            <h3>📋 Instrucțiuni</h3>
+            <ol>
+                <li>Apasă pe butonul "Exportă PDF de Test"</li>
+                <li>Verifică dacă fișierul PDF se descarcă corect</li>
+                <li>Deschide PDF-ul pentru a vedea conținutul</li>
+                <li>Repetă pentru JSON și CSV dacă dorești</li>
+            </ol>
+            <p><strong>Note:</strong> Asigură-te că browser-ul permite descărcarea fișierelor.</p>
+        </div>
+    </div>
+
+    <!-- Load jsPDF from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <script>
+        // Sample test data
+        const testData = {
+            bookmarks: [
+                { title: 'Google', url: 'https://google.com', category: 'Search', savedAt: '2025-10-18T10:00:00Z' },
+                { title: 'GitHub', url: 'https://github.com', category: 'Development', savedAt: '2025-10-18T11:00:00Z' },
+                { title: 'Stack Overflow', url: 'https://stackoverflow.com', category: 'Development', savedAt: '2025-10-18T12:00:00Z' }
+            ],
+            todos: [
+                { title: 'Test task 1', description: 'First test todo', priority: 'high', category: 'work', completed: false, createdAt: '2025-10-18T10:00:00Z' },
+                { title: 'Test task 2', description: 'Second test todo', priority: 'medium', category: 'personal', completed: true, createdAt: '2025-10-18T11:00:00Z' },
+                { title: 'Test task 3', description: 'Third test todo', priority: 'low', category: 'shopping', completed: false, createdAt: '2025-10-18T12:00:00Z' },
+                { title: 'Test task 4', description: 'Fourth test todo', priority: 'medium', category: 'health', completed: false, createdAt: '2025-10-18T13:00:00Z' },
+                { title: 'Test task 5', description: 'Fifth test todo', priority: 'high', category: 'family', completed: true, createdAt: '2025-10-18T14:00:00Z' }
+            ],
+            books: [
+                { title: 'Test Book 1', author: 'Test Author 1', genre: 'Fiction', status: 'reading', currentPage: 50, totalPages: 200, createdAt: '2025-10-18T10:00:00Z' },
+                { title: 'Test Book 2', author: 'Test Author 2', genre: 'Non-Fiction', status: 'complete', currentPage: 300, totalPages: 300, createdAt: '2025-10-18T11:00:00Z' }
+            ],
+            habits: [
+                { name: 'Exercise', category: 'health', frequency: 'daily', targetCount: 1, streak: 5, createdAt: '2025-10-18T10:00:00Z' },
+                { name: 'Read', category: 'personal', frequency: 'daily', targetCount: 1, streak: 3, createdAt: '2025-10-18T11:00:00Z' },
+                { name: 'Meditate', category: 'mindfulness', frequency: 'daily', targetCount: 1, streak: 7, createdAt: '2025-10-18T12:00:00Z' },
+                { name: 'Code', category: 'work', frequency: 'daily', targetCount: 2, streak: 10, createdAt: '2025-10-18T13:00:00Z' }
+            ],
+            transactions: [
+                { amount: 1000, description: 'Salary', category: 'income', date: '2025-10-01', type: 'income' },
+                { amount: -300, description: 'Rent', category: 'housing', date: '2025-10-02', type: 'expense' },
+                { amount: -50, description: 'Groceries', category: 'food', date: '2025-10-03', type: 'expense' },
+                { amount: -20, description: 'Gas', category: 'transport', date: '2025-10-04', type: 'expense' },
+                { amount: -100, description: 'Utilities', category: 'bills', date: '2025-10-05', type: 'expense' },
+                { amount: 200, description: 'Freelance', category: 'income', date: '2025-10-06', type: 'income' },
+                { amount: -30, description: 'Internet', category: 'bills', date: '2025-10-07', type: 'expense' },
+                { amount: -60, description: 'Restaurant', category: 'food', date: '2025-10-08', type: 'expense' }
+            ],
+            loans: [
+                { 
+                    personName: 'John Doe', 
+                    principalAmount: 1000, 
+                    interestRate: 5, 
+                    type: 'given', 
+                    status: 'active', 
+                    startDate: '2025-09-01', 
+                    dueDate: '2025-12-01', 
+                    currentBalance: 800, 
+                    totalPaid: 200, 
+                    createdAt: '2025-09-01T10:00:00Z' 
+                },
+                { 
+                    personName: 'Jane Smith', 
+                    principalAmount: 500, 
+                    interestRate: 3, 
+                    type: 'received', 
+                    status: 'active', 
+                    startDate: '2025-10-01', 
+                    dueDate: '2025-11-01', 
+                    currentBalance: 400, 
+                    totalPaid: 100, 
+                    createdAt: '2025-10-01T10:00:00Z' 
+                }
+            ],
+            version: '1.0.0',
+            exportedAt: new Date().toISOString()
+        };
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('ro-RO', {
+                style: 'currency',
+                currency: 'RON'
+            }).format(amount);
+        }
+
+        async function testPDFExport() {
+            try {
+                showMessage('⏳ Se generează PDF-ul...', 'success');
+                
+                // Create new PDF document
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // PDF Configuration
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                let yPosition = 20;
+                const lineHeight = 7;
+                const margin = 15;
+
+                // Helper function to add new page if needed
+                function checkPageBreak(requiredHeight) {
+                    if (yPosition + requiredHeight > pageHeight - 20) {
+                        doc.addPage();
+                        yPosition = 20;
+                        return true;
+                    }
+                    return false;
+                }
+
+                // Add header
+                doc.setFontSize(20);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Test Data Export Report', pageWidth / 2, yPosition, { align: 'center' });
+                yPosition += 15;
+
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Generated: ${new Date().toLocaleString('ro-RO')}`, pageWidth / 2, yPosition, { align: 'center' });
+                doc.text(`Version: ${testData.version || '1.0.0'}`, pageWidth / 2, yPosition + 5, { align: 'center' });
+                yPosition += 15;
+
+                // Add summary section
+                checkPageBreak(20);
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Summary', margin, yPosition);
+                yPosition += 10;
+
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                
+                const summaryData = [
+                    `Bookmarks: ${testData.bookmarks?.length || 0}`,
+                    `Todos: ${testData.todos?.length || 0}`,
+                    `Books: ${testData.books?.length || 0}`,
+                    `Habits: ${testData.habits?.length || 0}`,
+                    `Financial Transactions: ${testData.transactions?.length || 0}`,
+                    `Loans: ${testData.loans?.length || 0}`
+                ];
+
+                summaryData.forEach(line => {
+                    checkPageBreak(lineHeight);
+                    doc.text(line, margin + 5, yPosition);
+                    yPosition += lineHeight;
+                });
+
+                yPosition += 10;
+
+                // Todos section
+                if (testData.todos && testData.todos.length > 0) {
+                    checkPageBreak(20);
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Todos', margin, yPosition);
+                    yPosition += 10;
+
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    testData.todos.slice(0, 5).forEach((todo, index) => {
+                        checkPageBreak(lineHeight * 3);
+                        const status = todo.completed ? '[✓]' : '[ ]';
+                        doc.text(`${index + 1}. ${status} ${todo.title || 'No Title'}`, margin + 5, yPosition);
+                        yPosition += lineHeight;
+                        doc.text(`   Priority: ${todo.priority || 'medium'} | Category: ${todo.category || 'personal'}`, margin + 5, yPosition);
+                        yPosition += lineHeight;
+                        if (todo.description) {
+                            doc.text(`   Description: ${todo.description.substring(0, 80)}${todo.description.length > 80 ? '...' : ''}`, margin + 5, yPosition);
+                            yPosition += lineHeight;
+                        }
+                        yPosition += 2;
+                    });
+                }
+
+                // Financial Summary
+                if (testData.transactions && testData.transactions.length > 0) {
+                    checkPageBreak(20);
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Financial Summary', margin, yPosition);
+                    yPosition += 10;
+
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    
+                    const expenses = testData.transactions.filter(t => t.amount < 0 || t.type === 'expense');
+                    const income = testData.transactions.filter(t => t.amount > 0 || t.type === 'income');
+                    const totalExpenses = expenses.reduce((sum, t) => sum + Math.abs(t.amount || 0), 0);
+                    const totalIncome = income.reduce((sum, t) => sum + (t.amount || 0), 0);
+                    const netIncome = totalIncome - totalExpenses;
+
+                    doc.text(`Total Income: ${formatCurrency(totalIncome)}`, margin + 5, yPosition);
+                    yPosition += lineHeight;
+                    doc.text(`Total Expenses: ${formatCurrency(totalExpenses)}`, margin + 5, yPosition);
+                    yPosition += lineHeight;
+                    doc.text(`Net Income: ${formatCurrency(netIncome)}`, margin + 5, yPosition);
+                    yPosition += lineHeight + 5;
+                }
+
+                // Footer
+                checkPageBreak(20);
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'italic');
+                doc.text('This is a test PDF export from the data management application.', margin, pageHeight - 15);
+                doc.text(`Export date: ${new Date().toLocaleString('ro-RO')}`, margin, pageHeight - 10);
+
+                // Save the PDF
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                const filename = `test-pdf-export-${timestamp}.pdf`;
+                doc.save(filename);
+
+                showMessage(`✅ PDF exportat cu succes: ${filename}`, 'success');
+            } catch (error) {
+                console.error('Error exporting PDF:', error);
+                showMessage(`❌ Eroare la export PDF: ${error.message}`, 'error');
+            }
+        }
+
+        function testJSONExport() {
+            try {
+                const jsonString = JSON.stringify(testData, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                link.download = `test-json-export-${timestamp}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showMessage(`✅ JSON exportat cu succes`, 'success');
+            } catch (error) {
+                showMessage(`❌ Eroare la export JSON: ${error.message}`, 'error');
+            }
+        }
+
+        function testCSVExport() {
+            try {
+                let csvContent = '# Test Data Export\n';
+                csvContent += `# Exported: ${new Date().toISOString()}\n`;
+                csvContent += `# Version: ${testData.version}\n\n`;
+                
+                csvContent += '# Todos\n';
+                csvContent += 'Type,Title,Description,Priority,Category,Status,Created At\n';
+                testData.todos.forEach(todo => {
+                    csvContent += `Todo,"${todo.title}","${todo.description}",${todo.priority},${todo.category},${todo.completed ? 'Completed' : 'Pending'},${todo.createdAt}\n`;
+                });
+                
+                csvContent += '\n# Financial Transactions\n';
+                csvContent += 'Type,Amount,Description,Category,Date,Status\n';
+                testData.transactions.forEach(transaction => {
+                    csvContent += `Transaction,${transaction.amount},"${transaction.description}",${transaction.category},${transaction.date},${transaction.type}\n`;
+                });
+                
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                link.download = `test-csv-export-${timestamp}.csv`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showMessage(`✅ CSV exportat cu succes`, 'success');
+            } catch (error) {
+                showMessage(`❌ Eroare la export CSV: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
