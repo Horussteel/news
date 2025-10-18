@@ -30,19 +30,35 @@ const Radio = () => {
   const loadRadioData = async () => {
     setIsLoading(true);
     setError(null);
-
     try {
-      console.log('Loading all radio data...');
-      const [romanianData, internationalData] = await Promise.all([
+      console.log('Loading radio data from Radio Browser API...');
+      // Fetch both Romanian and international stations
+      const [romanian, international] = await Promise.all([
         radioService.fetchRomanianStations(),
         radioService.fetchInternationalStations()
       ]);
-      setStations(romanianData);
-      setInternationalStations(internationalData);
-      console.log(`Loaded ${romanianData.length} Romanian and ${internationalData.length} international stations`);
+
+      if (Array.isArray(romanian)) {
+        setStations(romanian);
+        console.log(`Loaded ${romanian.length} Romanian stations.`);
+      } else {
+        console.warn('Romanian stations data is not a valid array:', romanian);
+        setStations([]);
+      }
+
+      if (Array.isArray(international)) {
+        setInternationalStations(international);
+        console.log(`Loaded ${international.length} international stations.`);
+      } else {
+        console.warn('International stations data is not a valid array:', international);
+        setInternationalStations([]);
+      }
+
     } catch (error) {
-      console.error('Error loading radio data:', error);
+      console.error('Error loading radio data from API:', error);
       setError('Failed to load radio stations. Please try again later.');
+      setStations([]);
+      setInternationalStations([]);
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +70,9 @@ const Radio = () => {
 
     // Filter by genre
     if (selectedGenre !== 'all') {
-      filtered = sourceStations.filter(s => s.genre.toLowerCase().includes(selectedGenre.toLowerCase()));
+      filtered = sourceStations.filter(s => 
+        Array.isArray(s.genre) && s.genre.join(',').toLowerCase().includes(selectedGenre.toLowerCase())
+      );
     }
 
     // Filter by search query
@@ -62,7 +80,7 @@ const Radio = () => {
       const lowerQuery = searchQuery.toLowerCase();
       filtered = sourceStations.filter(station =>
         station.name.toLowerCase().includes(lowerQuery) ||
-        station.genre.toLowerCase().includes(lowerQuery)
+        (Array.isArray(station.genre) && station.genre.join(',').toLowerCase().includes(lowerQuery))
       );
     }
 

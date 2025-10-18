@@ -129,7 +129,15 @@ const RadioPlayer = ({ station, onStationChange, isMini = false }) => {
       audio.addEventListener('canplay', onCanPlay);
       audio.addEventListener('error', onError);
 
-      audio.src = url;
+      // Use proxy for all external streams to avoid CORS issues
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        console.log(`Using proxy for: ${url}`);
+        audio.src = `/api/radio-proxy?url=${encodeURIComponent(url)}`;
+      } else {
+        // For local files or other protocols, use direct src
+        audio.src = url;
+      }
+      
       audio.load();
     });
   };
