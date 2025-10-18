@@ -441,6 +441,19 @@ const Dashboard = () => {
           </div>
 
           <div className="quick-stat">
+            <div className="quick-stat-icon">🏦</div>
+            <div className="quick-stat-content">
+              <div className="quick-stat-value">
+                {financialStats?.loans?.netWorth !== undefined ? 
+                  new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'RON' }).format(financialStats.loans.netWorth) : 
+                  '0 RON'
+                }
+              </div>
+              <div className="quick-stat-label">Patrimoniu Net</div>
+            </div>
+          </div>
+
+          <div className="quick-stat">
             <div className="quick-stat-icon">📊</div>
             <div className="quick-stat-content">
               <div className="quick-stat-value">{quickStats.todayProductivity}</div>
@@ -503,6 +516,135 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Loans Overview */}
+      {financialStats?.loans && (
+        <div className="loans-section">
+          <h3>🏦 {t('financial.loans.title')}</h3>
+          <div className="loans-grid">
+            <div className="loan-card assets-card">
+              <div className="loan-header">
+                <span className="loan-icon">💰</span>
+                <span className="loan-label">{t('financial.loans.totalAssets')}</span>
+              </div>
+              <div className="loan-value">
+                {new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'RON' }).format(financialStats.loans.totalAssets)}
+              </div>
+              <div className="loan-subtitle">
+                {financialStats.loans.loansGiven} {t('financial.loans.myLoans')}
+              </div>
+              <div className="loan-progress">
+                <div 
+                  className="progress-bar"
+                  style={{ 
+                    width: `${financialStats.loans.totalPrincipalGiven > 0 ? 
+                      (financialStats.loans.totalReceived / financialStats.loans.totalPrincipalGiven) * 100 : 0}%` 
+                  }}
+                />
+                <span>
+                  {financialStats.loans.totalPrincipalGiven > 0 ? 
+                    Math.round((financialStats.loans.totalReceived / financialStats.loans.totalPrincipalGiven) * 100) : 0}%
+                  </span>
+              </div>
+            </div>
+
+            <div className="loan-card liabilities-card">
+              <div className="loan-header">
+                <span className="loan-icon">💳</span>
+                <span className="loan-label">{t('financial.loans.totalLiabilities')}</span>
+              </div>
+              <div className="loan-value">
+                {new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'RON' }).format(financialStats.loans.totalLiabilities)}
+              </div>
+              <div className="loan-subtitle">
+                {financialStats.loans.loansReceived} {t('financial.loans.myDebts')}
+              </div>
+              <div className="loan-progress">
+                <div 
+                  className="progress-bar"
+                  style={{ 
+                    width: `${financialStats.loans.totalPrincipalReceived > 0 ? 
+                      (financialStats.loans.totalPaid / financialStats.loans.totalPrincipalReceived) * 100 : 0}%` 
+                  }}
+                />
+                <span>
+                  {financialStats.loans.totalPrincipalReceived > 0 ? 
+                    Math.round((financialStats.loans.totalPaid / financialStats.loans.totalPrincipalReceived) * 100) : 0}%
+                  </span>
+              </div>
+            </div>
+
+            <div className="loan-card net-worth-card">
+              <div className="loan-header">
+                <span className="loan-icon">📊</span>
+                <span className="loan-label">{t('financial.loans.netWorth')}</span>
+              </div>
+              <div className="loan-value" style={{ 
+                color: financialStats.loans.netWorth >= 0 ? '#10B981' : '#EF4444'
+              }}>
+                {new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'RON' }).format(financialStats.loans.netWorth)}
+              </div>
+              <div className="loan-subtitle">
+                {financialStats.loans.netWorth >= 0 ? 'Positive' : 'Negative'} Balance
+              </div>
+              <div className="loan-progress">
+                <div 
+                  className="progress-bar"
+                  style={{ 
+                    width: `${Math.abs(financialStats.loans.netWorth) > 0 ? 
+                      Math.min((Math.abs(financialStats.loans.netWorth) / Math.max(financialStats.loans.totalAssets, financialStats.loans.totalLiabilities)) * 100, 100) : 0}%`,
+                    backgroundColor: financialStats.loans.netWorth >= 0 ? '#10B981' : '#EF4444'
+                  }}
+                />
+                <span style={{ color: financialStats.loans.netWorth >= 0 ? '#10B981' : '#EF4444' }}>
+                  {Math.abs(financialStats.loans.netWorth) > 0 ? 
+                    Math.round((Math.abs(financialStats.loans.netWorth) / Math.max(financialStats.loans.totalAssets, financialStats.loans.totalLiabilities)) * 100) : 0}%
+                  </span>
+              </div>
+            </div>
+
+            <div className="loan-card health-card">
+              <div className="loan-header">
+                <span className="loan-icon">❤️</span>
+                <span className="loan-label">{t('financial.loans.financialHealth')}</span>
+              </div>
+              <div className="loan-value" style={{ 
+                color: financialStats?.financialHealth?.financialHealthScore >= 70 ? '#10B981' : 
+                       financialStats?.financialHealth?.financialHealthScore >= 40 ? '#F59E0B' : '#EF4444'
+              }}>
+                {financialStats?.financialHealth?.financialHealthScore || 0}/100
+              </div>
+              <div className="loan-subtitle">
+                {financialStats?.financialHealth?.riskLevel && (
+                  <span className={`risk-badge risk-${financialStats.financialHealth.riskLevel}`}>
+                    {financialStats.financialHealth.riskLevel.toUpperCase()} RISK
+                  </span>
+                )}
+              </div>
+              <div className="loan-progress">
+                <div 
+                  className="progress-bar"
+                  style={{ 
+                    width: `${financialStats?.financialHealth?.financialHealthScore || 0}%`,
+                    backgroundColor: financialStats?.financialHealth?.financialHealthScore >= 70 ? '#10B981' : 
+                                   financialStats?.financialHealth?.financialHealthScore >= 40 ? '#F59E0B' : '#EF4444'
+                  }}
+                />
+                <span>{financialStats?.financialHealth?.financialHealthScore || 0}%</span>
+              </div>
+            </div>
+          </div>
+
+          {financialStats.loans.overdueLoans > 0 && (
+            <div className="overdue-alert">
+              <span className="alert-icon">⚠️</span>
+              <span className="alert-text">
+                {financialStats.loans.overdueLoans} overdue loan(s) require attention
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Recent Activity */}
       <div className="activity-section">
@@ -937,6 +1079,180 @@ const Dashboard = () => {
           font-size: 0.8rem;
           color: #3B82F6;
           font-weight: 500;
+        }
+
+        .loans-section {
+          margin-bottom: 30px;
+        }
+
+        .loans-section h3 {
+          margin: 0 0 20px 0;
+          color: var(--text-primary);
+          font-size: 1.2rem;
+        }
+
+        .loans-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 20px;
+          margin-bottom: 20px;
+        }
+
+        .loan-card {
+          background: var(--bg-secondary);
+          border: 1px solid var(--border-color);
+          border-radius: 12px;
+          padding: 20px;
+          text-align: center;
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .loan-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .loan-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, var(--accent-color), #10B981);
+        }
+
+        .assets-card::before {
+          background: linear-gradient(90deg, #10B981, #059669);
+        }
+
+        .liabilities-card::before {
+          background: linear-gradient(90deg, #EF4444, #DC2626);
+        }
+
+        .net-worth-card::before {
+          background: linear-gradient(90deg, #3B82F6, #2563EB);
+        }
+
+        .health-card::before {
+          background: linear-gradient(90deg, #F59E0B, #D97706);
+        }
+
+        .loan-header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 15px;
+        }
+
+        .loan-icon {
+          font-size: 24px;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: var(--accent-color);
+          color: white;
+          border-radius: 8px;
+        }
+
+        .assets-card .loan-icon {
+          background: #10B981;
+        }
+
+        .liabilities-card .loan-icon {
+          background: #EF4444;
+        }
+
+        .net-worth-card .loan-icon {
+          background: #3B82F6;
+        }
+
+        .health-card .loan-icon {
+          background: #F59E0B;
+        }
+
+        .loan-label {
+          font-weight: 600;
+          color: var(--text-primary);
+          font-size: 0.9rem;
+        }
+
+        .loan-value {
+          font-size: 1.8rem;
+          font-weight: bold;
+          color: var(--text-primary);
+          margin-bottom: 5px;
+        }
+
+        .loan-subtitle {
+          font-size: 0.8rem;
+          color: var(--text-secondary);
+          margin-bottom: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+        }
+
+        .risk-badge {
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-size: 0.7rem;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+
+        .risk-low {
+          background: #10B981;
+          color: white;
+        }
+
+        .risk-medium {
+          background: #F59E0B;
+          color: white;
+        }
+
+        .risk-high {
+          background: #EF4444;
+          color: white;
+        }
+
+        .loan-progress {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .overdue-alert {
+          background: #FEF2F2;
+          border: 1px solid #FEE2E2;
+          border-radius: 8px;
+          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          color: #991B1B;
+          margin-top: 15px;
+        }
+
+        .alert-icon {
+          font-size: 18px;
+          animation: pulse 2s infinite;
+        }
+
+        .alert-text {
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
         }
 
         @media (max-width: 768px) {

@@ -12,12 +12,17 @@ const FinancialTracker = () => {
   const [bills, setBills] = useState([]);
   const [categories, setCategories] = useState([]);
   const [statistics, setStatistics] = useState(null);
+  const [loans, setLoans] = useState([]);
+  const [loanPayments, setLoanPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [showAddIncome, setShowAddIncome] = useState(false);
   const [showAddBudget, setShowAddBudget] = useState(false);
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [showAddBill, setShowAddBill] = useState(false);
+  const [showAddLoan, setShowAddLoan] = useState(false);
+  const [showLoanPayment, setShowLoanPayment] = useState(false);
+  const [selectedLoan, setSelectedLoan] = useState(null);
 
   useEffect(() => {
     loadFinancialData();
@@ -26,14 +31,16 @@ const FinancialTracker = () => {
   const loadFinancialData = () => {
     try {
       setLoading(true);
-      const [expensesData, incomeData, budgetsData, goalsData, billsData, categoriesData, statsData] = [
+      const [expensesData, incomeData, budgetsData, goalsData, billsData, categoriesData, statsData, loansData, loanPaymentsData] = [
         financialService.getExpenses(),
         financialService.getIncome(),
         financialService.getBudgets(),
         financialService.getGoals(),
         financialService.getBills(),
         financialService.getCategories(),
-        financialService.getFinancialStatistics()
+        financialService.getFinancialStatistics(),
+        financialService.getLoans(),
+        financialService.getLoanPayments()
       ];
 
       setExpenses(expensesData);
@@ -43,6 +50,8 @@ const FinancialTracker = () => {
       setBills(billsData);
       setCategories(categoriesData);
       setStatistics(statsData);
+      setLoans(loansData);
+      setLoanPayments(loanPaymentsData);
     } catch (error) {
       console.error('Error loading financial data:', error);
     } finally {
@@ -109,6 +118,45 @@ const FinancialTracker = () => {
       setGoals(goals.map(goal => goal.id === goalId ? updatedGoal : goal));
       loadFinancialData(); // Refresh statistics
     }
+  };
+
+  const handleAddLoan = (loanData) => {
+    const newLoan = financialService.addLoan(loanData);
+    if (newLoan) {
+      setLoans([...loans, newLoan]);
+      setShowAddLoan(false);
+      loadFinancialData(); // Refresh statistics
+    }
+  };
+
+  const handleAddLoanPayment = (paymentData) => {
+    try {
+      const result = financialService.addLoanPayment(paymentData);
+      if (result) {
+        setLoans(loans.map(loan => loan.id === paymentData.loanId ? result.loan : loan));
+        setLoanPayments([...loanPayments, result.payment]);
+        setShowLoanPayment(false);
+        setSelectedLoan(null);
+        loadFinancialData(); // Refresh statistics
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleDeleteLoan = (loanId) => {
+    if (confirm(t('financial.loans.confirmDeleteLoan'))) {
+      const success = financialService.deleteLoan(loanId);
+      if (success) {
+        setLoans(loans.filter(loan => loan.id !== loanId));
+        setLoanPayments(loanPayments.filter(payment => payment.loanId !== loanId));
+        loadFinancialData(); // Refresh statistics
+      }
+    }
+  };
+
+  const getLoanPayments = (loanId) => {
+    return loanPayments.filter(payment => payment.loanId === loanId);
   };
 
   const formatCurrency = (amount) => {
@@ -240,6 +288,12 @@ const FinancialTracker = () => {
           onClick={() => setActiveTab('bills')}
         >
           📄 {t('financial.bills')}
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'loans' ? 'active' : ''}`}
+          onClick={() => setActiveTab('loans')}
+        >
+          🏦 {t('financial.loans.title')}
         </button>
       </div>
 
@@ -566,6 +620,259 @@ const FinancialTracker = () => {
         </div>
       )}
 
+      {/* Loans Tab */}
+      {activeTab === 'loans' && (
+        <div className="loans-content">
+          <div className="section-header">
+            <h3>{t('financial.loans.title')}</h3>
+            <div className="loan-actions">
+              <button 
+                className="add-btn loan-given-btn"
+                onClick={() => setShowAddLoan('given')}
+              >
+                + {t('financial.loans.addLoan')}
+              </button>
+              <button 
+                className="add-btn loan-received-btn"
+                onClick={() => setShowAddLoan('received')}
+              >
+                + {t('financial.loans.addDebt')}
+              </button>
+            </div>
+          </div>
+          
+          {/* Net Worth Summary */}
+          {statistics?.loans && (
+            <div className="loans-summary">
+              <div className="summary-card assets-summary">
+                <div className="card-icon">💰</div>
+                <div className="card-content">
+                  <h4>{t('financial.loans.totalAssets')}</h4>
+                  <div className="card-value">{formatCurrency(statistics.loans.totalAssets)}</div>
+                  <div className="card-subtitle">{statistics.loans.loansGiven} {t('financial.loans.myLoans')}</div>
+                </div>
+              </div>
+              <div className="summary-card liabilities-summary">
+                <div className="card-icon">💳</div>
+                <div className="card-content">
+                  <h4>{t('financial.loans.totalLiabilities')}</h4>
+                  <div className="card-value">{formatCurrency(statistics.loans.totalLiabilities)}</div>
+                  <div className="card-subtitle">{statistics.loans.loansReceived} {t('financial.loans.myDebts')}</div>
+                </div>
+              </div>
+              <div className="summary-card net-worth-summary" style={{ 
+                background: statistics.loans.netWorth >= 0 ? '#F0FDF4' : '#FEF2F2',
+                borderColor: statistics.loans.netWorth >= 0 ? '#10B981' : '#EF4444'
+              }}>
+                <div className="card-icon" style={{ 
+                  background: statistics.loans.netWorth >= 0 ? '#10B981' : '#EF4444',
+                  color: 'white'
+                }}>📊</div>
+                <div className="card-content">
+                  <h4>{t('financial.loans.netWorth')}</h4>
+                  <div className="card-value" style={{ 
+                    color: statistics.loans.netWorth >= 0 ? '#10B981' : '#EF4444'
+                  }}>{formatCurrency(statistics.loans.netWorth)}</div>
+                  <div className="card-subtitle">
+                    {statistics.loans.netWorth >= 0 ? t('financial.loans.assets') : t('financial.loans.liabilities')} {'>'} {t('financial.loans.liabilities')}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Loans Given */}
+          <div className="loans-section">
+            <h4>💰 {t('financial.loans.myLoans')}</h4>
+            <div className="loans-list">
+              {loans.filter(loan => loan.type === 'given').map(loan => {
+                const payments = getLoanPayments(loan.id);
+                const progressPercentage = (loan.totalPaid / loan.principalAmount) * 100;
+                return (
+                  <div key={loan.id} className="loan-item asset-item">
+                    <div className="loan-header">
+                      <h5>{t('financial.loans.loanTo', { name: loan.personName })}</h5>
+                      <span className={`loan-status status-${loan.status}`}>
+                        {t(`financial.loans.${loan.status}`)}
+                      </span>
+                    </div>
+                    <div className="loan-details">
+                      <div className="loan-amounts">
+                        <div className="loan-amount-row">
+                          <span>{t('financial.loans.originalAmount')}:</span>
+                          <span>{formatCurrency(loan.principalAmount)}</span>
+                        </div>
+                        <div className="loan-amount-row">
+                          <span>{t('financial.loans.currentBalance')}:</span>
+                          <span className={loan.currentBalance > 0 ? 'positive' : 'neutral'}>
+                            {formatCurrency(loan.currentBalance)}
+                          </span>
+                        </div>
+                        <div className="loan-amount-row">
+                          <span>{t('financial.loans.amountPaid')}:</span>
+                          <span className="positive">{formatCurrency(loan.totalPaid)}</span>
+                        </div>
+                      </div>
+                      <div className="loan-progress">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill"
+                            style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                          />
+                        </div>
+                        <span>{progressPercentage.toFixed(1)}%</span>
+                      </div>
+                      {loan.dueDate && (
+                        <div className="loan-dates">
+                          <span>{t('financial.loans.startDate')}: {loan.startDate}</span>
+                          {loan.dueDate && <span>{t('financial.loans.dueDate')}: {loan.dueDate}</span>}
+                        </div>
+                      )}
+                    </div>
+                    <div className="loan-actions">
+                      <button 
+                        className="payment-btn"
+                        onClick={() => {
+                          setSelectedLoan(loan);
+                          setShowLoanPayment(true);
+                        }}
+                      >
+                        {t('financial.loans.addPayment')}
+                      </button>
+                      <button 
+                        className="delete-btn"
+                        onClick={() => handleDeleteLoan(loan.id)}
+                      >
+                        {t('common.delete')}
+                      </button>
+                    </div>
+                    {payments.length > 0 && (
+                      <div className="loan-payments">
+                        <h6>{t('financial.loans.paymentHistory')}</h6>
+                        {payments.slice(0, 3).map(payment => (
+                          <div key={payment.id} className="payment-item">
+                            <span>{payment.date}</span>
+                            <span className="payment-amount positive">
+                              +{formatCurrency(payment.amount)}
+                            </span>
+                            {payment.note && <span className="payment-note">{payment.note}</span>}
+                          </div>
+                        ))}
+                        {payments.length > 3 && (
+                          <div className="more-payments">
+                            +{payments.length - 3} {t('financial.loans.morePayments')}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              {loans.filter(loan => loan.type === 'given').length === 0 && (
+                <div className="no-data">
+                  <p>{t('financial.loans.noLoans')}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Loans Received */}
+          <div className="loans-section">
+            <h4>💳 {t('financial.loans.myDebts')}</h4>
+            <div className="loans-list">
+              {loans.filter(loan => loan.type === 'received').map(loan => {
+                const payments = getLoanPayments(loan.id);
+                const progressPercentage = (loan.totalPaid / loan.principalAmount) * 100;
+                return (
+                  <div key={loan.id} className="loan-item liability-item">
+                    <div className="loan-header">
+                      <h5>{t('financial.loans.loanFrom', { name: loan.personName })}</h5>
+                      <span className={`loan-status status-${loan.status}`}>
+                        {t(`financial.loans.${loan.status}`)}
+                      </span>
+                    </div>
+                    <div className="loan-details">
+                      <div className="loan-amounts">
+                        <div className="loan-amount-row">
+                          <span>{t('financial.loans.originalAmount')}:</span>
+                          <span>{formatCurrency(loan.principalAmount)}</span>
+                        </div>
+                        <div className="loan-amount-row">
+                          <span>{t('financial.loans.currentBalance')}:</span>
+                          <span className={loan.currentBalance > 0 ? 'negative' : 'neutral'}>
+                            {formatCurrency(loan.currentBalance)}
+                          </span>
+                        </div>
+                        <div className="loan-amount-row">
+                          <span>{t('financial.loans.amountPaid')}:</span>
+                          <span className="positive">{formatCurrency(loan.totalPaid)}</span>
+                        </div>
+                      </div>
+                      <div className="loan-progress">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill"
+                            style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                          />
+                        </div>
+                        <span>{progressPercentage.toFixed(1)}%</span>
+                      </div>
+                      {loan.dueDate && (
+                        <div className="loan-dates">
+                          <span>{t('financial.loans.startDate')}: {loan.startDate}</span>
+                          {loan.dueDate && <span>{t('financial.loans.dueDate')}: {loan.dueDate}</span>}
+                        </div>
+                      )}
+                    </div>
+                    <div className="loan-actions">
+                      <button 
+                        className="payment-btn"
+                        onClick={() => {
+                          setSelectedLoan(loan);
+                          setShowLoanPayment(true);
+                        }}
+                      >
+                        {t('financial.loans.addPayment')}
+                      </button>
+                      <button 
+                        className="delete-btn"
+                        onClick={() => handleDeleteLoan(loan.id)}
+                      >
+                        {t('common.delete')}
+                      </button>
+                    </div>
+                    {payments.length > 0 && (
+                      <div className="loan-payments">
+                        <h6>{t('financial.loans.paymentHistory')}</h6>
+                        {payments.slice(0, 3).map(payment => (
+                          <div key={payment.id} className="payment-item">
+                            <span>{payment.date}</span>
+                            <span className="payment-amount negative">
+                              -{formatCurrency(payment.amount)}
+                            </span>
+                            {payment.note && <span className="payment-note">{payment.note}</span>}
+                          </div>
+                        ))}
+                        {payments.length > 3 && (
+                          <div className="more-payments">
+                            +{payments.length - 3} {t('financial.loans.morePayments')}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              {loans.filter(loan => loan.type === 'received').length === 0 && (
+                <div className="no-data">
+                  <p>{t('financial.loans.noDebts')}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Add Expense Modal */}
       {showAddExpense && (
         <ExpenseModal 
@@ -607,6 +914,27 @@ const FinancialTracker = () => {
           categories={categories.expenses}
           onSave={handleAddBill}
           onClose={() => setShowAddBill(false)}
+        />
+      )}
+
+      {/* Add Loan Modal */}
+      {showAddLoan && (
+        <LoanModal 
+          loanType={showAddLoan}
+          onSave={handleAddLoan}
+          onClose={() => setShowAddLoan(false)}
+        />
+      )}
+
+      {/* Add Loan Payment Modal */}
+      {showLoanPayment && selectedLoan && (
+        <LoanPaymentModal 
+          loan={selectedLoan}
+          onSave={handleAddLoanPayment}
+          onClose={() => {
+            setShowLoanPayment(false);
+            setSelectedLoan(null);
+          }}
         />
       )}
 
@@ -2120,6 +2448,386 @@ const BillModal = ({ categories, onSave, onClose }) => {
         .form-group input[type="checkbox"] {
           width: auto;
           margin-right: 8px;
+        }
+
+        .modal-actions {
+          display: flex;
+          gap: 10px;
+          justify-content: flex-end;
+          margin-top: 20px;
+        }
+
+        .cancel-btn {
+          background: var(--bg-secondary);
+          color: var(--text-primary);
+          border: 1px solid var(--border-color);
+          padding: 10px 20px;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+
+        .save-btn {
+          background: var(--accent-color);
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+
+        .save-btn:hover {
+          background: #38a169;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+// Loan Modal
+const LoanModal = ({ loanType, onSave, onClose }) => {
+  const { t } = useTranslation();
+  const [formData, setFormData] = useState({
+    type: loanType,
+    personName: '',
+    principalAmount: '',
+    interestRate: '',
+    startDate: new Date().toISOString().split('T')[0],
+    dueDate: '',
+    description: ''
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formData.personName && formData.principalAmount) {
+      onSave({
+        ...formData,
+        principalAmount: parseFloat(formData.principalAmount),
+        interestRate: parseFloat(formData.interestRate) || 0
+      });
+    }
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h3>
+            {loanType === 'given' ? t('financial.loans.addLoan') : t('financial.loans.addDebt')}
+          </h3>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>
+              {loanType === 'given' ? t('financial.loans.borrower') : t('financial.loans.lender')}
+            </label>
+            <input
+              type="text"
+              value={formData.personName}
+              onChange={(e) => setFormData({...formData, personName: e.target.value})}
+              placeholder={loanType === 'given' ? t('financial.loans.borrower') : t('financial.loans.lender')}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>{t('financial.loans.principalAmount')}</label>
+            <input
+              type="number"
+              step="0.01"
+              value={formData.principalAmount}
+              onChange={(e) => setFormData({...formData, principalAmount: e.target.value})}
+              placeholder={t('financial.loans.principalAmount')}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>{t('financial.loans.interestRate')} (%)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={formData.interestRate}
+              onChange={(e) => setFormData({...formData, interestRate: e.target.value})}
+              placeholder={t('financial.loans.interestRate')}
+            />
+          </div>
+          <div className="form-group">
+            <label>{t('financial.loans.startDate')}</label>
+            <input
+              type="date"
+              value={formData.startDate}
+              onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>{t('financial.loans.dueDate')}</label>
+            <input
+              type="date"
+              value={formData.dueDate}
+              onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
+            />
+          </div>
+          <div className="form-group">
+            <label>{t('financial.description')}</label>
+            <input
+              type="text"
+              value={formData.description}
+              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              placeholder={t('financial.description')}
+            />
+          </div>
+          <div className="modal-actions">
+            <button type="button" className="cancel-btn" onClick={onClose}>{t('common.cancel')}</button>
+            <button type="submit" className="save-btn">{t('common.save')}</button>
+          </div>
+        </form>
+      </div>
+      <style jsx>{`
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+
+        .modal-content {
+          background: var(--bg-primary);
+          border-radius: 12px;
+          padding: 20px;
+          max-width: 500px;
+          width: 90%;
+          max-height: 90vh;
+          overflow-y: auto;
+        }
+
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+          margin: 0;
+          color: var(--text-primary);
+        }
+
+        .close-btn {
+          background: none;
+          border: none;
+          font-size: 24px;
+          cursor: pointer;
+          color: var(--text-secondary);
+        }
+
+        .form-group {
+          margin-bottom: 15px;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 5px;
+          color: var(--text-primary);
+          font-weight: 500;
+        }
+
+        .form-group input {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid var(--border-color);
+          border-radius: 6px;
+          font-size: 1rem;
+        }
+
+        .modal-actions {
+          display: flex;
+          gap: 10px;
+          justify-content: flex-end;
+          margin-top: 20px;
+        }
+
+        .cancel-btn {
+          background: var(--bg-secondary);
+          color: var(--text-primary);
+          border: 1px solid var(--border-color);
+          padding: 10px 20px;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+
+        .save-btn {
+          background: var(--accent-color);
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+
+        .save-btn:hover {
+          background: #38a169;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+// Loan Payment Modal
+const LoanPaymentModal = ({ loan, onSave, onClose }) => {
+  const { t } = useTranslation();
+  const [formData, setFormData] = useState({
+    loanId: loan.id,
+    amount: '',
+    date: new Date().toISOString().split('T')[0],
+    note: ''
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formData.amount) {
+      onSave({
+        ...formData,
+        amount: parseFloat(formData.amount)
+      });
+    }
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h3>{t('financial.loans.addPayment')}</h3>
+          <button className="close-btn" onClick={onClose}>×</button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>{t('financial.loans.paymentFor')}</label>
+            <div className="payment-info">
+              <strong>{loan.personName}</strong>
+              <span>{t('financial.loans.currentBalance')}: {loan.currentBalance > 0 ? t('financial.loans.amountOwed') : ''}</span>
+            </div>
+          </div>
+          <div className="form-group">
+            <label>{t('financial.amount')}</label>
+            <input
+              type="number"
+              step="0.01"
+              value={formData.amount}
+              onChange={(e) => setFormData({...formData, amount: e.target.value})}
+              placeholder={t('financial.amount')}
+              required
+              max={loan.currentBalance}
+            />
+          </div>
+          <div className="form-group">
+            <label>{t('financial.date')}</label>
+            <input
+              type="date"
+              value={formData.date}
+              onChange={(e) => setFormData({...formData, date: e.target.value})}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>{t('financial.description')}</label>
+            <input
+              type="text"
+              value={formData.note}
+              onChange={(e) => setFormData({...formData, note: e.target.value})}
+              placeholder={t('financial.description')}
+            />
+          </div>
+          <div className="modal-actions">
+            <button type="button" className="cancel-btn" onClick={onClose}>{t('common.cancel')}</button>
+            <button type="submit" className="save-btn">{t('common.save')}</button>
+          </div>
+        </form>
+      </div>
+      <style jsx>{`
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+
+        .modal-content {
+          background: var(--bg-primary);
+          border-radius: 12px;
+          padding: 20px;
+          max-width: 500px;
+          width: 90%;
+          max-height: 90vh;
+          overflow-y: auto;
+        }
+
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+          margin: 0;
+          color: var(--text-primary);
+        }
+
+        .close-btn {
+          background: none;
+          border: none;
+          font-size: 24px;
+          cursor: pointer;
+          color: var(--text-secondary);
+        }
+
+        .form-group {
+          margin-bottom: 15px;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 5px;
+          color: var(--text-primary);
+          font-weight: 500;
+        }
+
+        .form-group input {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid var(--border-color);
+          border-radius: 6px;
+          font-size: 1rem;
+        }
+
+        .payment-info {
+          padding: 10px;
+          background: var(--bg-secondary);
+          border-radius: 6px;
+          margin-bottom: 5px;
+        }
+
+        .payment-info strong {
+          display: block;
+          margin-bottom: 5px;
+          color: var(--text-primary);
+        }
+
+        .payment-info span {
+          font-size: 0.8rem;
+          color: var(--text-secondary);
         }
 
         .modal-actions {
