@@ -1,24 +1,52 @@
-# 🤖 AI News Hub
+# 🚀 Personal Dashboard v3.0.0
 
-O aplicație Next.js modernă pentru agregarea știrilor despre inteligență artificială, machine learning și tehnologie.
+Un dashboard personal modern și complet construit cu Next.js, care include agregare de știri, management al productivității, finanțe personale, și multe altele.
 
 ## ✅ Features
 
-- 📰 **Știri AI** - Articole din surse internaționale și românești
-- 📺 **Videoclipuri YouTube** - Conținut video despre AI și tehnologie
-- 🔍 **Căutare avansată** - Filtre multiple și categorii
-- 🌍 **Suport multi-limbă** - Engleză și Română
-- 📱 **Responsive Design** - Optimizat pentru mobil și desktop
-- 🚀 **Performance optimizat** - Caching și lazy loading
-- 🐳 **Docker ready** - Deploy ușor cu containere
+### 📰 **Conținut & Media**
+- **Știri** - Articole din surse internaționale și românești despre AI și tehnologie
+- **Videoclipuri YouTube** - Conținut video despre AI și tehnologie
+- **Radio Player** - Ascultă muzică și podcasturi online
+- **Reading Journal** - Jurnal personal pentru cărți și articole
+
+### 🎯 **Productivitate**
+- **Todo List** - Managementul sarcinilor zilnice
+- **Pomodoro Timer** - Tehnica Pomodoro pentru focus maxim
+- **Habit Tracker** - Monitorizarea și dezvoltarea obiceiurilor
+- **Bookmarks** - Manager pentru linkuri și resurse salvate
+
+### 💰 **Finanțe & Analiză**
+- **Financial Tracker** - Gestionarea finanțelor personale
+- **Analytics Dashboard** - Statistici și vizualizări avansate
+- **Data Export** - Export PDF pentru toate datele
+
+### 🎨 **UX & Design**
+- **Teme Multiple** - Light/Dark mode cu personalizare
+- **Suport Multi-limbă** - Engleză și Română
+- **Responsive Design** - Optimizat complet pentru mobil și desktop
+- **Efecte Interactive** - Animații smooth la hover și micro-interacțiuni
+- **Performance Optimizat** - Caching și lazy loading
+
+### 🔧 **Tehnic**
+- **Docker Ready** - Deploy ușor cu containere
+- **PM2 Support** - Process management pentru producție
+- **API Routes** - Backend integrat cu Next.js
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 14, React 18
+- **Frontend**: Next.js 14, React 18, CSS-in-JS
 - **Backend**: Node.js, Next.js API Routes
-- **Styling**: CSS-in-JS, Responsive Design
-- **APIs**: NewsAPI, YouTube Data API
+- **Styling**: Styled-jsx, Glassmorphism Design
+- **State Management**: React Context API
+- **APIs**: NewsAPI, YouTube Data API, Radio APIs
+- **Export**: jsPDF pentru export PDF
+- **Authentication**: NextAuth.js
 - **Deployment**: PM2, Docker, Nginx
+
+### 📦 **Versiune Curentă**: **3.0.0** *(19 Octombrie 2025)*
+
+Vezi [CHANGELOG.md](./CHANGELOG.md) pentru istoricul complet al modificărilor.
 
 ## 🚀 Quick Start
 
@@ -99,17 +127,48 @@ NEXTAUTH_SECRET=your_secret_key
 ```
 news/
 ├── components/          # React components
-│   ├── NewsCard.js     # News article card
-│   ├── SearchBar.js    # Search input component
-│   └── VideoCard.js    # YouTube video card
+│   ├── HomePage.js     # Dashboard principal cu animații
+│   ├── NewsCard.js     # Card pentru articole știri
+│   ├── TodoList.js     # Management sarcini
+│   ├── PomodoroTimer.js # Timer Pomodoro
+│   ├── HabitTracker.js # Monitorizare obiceiuri
+│   ├── FinancialTracker.js # Gestionare finanțe
+│   ├── RadioPlayer.js  # Player radio online
+│   ├── ReadingTracker.js # Jurnal lectură
+│   ├── AnalyticsDashboard.js # Panou statistici
+│   └── ... # și multe altele
 ├── pages/              # Next.js pages
 │   ├── api/           # API routes
 │   │   ├── news.js    # News API endpoint
-│   │   └── youtube.js # YouTube API endpoint
-│   ├── index.js       # Main homepage
-│   └── _app.js        # App wrapper
+│   │   ├── youtube.js # YouTube API endpoint
+│   │   └── radio-proxy.js # Radio proxy
+│   ├── index.js       # Homepage / Dashboard
+│   ├── news.js        # Pagina știri
+│   ├── todo.js        # Pagina sarcini
+│   ├── pomodoro.js    # Pagina Pomodoro
+│   ├── habits.js      # Pagina obiceiuri
+│   ├── financial.js   # Pagina finanțe
+│   ├── reading.js     # Pagina lectură
+│   ├── radio.js       # Pagina radio
+│   ├── dashboard.js   # Panou control
+│   └── settings.js    # Setări aplicație
+├── lib/               # Services și utilities
+│   ├── todoService.js
+│   ├── habitService.js
+│   ├── financialService.js
+│   ├── pomodoroService.js
+│   ├── readingService.js
+│   └── ... # servicii pentru toate modulele
+├── contexts/          # React Context providers
+│   ├── LanguageContext.js
+│   ├── ThemeContext.js
+│   └── UserContext.js
+├── locales/           # Traduceri
+│   ├── en.json        # Engleză
+│   └── ro.json        # Română
 ├── styles/            # Global styles
 │   └── globals.css    # Main stylesheet
+├── CHANGELOG.md       # Istoric modificări
 ├── server.js          # Custom Node.js server
 ├── next.config.js     # Next.js configuration
 ├── ecosystem.config.js # PM2 configuration
@@ -243,6 +302,37 @@ For issues and questions:
 - Check the troubleshooting section
 - Review the API documentation
 
+## 🆕 What's New in v3.0.0
+
+### ✨ **Enhanced Interactive Experience**
+- **Hover Effects**: Efecte de pulsare smooth pentru toate elementele interactive
+- **Micro-interactions**: Animații subtile la interacțiunea cu elementele
+- **Visual Polish**: Design rafinat cu atenție la detalii
+
+### 🎯 **Focus on User Experience**
+- Cursor pointer pentru elementele clicabile
+- Animații de 1.5s cu loop infinit pentru efectul de pulsare
+- Transiții smooth între stări
+
 ---
 
-**Built with ❤️ using Next.js and modern web technologies**
+## 📈 **Dashboard Statistics**
+
+### Module Active:
+- ✅ 9 module funcționale complete
+- ✅ Suport pentru 2 limbi
+- ✅ 2 temi vizuale
+- ✅ Export PDF integrat
+- ✅ Responsive 100%
+
+### Performance:
+- ⚡ Loading time < 2s
+- 📱 Mobile optimized
+- 🔄 Auto-save local storage
+- 🎨 Glassmorphism UI
+
+---
+
+**Built with ❤️ și ☕ folosind Next.js și tehnologii web moderne**
+
+**Versiunea 3.0.0 - Interactivitate și Eleganță**

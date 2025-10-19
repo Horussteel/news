@@ -722,7 +722,7 @@ const Settings = () => {
                     </div>
                     <div className="version-details">
                       <div className="version-info-modern">
-                        <div className="version-number">v2.0.0</div>
+                        <div className="version-number">v3.0.0</div>
                         <div className="version-date">Actualizat: Octombrie 2025</div>
                       </div>
                       <div className="version-features-modern">
