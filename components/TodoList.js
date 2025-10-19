@@ -604,12 +604,12 @@ const TodoList = () => {
         {activeTab === 'categories' && (
           <div className="categories-section">
             <div className="section-header">
-              <h3>Categories</h3>
+              <h3>{t('todo.categories')}</h3>
               <button
                 onClick={() => {/* Handle add category */}}
                 className="add-category-btn"
               >
-                + Add Category
+                + {t('todo.addCategory', 'Add Category')}
               </button>
             </div>
             <div className="categories-grid">
@@ -621,12 +621,12 @@ const TodoList = () => {
         {activeTab === 'tags' && (
           <div className="tags-section">
             <div className="section-header">
-              <h3>Tags</h3>
+              <h3>{t('todo.tags')}</h3>
               <button
                 onClick={() => {/* Handle add tag */}}
                 className="add-tag-btn"
               >
-                + Add Tag
+                + {t('todo.addTag', 'Add Tag')}
               </button>
             </div>
             <div className="tags-grid">
@@ -637,7 +637,7 @@ const TodoList = () => {
 
         {activeTab === 'stats' && statistics && (
           <div className="stats-section">
-            <h3>Detailed Statistics</h3>
+            <h3>{t('todo.detailedStatistics', 'Detailed Statistics')}</h3>
             <div className="detailed-stats">
               <div className="stats-grid">
                 <div className="stat-item">

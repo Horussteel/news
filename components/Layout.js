@@ -38,7 +38,7 @@ const Layout = ({ children, title, description }) => {
             <div className="header-left">
               <h1 className="title">
                 <a href="/" className="home-link">
-                  🤖 NEWS ERDEROM
+                  🤖 {t('layout.title')}
                 </a>
               </h1>
               <p className="subtitle">{t('layout.subtitle')}</p>
@@ -51,7 +51,7 @@ const Layout = ({ children, title, description }) => {
                 <a href="/reading" className="nav-link">📚 {t('navigation.reading')}</a>
                 <a href="/todo" className="nav-link">✅ {t('navigation.todo')}</a>
                 <a href="/pomodoro" className="nav-link">🍅 {t('navigation.pomodoro')}</a>
-                <a href="/financial" className="nav-link">💰 Finanțe</a>
+                <a href="/financial" className="nav-link">💰 {t('navigation.financial')}</a>
                 <a href="/dashboard" className="nav-link">📊 {t('navigation.dashboard')}</a>
                 <a href="/settings" className="nav-link">⚙️ {t('navigation.settings')}</a>
               </nav>
@@ -81,7 +81,20 @@ const Layout = ({ children, title, description }) => {
         </main>
 
         <footer className="layout-footer">
-          <p>{t('layout.footer')}</p>
+          <div className="footer-content">
+            <a 
+              href="https://erderom.ro" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="footer-link"
+            >
+              {t('layout.footer')}
+            </a>
+            <div className="version-info">
+              <span className="version-badge">v2.0.0</span>
+              <span className="commit-hash">#0d6a867</span>
+            </div>
+          </div>
         </footer>
       </div>
 
@@ -181,10 +194,54 @@ const Layout = ({ children, title, description }) => {
           background: var(--bg-secondary);
           border-top: 1px solid var(--border-color);
           padding: 2rem;
-          text-align: center;
           color: var(--text-secondary);
           margin-top: auto;
           transition: all 0.3s ease;
+        }
+
+        .footer-content {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .footer-link {
+          color: var(--text-secondary);
+          text-decoration: none;
+          transition: all 0.3s ease;
+          font-size: 0.9rem;
+        }
+
+        .footer-link:hover {
+          color: var(--accent-color);
+          text-decoration: underline;
+        }
+
+        .version-info {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.8rem;
+          opacity: 0.7;
+        }
+
+        .version-badge {
+          background: var(--accent-color);
+          color: white;
+          padding: 0.2rem 0.5rem;
+          border-radius: 12px;
+          font-weight: 500;
+          font-size: 0.7rem;
+        }
+
+        .commit-hash {
+          font-family: monospace;
+          background: var(--bg-tertiary);
+          padding: 0.2rem 0.5rem;
+          border-radius: 8px;
+          color: var(--text-tertiary);
         }
 
         .language-toggle {
@@ -265,6 +322,16 @@ const Layout = ({ children, title, description }) => {
           .layout-footer {
             padding: 1rem;
             font-size: 0.9rem;
+          }
+
+          .footer-content {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+          }
+
+          .version-info {
+            justify-content: center;
           }
         }
 

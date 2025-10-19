@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import ReadingTracker from '../components/ReadingTracker';
 import Layout from '../components/Layout';
+import { useTranslation } from '../contexts/LanguageContext';
 
 export default function ReadingPage() {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -11,7 +13,7 @@ export default function ReadingPage() {
 
   if (!mounted) {
     return (
-      <Layout title="Reading - AI News" description="Track your reading progress and manage your book library">
+      <Layout title={t('reading.title')} description={t('reading.description')}>
         <div className="loading-container">
           <div className="spinner"></div>
         </div>
@@ -41,9 +43,9 @@ export default function ReadingPage() {
 
   return (
     <Layout 
-      title="Reading - AI News" 
-      description="Track your reading progress, manage your book library, and achieve your reading goals"
-      keywords="reading, books, tracker, library, goals, progress"
+      title={t('reading.title')} 
+      description={t('reading.description')}
+      keywords={t('reading.keywords')}
     >
       <ReadingTracker />
     </Layout>

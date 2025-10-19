@@ -44,8 +44,8 @@ export default function PomodoroPage() {
   return (
     <Layout 
       title={`🍅 ${t('pomodoro.title')} - AI News`} 
-      description="Boost your productivity with the Pomodoro technique. Focus on your tasks and track your progress with our timer."
-      keywords="pomodoro, timer, productivity, focus, time management, work sessions"
+      description={t('pomodoro.description')}
+      keywords={t('pomodoro.keywords')}
     >
       <PomodoroTimer />
     </Layout>

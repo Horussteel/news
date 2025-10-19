@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Features Test</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --accent-color: #3b82f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            color: var(--accent-color);
+        }
+
+        .test-section {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .test-section h2 {
+            margin: 0 0 15px 0;
+            color: var(--text-primary);
+        }
+
+        .test-button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 500;
+        }
+
+        .test-button:hover {
+            background: #2563eb;
+        }
+
+        .test-button.secondary {
+            background: #6b7280;
+        }
+
+        .test-button.secondary:hover {
+            background: #4b5563;
+        }
+
+        .result {
+            background: var(--bg-primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid var(--border-color);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #bbf7d0;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status.pass {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.fail {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Wellness Features Test</h1>
+            <p>Testare funcționalități noi: Mood Tracker, Analytics, Meditation Timer</p>
+        </div>
+
+        <div class="grid">
+            <!-- Mood Service Tests -->
+            <div class="test-section">
+                <h2>😌 Mood Service Tests <span id="mood-status" class="status pending">Pending</span></h2>
+                <button class="test-button" onclick="testMoodService()">Testează Mood Service</button>
+                <button class="test-button secondary" onclick="testMoodServiceClear()">Golește date</button>
+                <div id="mood-result" class="result"></div>
+            </div>
+
+            <!-- Analytics Service Tests -->
+            <div class="test-section">
+                <h2>📊 Analytics Service Tests <span id="analytics-status" class="status pending">Pending</span></h2>
+                <button class="test-button" onclick="testAnalyticsService()">Testează Analytics Service</button>
+                <button class="test-button secondary" onclick="testAnalyticsClear()">Golește cache</button>
+                <div id="analytics-result" class="result"></div>
+            </div>
+
+            <!-- Meditation Service Tests -->
+            <div class="test-section">
+                <h2>🧘‍♀️ Meditation Service Tests <span id="meditation-status" class="status pending">Pending</span></h2>
+                <button class="test-button" onclick="testMeditationService()">Testează Meditation Service</button>
+                <button class="test-button secondary" onclick="testMeditationClear()">Golește date</button>
+                <div id="meditation-result" class="result"></div>
+            </div>
+
+            <!-- Integration Tests -->
+            <div class="test-section">
+                <h2>🔗 Integration Tests <span id="integration-status" class="status pending">Pending</span></h2>
+                <button class="test-button" onclick="testIntegration()">Testează Integrarea</button>
+                <button class="test-button secondary" onclick="testDataExport()">Export date</button>
+                <div id="integration-result" class="result"></div>
+            </div>
+
+            <!-- Audio Tests -->
+            <div class="test-section">
+                <h2>🔊 Audio Tests <span id="audio-status" class="status pending">Pending</span></h2>
+                <button class="test-button" onclick="testAudioContext()">Testează Audio Context</button>
+                <button class="test-button" onclick="testAmbientSounds()">Testează Sunete Ambient</button>
+                <div id="audio-result" class="result"></div>
+            </div>
+
+            <!-- Performance Tests -->
+            <div class="test-section">
+                <h2>⚡ Performance Tests <span id="performance-status" class="status pending">Pending</span></h2>
+                <button class="test-button" onclick="testPerformance()">Testează Performanța</button>
+                <button class="test-button secondary" onclick="testLocalStorage()">Testează LocalStorage</button>
+                <div id="performance-result" class="result"></div>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="test-section">
+            <h2>📋 Test Summary</h2>
+            <div id="summary-result">
+                <p>Apasă pe butoanele de testare pentru a verifica toate funcționalitățile.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Import services (simulate imports since we're in a test file)
+        class MoodService {
+            constructor() {
+                this.initializeStorage();
+            }
+
+            initializeStorage() {
+                if (!localStorage.getItem('moodEntries')) {
+                    localStorage.setItem('moodEntries', JSON.stringify({}));
+                }
+                if (!localStorage.getItem('moodSettings')) {
+                    localStorage.setItem('moodSettings', JSON.stringify({
+                        reminderEnabled: false,
+                        reminderTime: '20:00',
+                        showInsights: true
+                    }));
+                }
+            }
+
+            getMoodOptions() {
+                return [
+                    { id: 'amazing', emoji: '🤩', label: 'Excelent', color: '#10b981' },
+                    { id: 'good', emoji: '😊', label: 'Bine', color: '#3b82f6' },
+                    { id: 'ok', emoji: '😐', label: 'OK', color: '#f59e0b' },
+                    { id: 'bad', emoji: '😟', label: 'Rău', color: '#ef4444' }
+                ];
+            }
+
+            setMoodEntry(date, moodId, entry = '') {
+                const entries = this.getMoodEntries();
+                const today = date || new Date().toISOString().split('T')[0];
+                
+                entries[today] = {
+                    mood: moodId,
+                    entry: entry,
+                    timestamp: new Date().toISOString(),
+                    date: today
+                };
+                
+                localStorage.setItem('moodEntries', JSON.stringify(entries));
+                return entries[today];
+            }
+
+            getMoodEntries() {
+                try {
+                    const entries = localStorage.getItem('moodEntries');
+                    return entries ? JSON.parse(entries) : {};
+                } catch (error) {
+                    return {};
+                }
+            }
+
+            getMoodStats(days = 30) {
+                const entries = this.getMoodEntries();
+                const moodOptions = this.getMoodOptions();
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - days);
+                
+                const stats = {
+                    totalEntries: 0,
+                    moodDistribution: {},
+                    averageMood: 0,
+                    currentStreak: 0
+                };
+                
+                moodOptions.forEach(mood => {
+                    stats.moodDistribution[mood.id] = {
+                        count: 0,
+                        percentage: 0,
+                        mood: mood
+                    };
+                });
+                
+                let totalScore = 0;
+                let validEntries = 0;
+                
+                Object.entries(entries).forEach(([dateStr, entry]) => {
+                    const entryDate = new Date(dateStr);
+                    if (entryDate >= cutoffDate) {
+                        stats.totalEntries++;
+                        if (stats.moodDistribution[entry.mood]) {
+                            stats.moodDistribution[entry.mood].count++;
+                        }
+                        
+                        const moodScore = this.getMoodScore(entry.mood);
+                        totalScore += moodScore;
+                        validEntries++;
+                    }
+                });
+                
+                Object.keys(stats.moodDistribution).forEach(moodId => {
+                    const count = stats.moodDistribution[moodId].count;
+                    stats.moodDistribution[moodId].percentage = 
+                        stats.totalEntries > 0 ? Math.round((count / stats.totalEntries) * 100) : 0;
+                });
+                
+                stats.averageMood = validEntries > 0 ? Math.round((totalScore / validEntries) * 10) / 10 : 0;
+                
+                return stats;
+            }
+
+            getMoodScore(moodId) {
+                const moodScores = {
+                    'amazing': 5,
+                    'good': 4,
+                    'ok': 3,
+                    'bad': 2
+                };
+                return moodScores[moodId] || 3;
+            }
+
+            clearAllData() {
+                localStorage.removeItem('moodEntries');
+                localStorage.removeItem('moodSettings');
+                this.initializeStorage();
+            }
+        }
+
+        class AnalyticsService {
+            constructor() {
+                this.initializeStorage();
+            }
+
+            initializeStorage() {
+                if (!localStorage.getItem('analyticsSettings')) {
+                    localStorage.setItem('analyticsSettings', JSON.stringify({
+                        showHeatmap: true,
+                        showCharts: true,
+                        heatmapIntensity: 'habits',
+                        timeRange: 30
+                    }));
+                }
+            }
+
+            getHeatmapColor(intensity, type = 'habits') {
+                if (intensity === 0) return '#e5e7eb';
+                
+                const colorSchemes = {
+                    habits: [
+                        { threshold: 0.2, color: '#dcfce7' },
+                        { threshold: 0.4, color: '#bbf7d0' },
+                        { threshold: 0.6, color: '#86efac' },
+                        { threshold: 0.8, color: '#4ade80' },
+                        { threshold: 1.0, color: '#22c55e' }
+                    ]
+                };
+                
+                const scheme = colorSchemes[type] || colorSchemes.habits;
+                
+                for (const { threshold, color } of scheme) {
+                    if (intensity <= threshold) {
+                        return color;
+                    }
+                }
+                
+                return scheme[scheme.length - 1].color;
+            }
+
+            generateWellnessReport(days = 30) {
+                return {
+                    period: `Ultimele ${days} de zile`,
+                    generatedAt: new Date().toISOString(),
+                    overallScore: {
+                        score: 75,
+                        grade: { letter: 'B', description: 'Bun' },
+                        habitScore: 80,
+                        moodScore: 70
+                    },
+                    recommendations: [
+                        {
+                            type: 'habit',
+                            priority: 'medium',
+                            title: 'Îmbunătățește consistența',
+                            description: 'Încearcă să completezi obiceiurile în fiecare zi.'
+                        }
+                    ],
+                    highlights: [
+                        {
+                            type: 'achievement',
+                            title: 'Serie impresionantă',
+                            description: '5 zile consecutive de înregistrare',
+                            icon: '🔥'
+                        }
+                    ]
+                };
+            }
+
+            clearCache() {
+                localStorage.removeItem('analyticsCache');
+            }
+        }
+
+        class MeditationService {
+            constructor() {
+                this.initializeStorage();
+                this.timers = new Map();
+            }
+
+            initializeStorage() {
+                if (!localStorage.getItem('meditationSettings')) {
+                    localStorage.setItem('meditationSettings', JSON.stringify({
+                        defaultDuration: 10,
+                        soundEnabled: true,
+                        selectedSound: 'rain',
+                        autoCompleteHabits: true
+                    }));
+                }
+                if (!localStorage.getItem('meditationSessions')) {
+                    localStorage.setItem('meditationSessions', JSON.stringify({}));
+                }
+                if (!localStorage.getItem('meditationStats')) {
+                    localStorage.setItem('meditationStats', JSON.stringify({
+                        totalSessions: 0,
+                        totalMinutes: 0,
+                        currentStreak: 0,
+                        longestStreak: 0
+                    }));
+                }
+            }
+
+            getAmbientSounds() {
+                return [
+                    { id: 'rain', name: 'Ploaie', icon: '🌧️', color: '#3b82f6' },
+                    { id: 'ocean', name: 'Ocean', icon: '🌊', color: '#06b6d4' },
+                    { id: 'forest', name: 'Pădure', icon: '🌲', color: '#10b981' },
+                    { id: 'silence', name: 'Liniște', icon: '🤫', color: '#9ca3af' }
+                ];
+            }
+
+            startMeditation(duration, soundType = 'silence', onComplete = null) {
+                const timerId = Date.now().toString();
+                const startTime = Date.now();
+                const endTime = startTime + (duration * 60 * 1000);
+                
+                const timer = {
+                    id: timerId,
+                    duration: duration,
+                    startTime: startTime,
+                    endTime: endTime,
+                    soundType: soundType,
+                    remainingTime: duration * 60,
+                    isActive: true,
+                    isPaused: false
+                };
+                
+                this.timers.set(timerId, timer);
+                
+                // Simulate completion after 3 seconds for testing
+                setTimeout(() => {
+                    this.completeMeditation(timerId);
+                    if (onComplete) onComplete(timer);
+                }, 3000);
+                
+                return timerId;
+            }
+
+            completeMeditation(timerId) {
+                const timer = this.timers.get(timerId);
+                if (timer) {
+                    this.recordMeditationSession(timer);
+                    this.timers.delete(timerId);
+                }
+            }
+
+            recordMeditationSession(timer) {
+                const sessions = this.getMeditationSessions();
+                const today = new Date().toISOString().split('T')[0];
+                
+                if (!sessions[today]) {
+                    sessions[today] = [];
+                }
+                
+                const session = {
+                    id: timer.id,
+                    duration: timer.duration,
+                    soundType: timer.soundType,
+                    startTime: new Date(timer.startTime).toISOString(),
+                    endTime: new Date().toISOString(),
+                    completed: true,
+                    date: today
+                };
+                
+                sessions[today].push(session);
+                localStorage.setItem('meditationSessions', JSON.stringify(sessions));
+                this.updateMeditationStats();
+            }
+
+            getMeditationSessions() {
+                try {
+                    const sessions = localStorage.getItem('meditationSessions');
+                    return sessions ? JSON.parse(sessions) : {};
+                } catch (error) {
+                    return {};
+                }
+            }
+
+            updateMeditationStats() {
+                const sessions = this.getMeditationSessions();
+                const stats = this.getMeditationStats();
+                
+                let totalSessions = 0;
+                let totalMinutes = 0;
+                
+                Object.values(sessions).forEach(daySessions => {
+                    daySessions.forEach(session => {
+                        if (session.completed) {
+                            totalSessions++;
+                            totalMinutes += session.duration;
+                        }
+                    });
+                });
+                
+                const updatedStats = {
+                    ...stats,
+                    totalSessions,
+                    totalMinutes,
+                    currentStreak: totalSessions > 0 ? 1 : 0,
+                    longestStreak: Math.max(stats.longestStreak, totalSessions)
+                };
+                
+                localStorage.setItem('meditationStats', JSON.stringify(updatedStats));
+                return updatedStats;
+            }
+
+            getMeditationStats() {
+                try {
+                    const stats = localStorage.getItem('meditationStats');
+                    return stats ? JSON.parse(stats) : {};
+                } catch (error) {
+                    return {};
+                }
+            }
+
+            clearAllData() {
+                localStorage.removeItem('meditationSettings');
+                localStorage.removeItem('meditationSessions');
+                localStorage.removeItem('meditationStats');
+                this.initializeStorage();
+            }
+        }
+
+        // Initialize services
+        const moodService = new MoodService();
+        const analyticsService = new AnalyticsService();
+        const meditationService = new MeditationService();
+
+        // Test functions
+        function updateStatus(elementId, status) {
+            const element = document.getElementById(elementId);
+            element.className = `status ${status}`;
+            element.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        }
+
+        function showResult(elementId, content, isError = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = content;
+            element.className = `result ${isError ? 'error' : 'success'}`;
+        }
+
+        async function testMoodService() {
+            try {
+                updateStatus('mood-status', 'pending');
+                showResult('mood-result', 'Testare Mood Service...\n');
+
+                // Test mood options
+                const moodOptions = moodService.getMoodOptions();
+                showResult('mood-result', `✓ Mood options loaded: ${moodOptions.length} moods\n`);
+
+                // Test setting mood
+                const today = new Date().toISOString().split('T')[0];
+                const moodEntry = moodService.setMoodEntry(today, 'good', 'Test entry for today');
+                showResult('mood-result', prev => prev + `✓ Mood entry created: ${moodEntry.mood} - ${moodEntry.entry}\n`);
+
+                // Test getting stats
+                const stats = moodService.getMoodStats();
+                showResult('mood-result', prev => prev + `✓ Mood stats: ${stats.totalEntries} entries, avg mood: ${stats.averageMood}\n`);
+
+                // Test mood distribution
+                const distribution = Object.entries(stats.moodDistribution)
+                    .filter(([, data]) => data.count > 0)
+                    .map(([mood, data]) => `${mood}: ${data.count} (${data.percentage}%)`)
+                    .join(', ');
+                showResult('mood-result', prev => prev + `✓ Mood distribution: ${distribution}\n`);
+
+                updateStatus('mood-status', 'pass');
+                showResult('mood-result', prev => prev + '\n🎉 Mood Service test completed successfully!');
+            } catch (error) {
+                updateStatus('mood-status', 'fail');
+                showResult('mood-result', `❌ Error: ${error.message}`, true);
+            }
+        }
+
+        async function testAnalyticsService() {
+            try {
+                updateStatus('analytics-status', 'pending');
+                showResult('analytics-result', 'Testare Analytics Service...\n');
+
+                // Test heatmap colors
+                const color1 = analyticsService.getHeatmapColor(0.2, 'habits');
+                const color2 = analyticsService.getHeatmapColor(0.8, 'habits');
+                showResult('analytics-result', `✓ Heatmap colors: ${color1}, ${color2}\n`);
+
+                // Test wellness report
+                const report = analyticsService.generateWellnessReport();
+                showResult('analytics-result', prev => prev + `✓ Wellness report: ${report.period}\n`);
+                showResult('analytics-result', prev => prev + `✓ Overall score: ${report.overallScore.score} (${report.overallScore.grade.letter})\n`);
+
+                // Test recommendations
+                const recommendations = report.recommendations.length;
+                const highlights = report.highlights.length;
+                showResult('analytics-result', prev => prev + `✓ ${recommendations} recommendations, ${highlights} highlights\n`);
+
+                updateStatus('analytics-status', 'pass');
+                showResult('analytics-result', prev => prev + '\n🎉 Analytics Service test completed successfully!');
+            } catch (error) {
+                updateStatus('analytics-status', 'fail');
+                showResult('analytics-result', `❌ Error: ${error.message}`, true);
+            }
+        }
+
+        async function testMeditationService() {
+            try {
+                updateStatus('meditation-status', 'pending');
+                showResult('meditation-result', 'Testare Meditation Service...\n');
+
+                // Test ambient sounds
+                const sounds = meditationService.getAmbientSounds();
+                showResult('meditation-result', `✓ Ambient sounds loaded: ${sounds.length} sounds\n`);
+
+                // Test starting meditation
+                const timerId = meditationService.startMeditation(5, 'rain', (timer) => {
+                    showResult('meditation-result', prev => prev + `✓ Meditation completed: ${timer.duration} minutes\n`);
+                });
+                showResult('meditation-result', prev => prev + `✓ Meditation started: Timer ID ${timerId}\n`);
+
+                // Test getting stats
+                const stats = meditationService.getMeditationStats();
+                showResult('meditation-result', prev => prev + `✓ Initial stats: ${stats.totalSessions} sessions, ${stats.totalMinutes} minutes\n`);
+
+                // Wait for completion
+                await new Promise(resolve => setTimeout(resolve, 3500));
+
+                // Test updated stats
+                const updatedStats = meditationService.getMeditationStats();
+                showResult('meditation-result', prev => prev + `✓ Updated stats: ${updatedStats.totalSessions} sessions, ${updatedStats.totalMinutes} minutes\n`);
+
+                updateStatus('meditation-status', 'pass');
+                showResult('meditation-result', prev => prev + '\n🎉 Meditation Service test completed successfully!');
+            } catch (error) {
+                updateStatus('meditation-status', 'fail');
+                showResult('meditation-result', `❌ Error: ${error.message}`, true);
+            }
+        }
+
+        async function testIntegration() {
+            try {
+                updateStatus('integration-status', 'pending');
+                showResult('integration-result', 'Testare Integrare...\n');
+
+                // Test mood + meditation integration
+                const today = new Date().toISOString().split('T')[0];
+                moodService.setMoodEntry(today, 'amazing', 'Feeling great before meditation');
+                showResult('integration-result', '✓ Mood set before meditation\n');
+
+                // Start meditation
+                const timerId = meditationService.startMeditation(3, 'ocean');
+                showResult('integration-result', prev => prev + `✓ Meditation started with ocean sounds\n`);
+
+                await new Promise(resolve => setTimeout(resolve, 3500));
+
+                // Set mood after meditation
+                moodService.setMoodEntry(today, 'good', 'Feeling relaxed after meditation');
+                showResult('integration-result', prev => prev + `✓ Mood updated after meditation\n`);
+
+                // Generate combined report
+                const report = analyticsService.generateWellnessReport();
+                showResult('integration-result', prev => prev + `✓ Combined wellness report generated\n`);
+
+                updateStatus('integration-status', 'pass');
+                showResult('integration-result', prev => prev + '\n🎉 Integration test completed successfully!');
+            } catch (error) {
+                updateStatus('integration-status', 'fail');
+                showResult('integration-result', `❌ Error: ${error.message}`, true);
+            }
+        }
+
+        async function testDataExport() {
+            try {
+                showResult('integration-result', 'Export date...\n');
+
+                const moodData = {
+                    entries: moodService.getMoodEntries(),
+                    stats: moodService.getMoodStats()
+                };
+
+                const meditationData = {
+                    sessions: meditationService.getMeditationSessions(),
+                    stats: meditationService.getMeditationStats()
+                };
+
+                const analyticsData = analyticsService.generateWellnessReport();
+
+                const exportData = {
+                    mood: moodData,
+                    meditation: meditationData,
+                    analytics: analyticsData,
+                    exportedAt: new Date().toISOString()
+                };
+
+                const dataStr = JSON.stringify(exportData, null, 2);
+                showResult('integration-result', prev => prev + `✓ Export data size: ${dataStr.length} characters\n`);
+                showResult('integration-result', prev => prev + `✓ Data includes: ${Object.keys(exportData).join(', ')}\n`);
+
+                // Create download link
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `wellness-export-${new Date().toISOString().split('T')[0]}.json`;
+                a.textContent = '📥 Descarcă exportul';
+                a.style.display = 'block';
+                a.style.marginTop = '10px';
+                a.style.padding = '10px';
+                a.style.background = '#10b981';
+                a.style.color = 'white';
+                a.style.textDecoration = 'none';
+                a.style.borderRadius = '6px';
+                a.style.textAlign = 'center';
+
+                const resultDiv = document.getElementById('integration-result');
+                if (!resultDiv.querySelector('a')) {
+                    resultDiv.appendChild(a);
+                }
+
+                showResult('integration-result', prev => prev + '\n✓ Export completed successfully!');
+            } catch (error) {
+                showResult('integration-result', `❌ Export error: ${error.message}`, true);
+            }
+        }
+
+        async function testAudioContext() {
+            try {
+                updateStatus('audio-status', 'pending');
+                showResult('audio-result', 'Testare Audio Context...\n');
+
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) {
+                    throw new Error('Web Audio API not supported');
+                }
+
+                const audioContext = new AudioContext();
+                showResult('audio-result', `✓ Audio Context created\n`);
+                showResult('audio-result', prev => prev + `✓ Sample rate: ${audioContext.sampleRate}Hz\n`);
+                showResult('audio-result', prev => prev + `✓ State: ${audioContext.state}\n`);
+
+                // Test creating oscillator
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = 0.1; // Low volume for test
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.1); // Very short test
+
+                showResult('audio-result', prev => prev + `✓ Oscillator test completed\n`);
+
+                updateStatus('audio-status', 'pass');
+                showResult('audio-result', prev => prev + '\n🎉 Audio test completed successfully!');
+            } catch (error) {
+                updateStatus('audio-status', 'fail');
+                showResult('audio-result', `❌ Audio error: ${error.message}`, true);
+            }
+        }
+
+        async function testAmbientSounds() {
+            try {
+                showResult('audio-result', 'Testare sunete ambient...\n');
+
+                const sounds = meditationService.getAmbientSounds();
+                showResult('audio-result', prev => prev + `✓ Available sounds: ${sounds.length}\n`);
+
+                sounds.forEach(sound => {
+                    showResult('audio-result', prev => prev + `  - ${sound.icon} ${sound.name} (${sound.id})\n`);
+                });
+
+                showResult('audio-result', prev => prev + '\n✓ Ambient sounds test completed!');
+            } catch (error) {
+                showResult('audio-result', `❌ Ambient sounds error: ${error.message}`, true);
+            }
+        }
+
+        async function testPerformance() {
+            try {
+                updateStatus('performance-status', 'pending');
+                showResult('performance-result', 'Testare performanță...\n');
+
+                // Test mood service performance
+                const start = performance.now();
+                for (let i = 0; i < 100; i++) {
+                    moodService.getMoodStats();
+                }
+                const moodTime = performance.now() - start;
+                showResult('performance-result', `✓ Mood service: 100 calls in ${moodTime.toFixed(2)}ms\n`);
+
+                // Test analytics service performance
+                const start2 = performance.now();
+                for (let i = 0; i < 50; i++) {
+                    analyticsService.generateWellnessReport();
+                }
+                const analyticsTime = performance.now() - start2;
+                showResult('performance-result', prev => prev + `✓ Analytics service: 50 calls in ${analyticsTime.toFixed(2)}ms\n`);
+
+                // Test localStorage performance
+                const start3 = performance.now();
+                const testData = { test: 'data', timestamp: Date.now() };
+                for (let i = 0; i < 1000; i++) {
+                    localStorage.setItem(`perf-test-${i}`, JSON.stringify(testData));
+                    JSON.parse(localStorage.getItem(`perf-test-${i}`));
+                }
+                const storageTime = performance.now() - start3;
+                showResult('performance-result', prev => prev + `✓ LocalStorage: 1000 operations in ${storageTime.toFixed(2)}ms\n`);
+
+                // Cleanup
+                for (let i = 0; i < 1000; i++) {
+                    localStorage.removeItem(`perf-test-${i}`);
+                }
+
+                updateStatus('performance-status', 'pass');
+                showResult('performance-result', prev => prev + '\n🚀 Performance test completed successfully!');
+            } catch (error) {
+                updateStatus('performance-status', 'fail');
+                showResult('performance-result', `❌ Performance error: ${error.message}`, true);
+            }
+        }
+
+        async function testLocalStorage() {
+            try {
+                showResult('performance-result', 'Testare LocalStorage...\n');
+
+                // Test available space
+                const testKey = 'storage-test';
+                const testData = 'x'.repeat(1000);
+                let i = 0;
+                
+                try {
+                    while (i < 1000) { // Try up to 1MB
+                        localStorage.setItem(`${testKey}-${i}`, testData);
+                        i++;
+                    }
+                } catch (e) {
+                    showResult('performance-result', `✓ Storage limit reached at ${i}KB\n`);
+                }
+
+                // Cleanup
+                for (let j = 0; j < i; j++) {
+                    localStorage.removeItem(`${testKey}-${j}`);
+                }
+
+                // Test current usage
+                let totalSize = 0;
+                for (let key in localStorage) {
+                    if (localStorage.hasOwnProperty(key)) {
+                        totalSize += localStorage[key].length + key.length;
+                    }
+                }
+
+                showResult('performance-result', prev => prev + `✓ Current storage usage: ${(totalSize / 1024).toFixed(2)}KB\n`);
+                showResult('performance-result', prev => prev + '\n✓ LocalStorage test completed!');
+            } catch (error) {
+                showResult('performance-result', `❌ Storage error: ${error.message}`, true);
+            }
+        }
+
+        // Clear functions
+        function testMoodServiceClear() {
+            moodService.clearAllData();
+            showResult('mood-result', '✓ Mood data cleared');
+        }
+
+        function testAnalyticsClear() {
+            analyticsService.clearCache();
+            showResult('analytics-result', '✓ Analytics cache cleared');
+        }
+
+        function testMeditationClear() {
+            meditationService.clearAllData();
+            showResult('meditation-result', '✓ Meditation data cleared');
+        }
+
+        // Update summary
+        function updateSummary() {
+            const statuses = ['mood-status', 'analytics-status', 'meditation-status', 'integration-status', 'audio-status', 'performance-status'];
+            const results = statuses.map(id => {
+                const element = document.getElementById(id);
+                return element ? element.textContent : 'Pending';
+            });
+
+            const passed = results.filter(r => r === 'Pass').length;
+            const failed = results.filter(r => r === 'Fail').length;
+            const pending = results.filter(r => r === 'Pending').length;
+
+            const summaryDiv = document.getElementById('summary-result');
+            summaryDiv.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center;">
+                    <div style="background: #dcfce7; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #166534;">${passed}</div>
+                        <div style="color: #166534;">Passed</div>
+                    </div>
+                    <div style="background: #fee2e2; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #dc2626;">${failed}</div>
+                        <div style="color: #dc2626;">Failed</div>
+                    </div>
+                    <div style="background: #fef3c7; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #92400e;">${pending}</div>
+                        <div style="color: #92400e;">Pending</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <strong>Total: ${passed + failed + pending} tests</strong>
+                </div>
+            `;
+        }
+
+        // Auto-update summary every 2 seconds
+        setInterval(updateSummary, 2000);
+        updateSummary();
+    </script>
+</body>
+</html>

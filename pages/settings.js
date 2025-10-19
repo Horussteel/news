@@ -200,14 +200,14 @@ const Settings = () => {
             onClick={() => setActiveTab('appearance')}
           >
             <span className="tab-icon">🎨</span>
-            <span className="tab-label">Appearance</span>
+            <span className="tab-label">{t('settings.appearance')}</span>
           </button>
           <button 
             className={`nav-tab ${activeTab === 'notifications' ? 'active' : ''}`}
             onClick={() => setActiveTab('notifications')}
           >
             <span className="tab-icon">🔔</span>
-            <span className="tab-label">Notifications</span>
+            <span className="tab-label">{t('settings.notifications')}</span>
           </button>
           <button 
             className={`nav-tab ${activeTab === 'data' ? 'active' : ''}`}
@@ -230,7 +230,7 @@ const Settings = () => {
           {/* Profile Tab */}
           {activeTab === 'profile' && (
             <div className="tab-content">
-              <h2>Profile Settings</h2>
+              <h2>{t('settings.profileSettings')}</h2>
               
               <div className="settings-grid">
                 <div className="setting-card">
@@ -238,7 +238,7 @@ const Settings = () => {
                     <span className="setting-icon">🌐</span>
                     <div>
                       <h3>{t('settings.language')}</h3>
-                      <p>Choose your preferred language</p>
+                      <p>{t('settings.chooseLanguage')}</p>
                     </div>
                   </div>
                   <select 
@@ -632,7 +632,7 @@ const Settings = () => {
               <div className="about-hero">
                 <div className="hero-content">
                   <div className="hero-icon">🚀</div>
-                  <h1 className="hero-title">Despre News ERDEROM</h1>
+                  <h1 className="hero-title">Despre Momentum</h1>
                   <p className="hero-subtitle">
                     Gata, l-am actualizat.
                   </p>
@@ -644,7 +644,7 @@ const Settings = () => {
                   <div className="privacy-card">
                     <div className="privacy-header">
                       <div className="privacy-icon-large">🔒</div>
-                      <h2>Bun venit la News ERDEROM</h2>
+                      <h2>Bun venit la Momentum</h2>
                     </div>
                     <div className="privacy-text">
                       <p className="intro-text">
@@ -808,8 +808,10 @@ const Settings = () => {
         }
 
         .header-subtitle {
-          opacity: 0.9;
+          opacity: 0.95;
           margin: 0;
+          color: #ffffff;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .user-profile-card {

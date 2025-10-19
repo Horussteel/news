@@ -1,9 +1,16 @@
 import Dashboard from '../components/Dashboard';
 import Layout from '../components/Layout';
+import { useTranslation } from '../contexts/LanguageContext';
 
 const DashboardPage = () => {
+  const { t } = useTranslation();
+  
   return (
-    <Layout title="Analytics Dashboard" description="View your productivity statistics and analytics">
+    <Layout 
+      title={`${t('dashboard.title')} - AI News`} 
+      description={t('dashboard.description')}
+      keywords={t('dashboard.keywords')}
+    >
       <div className="dashboard-page">
         <Dashboard />
         <style jsx global>{`

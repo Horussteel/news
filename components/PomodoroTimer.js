@@ -143,10 +143,10 @@ const PomodoroTimer = () => {
 
   const showNotification = () => {
     if (settings.notificationEnabled && 'Notification' in window && Notification.permission === 'granted') {
-      const title = currentSession === 'work' ? 'Time for a break! ☕' : 'Back to work! 🍅';
+      const title = currentSession === 'work' ? t('pomodoro.timeForBreak') : t('pomodoro.backToWork');
       const body = currentSession === 'work' 
-        ? `Great job! You've completed a Pomodoro session. Time for a ${currentSession === 'longBreak' ? 'long' : 'short'} break.`
-        : 'Break time is over. Ready to focus?';
+        ? `${t('pomodoro.greatJob')} ${t('pomodoro.shortBreak')}.`
+        : t('pomodoro.breakTimeOver');
       
       new Notification(title, {
         body,
@@ -349,11 +349,11 @@ const PomodoroTimer = () => {
       {showSettings && (
         <div className="modal-overlay" onClick={() => setShowSettings(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>⚙️ Pomodoro Settings</h3>
+            <h3>⚙️ {t('pomodoro.pomodoroSettings')}</h3>
             
             <div className="settings-grid">
               <div className="setting-group">
-                <label>Work Duration (minutes)</label>
+                <label>{t('pomodoro.workDuration')}</label>
                 <input
                   type="number"
                   min="1"
@@ -364,7 +364,7 @@ const PomodoroTimer = () => {
               </div>
               
               <div className="setting-group">
-                <label>Short Break (minutes)</label>
+                <label>{t('pomodoro.shortBreakDuration')}</label>
                 <input
                   type="number"
                   min="1"
@@ -375,7 +375,7 @@ const PomodoroTimer = () => {
               </div>
               
               <div className="setting-group">
-                <label>Long Break (minutes)</label>
+                <label>{t('pomodoro.longBreakDuration')}</label>
                 <input
                   type="number"
                   min="1"
@@ -386,7 +386,7 @@ const PomodoroTimer = () => {
               </div>
               
               <div className="setting-group">
-                <label>Long Break Interval</label>
+                <label>{t('pomodoro.longBreakInterval')}</label>
                 <input
                   type="number"
                   min="2"
@@ -404,7 +404,7 @@ const PomodoroTimer = () => {
                   checked={settings.autoStartBreaks}
                   onChange={(e) => updateSettings({...settings, autoStartBreaks: e.target.checked})}
                 />
-                Auto-start breaks
+                {t('pomodoro.autoStartBreaks')}
               </label>
               
               <label className="checkbox-label">
@@ -413,7 +413,7 @@ const PomodoroTimer = () => {
                   checked={settings.autoStartPomodoros}
                   onChange={(e) => updateSettings({...settings, autoStartPomodoros: e.target.checked})}
                 />
-                Auto-start Pomodoros
+                {t('pomodoro.autoStartPomodoros')}
               </label>
               
               <label className="checkbox-label">
@@ -422,7 +422,7 @@ const PomodoroTimer = () => {
                   checked={settings.soundEnabled}
                   onChange={(e) => updateSettings({...settings, soundEnabled: e.target.checked})}
                 />
-                Enable sound notifications
+                {t('pomodoro.soundEnabled')}
               </label>
               
               <label className="checkbox-label">
@@ -431,7 +431,7 @@ const PomodoroTimer = () => {
                   checked={settings.notificationEnabled}
                   onChange={(e) => updateSettings({...settings, notificationEnabled: e.target.checked})}
                 />
-                Enable browser notifications
+                {t('pomodoro.notificationEnabled')}
               </label>
               
               <label className="checkbox-label">
@@ -440,12 +440,12 @@ const PomodoroTimer = () => {
                   checked={settings.taskIntegration}
                   onChange={(e) => updateSettings({...settings, taskIntegration: e.target.checked})}
                 />
-                Integrate with To-Do tasks
+                {t('pomodoro.taskIntegration')}
               </label>
             </div>
 
             <div className="settings-actions">
-              <button onClick={() => setShowSettings(false)}>Close</button>
+              <button onClick={() => setShowSettings(false)}>{t('pomodoro.close')}</button>
               <button 
                 onClick={() => {
                   pomodoroService.resetStats();
@@ -453,7 +453,7 @@ const PomodoroTimer = () => {
                 }}
                 className="danger-btn"
               >
-                Reset Statistics
+                {t('pomodoro.resetStatistics')}
               </button>
             </div>
           </div>

@@ -271,7 +271,7 @@ const ReadingTracker = () => {
               <div className="book-meta">
                 <span className="book-genre">{book.genre}</span>
               <span className="book-status" style={{ color: getStatusColor(book.status) }}>
-                {t(`reading.status.${book.status.toLowerCase()}`, book.status)}
+                {t(`reading.statusOptions.${book.status.toLowerCase()}`, book.status)}
               </span>
               </div>
             </div>
@@ -755,10 +755,10 @@ const ReadingTracker = () => {
                 value={newBook.status}
                 onChange={(e) => setNewBook({...newBook, status: e.target.value})}
               >
-                <option value="reading">{t('reading.reading')}</option>
-                <option value="completed">{t('reading.completed')}</option>
-                <option value="paused">{t('reading.paused')}</option>
-                <option value="abandoned">{t('reading.status.abandoned')}</option>
+                <option value="reading">{t('reading.statusOptions.reading')}</option>
+                <option value="completed">{t('reading.statusOptions.completed')}</option>
+                <option value="paused">{t('reading.statusOptions.paused')}</option>
+                <option value="abandoned">{t('reading.statusOptions.abandoned')}</option>
               </select>
             </div>
             </div>
@@ -809,15 +809,15 @@ const ReadingTracker = () => {
       {showAddSessionForm && (
         <div className="modal-overlay" onClick={() => setShowAddSessionForm(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Add Reading Session</h3>
+            <h3>{t('reading.addSession')}</h3>
             
             <div className="form-group">
-              <label>Book *</label>
+              <label>{t('reading.book')} *</label>
               <select
                 value={newSession.bookId}
                 onChange={(e) => setNewSession({...newSession, bookId: e.target.value})}
               >
-                <option value="">Select a book</option>
+                <option value="">{t('reading.selectBook')}</option>
                 {books.map(book => (
                   <option key={book.id} value={book.id}>{book.title}</option>
                 ))}
@@ -826,7 +826,7 @@ const ReadingTracker = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label>Start Page</label>
+                <label>{t('reading.startPage')}</label>
                 <input
                   type="number"
                   value={newSession.startPage}
@@ -835,7 +835,7 @@ const ReadingTracker = () => {
               </div>
 
               <div className="form-group">
-                <label>End Page</label>
+                <label>{t('reading.endPage')}</label>
                 <input
                   type="number"
                   value={newSession.endPage}
@@ -845,41 +845,41 @@ const ReadingTracker = () => {
             </div>
 
             <div className="form-group">
-              <label>Location</label>
+              <label>{t('reading.location')}</label>
               <input
                 type="text"
                 value={newSession.location}
                 onChange={(e) => setNewSession({...newSession, location: e.target.value})}
-                placeholder="Where are you reading?"
+                placeholder={t('reading.locationPlaceholder')}
               />
             </div>
 
             <div className="form-group">
-              <label>Mood</label>
+              <label>{t('reading.mood')}</label>
               <select
                 value={newSession.mood}
                 onChange={(e) => setNewSession({...newSession, mood: e.target.value})}
               >
                 {moodOptions.map(mood => (
-                  <option key={mood.value} value={mood.value}>{mood.label}</option>
+                  <option key={mood.value} value={mood.value}>{t(`reading.moodOptions.${mood.value}`)}</option>
                 ))}
               </select>
             </div>
 
             <div className="form-group">
-              <label>Notes</label>
+              <label>{t('reading.notes')}</label>
               <textarea
                 value={newSession.notes}
                 onChange={(e) => setNewSession({...newSession, notes: e.target.value})}
-                placeholder="Any thoughts about this session?"
+                placeholder={t('reading.sessionNotesPlaceholder')}
                 rows={3}
               />
             </div>
 
             <div className="form-actions">
-              <button onClick={() => setShowAddSessionForm(false)}>Cancel</button>
+              <button onClick={() => setShowAddSessionForm(false)}>{t('common.cancel')}</button>
               <button onClick={() => {/* Handle add session */}} disabled={!newSession.bookId}>
-                Add Session
+                {t('reading.addSession')}
               </button>
             </div>
           </div>
@@ -890,15 +890,15 @@ const ReadingTracker = () => {
       {showAddNoteForm && (
         <div className="modal-overlay" onClick={() => setShowAddNoteForm(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Add Reading Note</h3>
+            <h3>{t('reading.addNote')}</h3>
             
             <div className="form-group">
-              <label>Book *</label>
+              <label>{t('reading.book')} *</label>
               <select
                 value={newNote.bookId}
                 onChange={(e) => setNewNote({...newNote, bookId: e.target.value})}
               >
-                <option value="">Select a book</option>
+                <option value="">{t('reading.selectBook')}</option>
                 {books.map(book => (
                   <option key={book.id} value={book.id}>{book.title}</option>
                 ))}
@@ -906,30 +906,30 @@ const ReadingTracker = () => {
             </div>
 
             <div className="form-group">
-              <label>Note *</label>
+              <label>{t('reading.noteContent')} *</label>
               <textarea
                 value={newNote.content}
                 onChange={(e) => setNewNote({...newNote, content: e.target.value})}
-                placeholder="Enter your note or quote"
+                placeholder={t('reading.notePlaceholder')}
                 rows={4}
               />
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label>Type</label>
+                <label>{t('reading.type')}</label>
                 <select
                   value={newNote.type}
                   onChange={(e) => setNewNote({...newNote, type: e.target.value})}
                 >
                   {noteTypes.map(type => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
+                    <option key={type.value} value={type.value}>{t(`reading.noteTypes.${type.value}`)}</option>
                   ))}
                 </select>
               </div>
 
               <div className="form-group">
-                <label>Page Number</label>
+                <label>{t('reading.pageNumber')}</label>
                 <input
                   type="number"
                   value={newNote.pageNumber}
@@ -939,19 +939,19 @@ const ReadingTracker = () => {
             </div>
 
             <div className="form-group">
-              <label>Chapter</label>
+              <label>{t('reading.chapter')}</label>
               <input
                 type="text"
                 value={newNote.chapter}
                 onChange={(e) => setNewNote({...newNote, chapter: e.target.value})}
-                placeholder="Chapter name or number"
+                placeholder={t('reading.chapterPlaceholder')}
               />
             </div>
 
             <div className="form-actions">
-              <button onClick={() => setShowAddNoteForm(false)}>Cancel</button>
+              <button onClick={() => setShowAddNoteForm(false)}>{t('common.cancel')}</button>
               <button onClick={handleAddNote} disabled={!newNote.content.trim()}>
-                Add Note
+                {t('reading.addNote')}
               </button>
             </div>
           </div>
@@ -1094,12 +1094,24 @@ const ReadingTracker = () => {
           border-radius: 6px;
           cursor: pointer;
           font-size: 0.8rem;
+          color: var(--text-primary);
+          font-weight: 500;
+          transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+          background: var(--accent-color);
+          color: white;
+          border-color: var(--accent-color);
+          transform: translateY(-1px);
         }
 
         .filter-btn.active {
           background: var(--accent-color);
           color: white;
           border-color: var(--accent-color);
+          box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+          font-weight: 600;
         }
 
         .books-grid {

@@ -324,7 +324,7 @@ const Dashboard = () => {
             </div>
             <div className="stat-value">{formatNumber(overview.totalTodos)}</div>
             <div className="stat-subtitle">
-              {formatNumber(overview.completedTodos)} completed
+              {formatNumber(overview.completedTodos)} {t('dashboard.completed')}
             </div>
             <div className="stat-progress">
               <div 
@@ -342,7 +342,7 @@ const Dashboard = () => {
             </div>
             <div className="stat-value">{formatNumber(overview.totalHabits)}</div>
             <div className="stat-subtitle">
-              {formatNumber(overview.activeHabits)} active
+              {formatNumber(overview.activeHabits)} {t('dashboard.active')}
             </div>
             <div className="stat-progress">
               <div 
@@ -364,7 +364,7 @@ const Dashboard = () => {
             </div>
             <div className="stat-value">{formatNumber(overview.totalReading)}</div>
             <div className="stat-subtitle">
-              {formatNumber(overview.completedReading)} completed
+              {formatNumber(overview.completedReading)} {t('dashboard.completed')}
             </div>
             <div className="stat-progress">
               <div 
@@ -378,11 +378,11 @@ const Dashboard = () => {
           <div className="stat-card">
             <div className="stat-header">
               <span className="stat-icon">🚀</span>
-              <span className="stat-label">Productivity</span>
+              <span className="stat-label">{t('dashboard.productivity')}</span>
             </div>
             <div className="stat-value">{overview.overallProductivity}</div>
             <div className="stat-subtitle">
-              Overall Score
+              {t('dashboard.overallScore')}
             </div>
             <div className="stat-progress">
               <div 
@@ -436,7 +436,7 @@ const Dashboard = () => {
                   '0 RON'
                 }
               </div>
-              <div className="quick-stat-label">Economii</div>
+              <div className="quick-stat-label">{t('dashboard.savings')}</div>
             </div>
           </div>
 
@@ -449,7 +449,7 @@ const Dashboard = () => {
                   '0 RON'
                 }
               </div>
-              <div className="quick-stat-label">Patrimoniu Net</div>
+              <div className="quick-stat-label">{t('dashboard.netWorth')}</div>
             </div>
           </div>
 
@@ -457,7 +457,7 @@ const Dashboard = () => {
             <div className="quick-stat-icon">📊</div>
             <div className="quick-stat-content">
               <div className="quick-stat-value">{quickStats.todayProductivity}</div>
-              <div className="quick-stat-label">Score</div>
+              <div className="quick-stat-label">{t('dashboard.score')}</div>
             </div>
           </div>
         </div>
@@ -475,7 +475,7 @@ const Dashboard = () => {
               </div>
               <div className="metric-value">{topMetrics.mostProductiveDay.date}</div>
               <div className="metric-subtitle">
-                Score: {topMetrics.mostProductiveDay.score}
+                {t('dashboard.score')}: {topMetrics.mostProductiveDay.score}
               </div>
             </div>
           )}
@@ -487,7 +487,7 @@ const Dashboard = () => {
                 <span className="metric-label">{t('dashboard.longestStreak')}</span>
               </div>
               <div className="metric-value">{topMetrics.longestStreak} days</div>
-              <div className="metric-subtitle">Current best</div>
+              <div className="metric-subtitle">{t('dashboard.currentBest')}</div>
             </div>
           )}
 
@@ -499,7 +499,7 @@ const Dashboard = () => {
               </div>
               <div className="metric-value">{topMetrics.fastestReader.readingSpeed} pages/day</div>
               <div className="metric-subtitle">
-                {topMetrics.fastestReader.booksCompleted} books completed
+                {topMetrics.fastestReader.booksCompleted} {t('dashboard.booksCompleted')}
               </div>
             </div>
           )}
@@ -508,10 +508,10 @@ const Dashboard = () => {
             <div className="metric-card">
               <div className="metric-header">
                 <span className="metric-icon">📚</span>
-                <span className="metric-label">Favorite Category</span>
+                <span className="metric-label">{t('dashboard.favoriteCategory')}</span>
               </div>
               <div className="metric-value">{topMetrics.topCategory}</div>
-              <div className="metric-subtitle">Most read</div>
+              <div className="metric-subtitle">{t('dashboard.mostRead')}</div>
             </div>
           )}
         </div>
@@ -585,7 +585,7 @@ const Dashboard = () => {
                 {new Intl.NumberFormat('ro-RO', { style: 'currency', currency: 'RON' }).format(financialStats.loans.netWorth)}
               </div>
               <div className="loan-subtitle">
-                {financialStats.loans.netWorth >= 0 ? 'Positive' : 'Negative'} Balance
+                {financialStats.loans.netWorth >= 0 ? t('dashboard.positiveBalance') : t('dashboard.negativeBalance')}
               </div>
               <div className="loan-progress">
                 <div 
@@ -606,7 +606,7 @@ const Dashboard = () => {
             <div className="loan-card health-card">
               <div className="loan-header">
                 <span className="loan-icon">❤️</span>
-                <span className="loan-label">{t('financial.loans.financialHealth')}</span>
+                <span className="loan-label">{t('dashboard.financialHealth')}</span>
               </div>
               <div className="loan-value" style={{ 
                 color: financialStats?.financialHealth?.financialHealthScore >= 70 ? '#10B981' : 
@@ -639,7 +639,7 @@ const Dashboard = () => {
             <div className="overdue-alert">
               <span className="alert-icon">⚠️</span>
               <span className="alert-text">
-                {financialStats.loans.overdueLoans} overdue loan(s) require attention
+                {financialStats.loans.overdueLoans} {t('dashboard.overdueLoans')} {t('dashboard.requireAttention')}
               </span>
             </div>
           )}

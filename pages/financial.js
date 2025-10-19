@@ -1,9 +1,16 @@
 import Layout from '../components/Layout';
 import FinancialTracker from '../components/FinancialTracker';
+import { useTranslation } from '../contexts/LanguageContext';
 
 const FinancialPage = () => {
+  const { t } = useTranslation();
+  
   return (
-    <Layout title="Finanțe Personale" description="Gestionează cheltuieli, venituri, bugete și obiective financiare">
+    <Layout 
+      title={`${t('financial.title')} - AI News`} 
+      description={t('financial.description')}
+      keywords={t('financial.keywords')}
+    >
       <div className="financial-page">
         <FinancialTracker />
         <style jsx global>{`

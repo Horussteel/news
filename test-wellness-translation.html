@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Traduceri Wellness Hub</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-tertiary: #adb5bd;
+            --border-color: #dee2e6;
+            --accent-color: #667eea;
+            --accent-hover: #5a67d8;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #404040;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-tertiary: #808080;
+            --border-color: #404040;
+            --shadow: 0 2px 4px rgba(0,0,0,0.3);
+            --shadow-lg: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .test-section {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .test-section h2 {
+            margin: 0 0 15px 0;
+            color: var(--text-primary);
+        }
+
+        .translation-test {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .language-column {
+            padding: 15px;
+            border-radius: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .language-column h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+        }
+
+        .translation-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .translation-item:last-child {
+            border-bottom: none;
+        }
+
+        .translation-key {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .translation-value {
+            color: var(--text-secondary);
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status.pass {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.fail {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .result {
+            background: var(--bg-primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid var(--border-color);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #bbf7d0;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        .test-button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 500;
+        }
+
+        .test-button:hover {
+            background: #2563eb;
+        }
+
+        .test-button.secondary {
+            background: #6b7280;
+        }
+
+        .test-button.secondary:hover {
+            background: #4b5563;
+        }
+
+        .wellness-hub-preview {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-top: 20px;
+        }
+
+        .tab-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+            /* Ensure visibility on light theme */
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--accent-color);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .mood-options-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .mood-option-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .mood-option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .mood-emoji {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .mood-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .mood-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Light mode specific colors for mood cards */
+        .mood-option-card[data-mood="amazing"] {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-color: #10b981;
+        }
+
+        .mood-option-card[data-mood="good"] {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-color: #3b82f6;
+        }
+
+        .mood-option-card[data-mood="ok"] {
+            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+            border-color: #f59e0b;
+        }
+
+        .mood-option-card[data-mood="bad"] {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+            border-color: #ef4444;
+        }
+
+        .mood-option-card[data-mood="angry"] {
+            background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%);
+            border-color: #dc2626;
+        }
+
+        .mood-option-card[data-mood="sad"] {
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            border-color: #6b7280;
+        }
+
+        .mood-option-card[data-mood="anxious"] {
+            background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
+            border-color: #8b5cf6;
+        }
+
+        .mood-option-card[data-mood="tired"] {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-color: #64748b;
+        }
+
+        /* Dark mode specific colors for mood cards */
+        [data-theme="dark"] .mood-option-card {
+            background: var(--bg-secondary);
+            border-width: 2px;
+        }
+
+        [data-theme="dark"] .mood-option-card[data-mood="amazing"] {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+            border-color: #10b981;
+        }
+
+        [data-theme="dark"] .mood-option-card[data-mood="good"] {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            border-color: #3b82f6;
+        }
+
+        [data-theme="dark"] .mood-option-card[data-mood="ok"] {
+            background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+            border-color: #f59e0b;
+        }
+
+        [data-theme="dark"] .mood-option-card[data-mood="bad"] {
+            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+            border-color: #ef4444;
+        }
+
+        [data-theme="dark"] .mood-option-card[data-mood="angry"] {
+            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+            border-color: #dc2626;
+        }
+
+        [data-theme="dark"] .mood-option-card[data-mood="sad"] {
+            background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+            border-color: #6b7280;
+        }
+
+        [data-theme="dark"] .mood-option-card[data-mood="anxious"] {
+            background: linear-gradient(135deg, #581c87 0%, #6b21a8 100%);
+            border-color: #8b5cf6;
+        }
+
+        [data-theme="dark"] .mood-option-card[data-mood="tired"] {
+            background: linear-gradient(135deg, #334155 0%, #475569 100%);
+            border-color: #64748b;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 1000;
+            font-weight: 500;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-hover);
+        }
+
+        @media (max-width: 600px) {
+            .translation-test {
+                grid-template-columns: 1fr;
+            }
+            
+            .mood-options-preview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test Traduceri Wellness Hub</h1>
+            <p>Verificare traducerile pentru modulele: Mood, Meditation, Analytics</p>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 Testare Traduceri Module</h2>
+            <button class="test-button" onclick="testTranslations()">Testează Traduceri</button>
+            <button class="test-button secondary" onclick="clearResults()">Golește Rezultate</button>
+            <div id="translation-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🌐 Preview Wellness Hub</h2>
+            <div class="wellness-hub-preview">
+                <div class="tab-navigation">
+                    <button class="tab-btn active">🎯 Obiceiuri</button>
+                    <button class="tab-btn">😌 Stare Emoțională</button>
+                    <button class="tab-btn">🧘‍♀️ Meditație</button>
+                    <button class="tab-btn">📊 Statistici</button>
+                </div>
+                
+                <div class="mood-options-preview" id="mood-options-preview">
+                    <h3 style="grid-column: 1 / -1; text-align: center; margin-bottom: 10px;">Opțiuni Stare Emoțională</h3>
+                </div>
+            </div>
+        </div>
+
+        <div id="summary-section">
+            <h2>📊 Rezumat Test</h2>
+            <div id="summary-result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simulare a traducerilor
+        const translations = {
+            ro: {
+                habits: { title: "Obiceiuri" },
+                mood: { title: "Stare Emoțională" },
+                meditation: { title: "Meditație" },
+                analytics: { title: "Statistici & Analiză" },
+                rain: { title: "Ploaie", desc: "Sunet de ploaie calmantă" },
+                ocean: { title: "Ocean", desc: "Valuri oceanice" },
+                forest: { title: "Pădure", desc: "Sunete de pădure" },
+                campfire: { title: "Foc de tabără", desc: "Crăpat de foc" },
+                birds: { title: "Păsări", desc: "Ciripit de păsări" },
+                whiteNoise: { title: "Zgomot alb", desc: "Zgomot alb relaxant" },
+                bells: { title: "Clopoței", desc: "Clopoței tibetani" },
+                silence: { title: "Liniște", desc: "Fără sunet" }
+            },
+            en: {
+                habits: { title: "Habits" },
+                mood: { title: "Mood Tracker" },
+                meditation: { title: "Meditation" },
+                analytics: { title: "Analytics & Insights" },
+                rain: { title: "Rain", desc: "Calming rain sound" },
+                ocean: { title: "Ocean", desc: "Ocean waves" },
+                forest: { title: "Forest", desc: "Forest sounds" },
+                campfire: { title: "Campfire", desc: "Crackling fire" },
+                birds: { title: "Birds", desc: "Birdsong" },
+                whiteNoise: { title: "White Noise", desc: "Relaxing white noise" },
+                bells: { title: "Bells", desc: "Tibetan bells" },
+                silence: { title: "Silence", desc: "No sound" }
+            }
+        };
+
+        function t(key, lang = 'ro') {
+            const keys = key.split('.');
+            let value = translations[lang];
+            for (const k of keys) {
+                value = value?.[k];
+                if (!value) return key;
+            }
+            return value;
+        }
+
+        function testTranslations() {
+            const resultDiv = document.getElementById('translation-result');
+            const summaryDiv = document.getElementById('summary-result');
+            
+            let results = '';
+            let passed = 0;
+            let failed = 0;
+            let total = 0;
+
+            // Testare traduceri pentru ambele limbi
+            const languages = ['ro', 'en'];
+            const modules = ['habits', 'mood', 'meditation', 'analytics'];
+
+            languages.forEach(lang => {
+                results += `<h3>🌍 Limba: ${lang.toUpperCase()}</h3>`;
+                results += '<div class="translation-test">';
+                
+                modules.forEach(module => {
+                    total++;
+                    const translated = t(`${module}.title`, lang);
+                    const expected = translations[lang][module].title;
+                    
+                    if (translated === expected) {
+                        passed++;
+                        results += `
+                            <div class="translation-item">
+                                <span class="translation-key">${module}.title</span>
+                                <span class="translation-value">${translated}</span>
+                                <span class="status pass">✓</span>
+                            </div>
+                        `;
+                    } else {
+                        failed++;
+                        results += `
+                            <div class="translation-item">
+                                <span class="translation-key">${module}.title</span>
+                                <span class="translation-value">${translated}</span>
+                                <span class="status fail">✗</span>
+                            </div>
+                        `;
+                    }
+                });
+                
+                results += '</div>';
+            });
+
+            // Afișare rezultate
+            resultDiv.innerHTML = results;
+            resultDiv.className = 'result success';
+
+            // Afișare sumar
+            const successRate = Math.round((passed / total) * 100);
+            summaryDiv.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center;">
+                    <div style="background: #dcfce7; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #166534;">${passed}</div>
+                        <div style="color: #166534;">Trecute</div>
+                    </div>
+                    <div style="background: #fee2e2; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #dc2626;">${failed}</div>
+                        <div style="color: #dc2626;">Eșuate</div>
+                    </div>
+                    <div style="background: #fef3c7; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #92400e;">${total}</div>
+                        <div style="color: #92400e;">Total</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <strong>Rata succes: ${successRate}%</strong>
+                    <div style="margin-top: 10px; font-size: 1.1rem;">
+                        ${successRate === 100 ? '🎉 Toate traducerile funcționează perfect!' : 
+                         successRate >= 75 ? '✅ Traducerile funcționale!' : 
+                         '⚠️ Unele traduceri necesită corecții'}
+                    </div>
+                </div>
+            `;
+
+            // Adăuga stiluri pentru preview
+            updateTabButtons('ro');
+        }
+
+        function clearResults() {
+            document.getElementById('translation-result').innerHTML = '';
+            document.getElementById('summary-result').innerHTML = '<p>Apasă pe "Testează Traduceri" pentru a verifica modulele.</p>';
+        }
+
+        function updateTabButtons(lang) {
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons[0].innerHTML = `🎯 ${t('habits.title', lang)}`;
+            buttons[1].innerHTML = `😌 ${t('mood.title', lang)}`;
+            buttons[2].innerHTML = `🧘‍♀️ ${t('meditation.title', lang)}`;
+            buttons[3].innerHTML = `📊 ${t('analytics.title', lang)}`;
+        }
+
+        function switchLanguage() {
+            const currentLang = document.querySelector('.tab-btn').textContent.includes('Obiceiuri') ? 'en' : 'ro';
+            updateTabButtons(currentLang);
+            
+            // Actualizare buton de switch
+            const switchBtn = document.createElement('button');
+            switchBtn.textContent = currentLang === 'ro' ? '🇬🇧 Switch to EN' : '🇬🇧 Switch to RO';
+            switchBtn.className = 'test-button';
+            switchBtn.style.position = 'fixed';
+            switchBtn.style.top = '20px';
+            switchBtn.style.right = '20px';
+            switchBtn.style.zIndex = '1000';
+            switchBtn.onclick = () => {
+                document.body.removeChild(switchBtn);
+                updateTabButtons(currentLang === 'ro' ? 'en' : 'ro');
+            };
+            document.body.appendChild(switchBtn);
+        }
+
+        // Mood options from moodService
+        const moodOptions = [
+            { id: 'amazing', emoji: '🤩', label: 'Excelent', color: '#10b981', description: 'Mă simt fantastic!' },
+            { id: 'good', emoji: '😊', label: 'Bine', color: '#3b82f6', description: 'O zi bună' },
+            { id: 'ok', emoji: '😐', label: 'OK', color: '#f59e0b', description: 'Normal, nici bine nici rău' },
+            { id: 'bad', emoji: '😟', label: 'Rău', color: '#ef4444', description: 'Nu e o zi bună' },
+            { id: 'angry', emoji: '😠', label: 'Furios', color: '#dc2626', description: 'Sunt supărat/ă' },
+            { id: 'sad', emoji: '😢', label: 'Trist', color: '#6b7280', description: 'Mă simt trist/ă' },
+            { id: 'anxious', emoji: '😰', label: 'Anxios', color: '#8b5cf6', description: 'Sunt îngrijorat/ă' },
+            { id: 'tired', emoji: '😴', label: 'Obosit', color: '#64748b', description: 'Sunt obosit/ă' }
+        ];
+
+        // Theme toggle function
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeToggle = document.querySelector('.theme-toggle');
+            const currentTheme = html.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                html.removeAttribute('data-theme');
+                themeToggle.textContent = '🌙 Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️ Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeToggle = document.querySelector('.theme-toggle');
+            
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️ Light Mode';
+            }
+        }
+
+        // Display mood options
+        function displayMoodOptions() {
+            const container = document.getElementById('mood-options-preview');
+            const existingCards = container.querySelectorAll('.mood-option-card');
+            
+            // Remove existing cards except the title
+            existingCards.forEach(card => card.remove());
+            
+            moodOptions.forEach(mood => {
+                const card = document.createElement('div');
+                card.className = 'mood-option-card';
+                card.setAttribute('data-mood', mood.id);
+                card.innerHTML = `
+                    <div class="mood-emoji">${mood.emoji}</div>
+                    <div class="mood-label">${mood.label}</div>
+                    <div class="mood-description">${mood.description}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Testare la încărcare
+        window.addEventListener('load', () => {
+            // Load saved theme
+            loadTheme();
+            
+            // Display mood options
+            displayMoodOptions();
+            
+            // Adăuga buton de switch limbă
+            const switchBtn = document.createElement('button');
+            switchBtn.textContent = '🇬🇧 Switch Language';
+            switchBtn.className = 'test-button';
+            switchBtn.style.position = 'fixed';
+            switchBtn.style.top = '20px';
+            switchBtn.style.right = '20px';
+            switchBtn.style.zIndex = '1000';
+            switchBtn.onclick = switchLanguage;
+            document.body.appendChild(switchBtn);
+        });
+    </script>
+</body>
+</html>

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import TodoList from '../components/TodoList';
 import Layout from '../components/Layout';
+import { useTranslation } from '../contexts/LanguageContext';
 
 export default function TodoPage() {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -11,7 +13,7 @@ export default function TodoPage() {
 
   if (!mounted) {
     return (
-      <Layout title="To-Do List - AI News" description="Manage your tasks, increase productivity, and achieve your goals">
+      <Layout title={t('todo.title')} description={t('todo.description')}>
         <div className="loading-container">
           <div className="spinner"></div>
         </div>
@@ -41,9 +43,9 @@ export default function TodoPage() {
 
   return (
     <Layout 
-      title="To-Do List - AI News" 
-      description="Manage your tasks, increase productivity, and achieve your goals"
-      keywords="todo, tasks, productivity, goals, planner, organizer"
+      title={t('todo.title')} 
+      description={t('todo.description')}
+      keywords={t('todo.keywords')}
     >
       <TodoList />
     </Layout>
