@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Complet Seif - Diagnostic Avansat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .test-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .test-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .test-card h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .test-card .icon {
+            font-size: 1.5rem;
+        }
+
+        .test-controls {
+            margin-bottom: 15px;
+        }
+
+        .test-controls input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .test-controls input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .result-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .result-box.success {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .result-box.error {
+            border-color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .result-box.warning {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .result-box.info {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.success {
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .status-indicator.error {
+            background: #dc2626;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+        }
+
+        .status-indicator.warning {
+            background: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        .status-indicator.info {
+            background: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .summary-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .summary-item .value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .summary-item .label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .log-entry.success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10b981;
+        }
+
+        .log-entry.error {
+            background: rgba(220, 38, 38, 0.1);
+            border-left: 3px solid #dc2626;
+        }
+
+        .log-entry.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid #f59e0b;
+        }
+
+        .log-entry.info {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+        }
+
+        @media (max-width: 768px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Test Complet Seif Securizat</h1>
+            <p>Diagnostic avansat pentru identificarea problemelor cu seiful</p>
+        </div>
+
+        <div class="summary-section">
+            <h3>📊 Rezumat Teste</h3>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="value" id="total-tests">0</div>
+                    <div class="label">Teste Totale</div>
+                </div>
+                <div class="summary-item">
+                    <div class="value" id="passed-tests">0</div>
+                    <div class="label">Teste Reușite</div>
+                </div>
+                <div class="summary-item">
+                    <div class="value" id="failed-tests">0</div>
+                    <div class="label">Teste Eșuate</div>
+                </div>
+                <div class="summary-item">
+                    <div class="value" id="success-rate">0%</div>
+                    <div class="label">Rata Succes</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-grid">
+            <!-- Test 1: Verificare Mediu -->
+            <div class="test-card">
+                <h3><span class="icon">🌍</span>Verificare Mediu</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="env-progress"></div>
+                </div>
+                <div class="test-controls">
+                    <button class="btn" onclick="testEnvironment()">Testează Mediu</button>
+                </div>
+                <div class="result-box" id="env-result">Apasă pentru a testa mediul...</div>
+            </div>
+
+            <!-- Test 2: Verificare Crypto -->
+            <div class="test-card">
+                <h3><span class="icon">🔒</span>Verificare Criptare</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="crypto-progress"></div>
+                </div>
+                <div class="test-controls">
+                    <button class="btn" onclick="testCryptography()">Testează Criptare</button>
+                </div>
+                <div class="result-box" id="crypto-result">Apasă pentru a testa criptarea...</div>
+            </div>
+
+            <!-- Test 3: Test Inițializare -->
+            <div class="test-card">
+                <h3><span class="icon">🚀</span>Test Inițializare Seif</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="init-progress"></div>
+                </div>
+                <div class="test-controls">
+                    <input type="text" id="init-pin" placeholder="PIN pentru test (ex: 1234)" value="1234">
+                    <button class="btn btn-success" onclick="testVaultInitialization()">Testează Inițializare</button>
+                </div>
+                <div class="result-box" id="init-result">Introdu un PIN și apasă pentru a testa...</div>
+            </div>
+
+            <!-- Test 4: Test Deblocare -->
+            <div class="test-card">
+                <h3><span class="icon">🔓</span>Test Deblocare Seif</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="unlock-progress"></div>
+                </div>
+                <div class="test-controls">
+                    <input type="text" id="unlock-pin" placeholder="PIN pentru deblocare" value="1234">
+                    <button class="btn" onclick="testVaultUnlocking()">Testează Deblocare</button>
+                </div>
+                <div class="result-box" id="unlock-result">Introdu PIN-ul și apasă pentru a testa...</div>
+            </div>
+
+            <!-- Test 5: Test Sesiuni -->
+            <div class="test-card">
+                <h3><span class="icon">👤</span>Test Sesiuni</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="session-progress"></div>
+                </div>
+                <div class="test-controls">
+                    <button class="btn" onclick="testSessions()">Testează Sesiuni</button>
+                </div>
+                <div class="result-box" id="session-result">Apasă pentru a testa sesiunile...</div>
+            </div>
+
+            <!-- Test 6: Test Note Securizate -->
+            <div class="test-card">
+                <h3><span class="icon">📝</span>Test Note Securizate</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="notes-progress"></div>
+                </div>
+                <div class="test-controls">
+                    <button class="btn" onclick="testSecureNotes()">Testează Note</button>
+                </div>
+                <div class="result-box" id="notes-result">Apasă pentru a testarea notițelor...</div>
+            </div>
+
+            <!-- Test 7: Test Blocare -->
+            <div class="test-card">
+                <h3><span class="icon">🚫</span>Test Blocare Seif</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="lockout-progress"></div>
+                </div>
+                <div class="test-controls">
+                    <button class="btn btn-warning" onclick="testLockoutMechanism()">Testează Blocare</button>
+                </div>
+                <div class="result-box" id="lockout-result">Apasă pentru a testa mecanismul de blocare...</div>
+            </div>
+
+            <!-- Test 8: Test Flux Complet -->
+            <div class="test-card">
+                <h3><span class="icon">🔄</span>Test Flux Complet</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="flow-progress"></div>
+                </div>
+                <div class="test-controls">
+                    <button class="btn btn-success" onclick="testCompleteFlow()">Testează Flux Complet</button>
+                </div>
+                <div class="result-box" id="flow-result">Apasă pentru a testa fluxul complet...</div>
+            </div>
+
+            <!-- Test 9: Test Resetare -->
+            <div class="test-card">
+                <h3><span class="icon">🗑️</span>Test Resetare Seif</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="reset-progress"></div>
+                </div>
+                <div class="test-controls">
+                    <button class="btn btn-danger" onclick="testVaultReset()">Resetează Seif</button>
+                </div>
+                <div class="result-box" id="reset-result">Apasă pentru a reseta seiful...</div>
+            </div>
+
+            <!-- Test 10: Debug Avansat -->
+            <div class="test-card">
+                <h3><span class="icon">🔍</span>Debug Avansat</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="debug-progress"></div>
+                </div>
+                <div class="test-controls">
+                    <button class="btn" onclick="advancedDebug()">Debug Avansat</button>
+                </div>
+                <div class="result-box" id="debug-result">Apasă pentru debug avansat...</div>
+            </div>
+        </div>
+
+        <!-- Secțiune Log-uri -->
+        <div class="summary-section">
+            <h3>📋 Log-uri Detaliate</h3>
+            <div class="result-box" id="detailed-logs" style="max-height: 400px;">Așteptare teste...</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        // Serviciu Vault pentru testare
+        class TestVaultService {
+            constructor() {
+                this.storageKey = 'secureVault';
+                this.sessionKey = 'vaultSession';
+                this.maxFailedAttempts = 5;
+                this.lockoutDuration = 5 * 60 * 1000;
+                this.testResults = {
+                    total: 0,
+                    passed: 0,
+                    failed: 0
+                };
+            }
+
+            log(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = `[${timestamp}] ${message}`;
+                const logsElement = document.getElementById('detailed-logs');
+                
+                if (logsElement) {
+                    const logDiv = document.createElement('div');
+                    logDiv.className = `log-entry ${type}`;
+                    logDiv.textContent = logEntry;
+                    logsElement.appendChild(logDiv);
+                    logsElement.scrollTop = logsElement.scrollHeight;
+                }
+                
+                console.log(`🔐 [VaultTest] ${logEntry}`);
+            }
+
+            updateTestResults(passed) {
+                this.testResults.total++;
+                if (passed) {
+                    this.testResults.passed++;
+                } else {
+                    this.testResults.failed++;
+                }
+                
+                document.getElementById('total-tests').textContent = this.testResults.total;
+                document.getElementById('passed-tests').textContent = this.testResults.passed;
+                document.getElementById('failed-tests').textContent = this.testResults.failed;
+                
+                const successRate = this.testResults.total > 0 
+                    ? Math.round((this.testResults.passed / this.testResults.total) * 100)
+                    : 0;
+                document.getElementById('success-rate').textContent = `${successRate}%`;
+            }
+
+            showResult(elementId, message, type = 'info', progressId = null) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.className = `result-box ${type}`;
+                    element.textContent = message;
+                }
+                
+                if (progressId) {
+                    const progressElement = document.getElementById(progressId);
+                    if (progressElement) {
+                        progressElement.style.width = '100%';
+                        setTimeout(() => {
+                            progressElement.style.width = '0%';
+                        }, 1000);
+                    }
+                }
+                
+                this.log(message, type);
+                this.updateTestResults(type === 'success');
+            }
+
+            // Metode serviciu vault (copiate din implementarea reală)
+            initializeVault(masterPin) {
+                try {
+                    if (this.isVaultInitialized()) {
+                        throw new Error('Seiful este deja inițializat');
+                    }
+
+                    const salt = CryptoJS.lib.WordArray.random(256/8);
+                    const pinHash = CryptoJS.PBKDF2(masterPin, salt, {
+                        keySize: 256/32,
+                        iterations: 10000
+                    });
+
+                    const vaultData = {
+                        initialized: true,
+                        salt: salt.toString(),
+                        pinHash: pinHash.toString(),
+                        failedAttempts: 0,
+                        lockoutUntil: null,
+                        notes: [],
+                        createdAt: new Date().toISOString()
+                    };
+
+                    localStorage.setItem(this.storageKey, JSON.stringify(vaultData));
+                    return { success: true, message: 'Seif inițializat cu succes', data: vaultData };
+                } catch (error) {
+                    return { success: false, message: error.message };
+                }
+            }
+
+            isVaultInitialized() {
+                try {
+                    const vaultData = localStorage.getItem(this.storageKey);
+                    if (!vaultData) return false;
+                    const parsed = JSON.parse(vaultData);
+                    return parsed.initialized === true;
+                } catch (error) {
+                    return false;
+                }
+            }
+
+            isVaultLocked() {
+                try {
+                    const vaultData = JSON.parse(localStorage.getItem(this.storageKey));
+                    if (!vaultData.lockoutUntil) return false;
+                    return new Date() < new Date(vaultData.lockoutUntil);
+                } catch (error) {
+                    return false;
+                }
+            }
+
+            getLockoutTimeRemaining() {
+                try {
+                    const vaultData = JSON.parse(localStorage.getItem(this.storageKey));
+                    if (!vaultData.lockoutUntil) return 0;
+                    const lockoutTime = new Date(vaultData.lockoutUntil);
+                    const now = new Date();
+                    const remaining = lockoutTime - now;
+                    return Math.max(0, Math.ceil(remaining / 1000));
+                } catch (error) {
+                    return 0;
+                }
+            }
+
+            unlockVault(masterPin) {
+                try {
+                    this.log(`Încercare deblocare cu PIN: ${masterPin}`);
+                    
+                    if (!this.isVaultInitialized()) {
+                        return { success: false, message: 'Seiful nu este inițializat' };
+                    }
+
+                    if (this.isVaultLocked()) {
+                        const remaining = this.getLockoutTimeRemaining();
+                        return { 
+                            success: false, 
+                            message: `Seiful este blocat. Încercați din nou în ${remaining} secunde`,
+                            lockoutTimeRemaining: remaining
+                        };
+                    }
+
+                    const vaultData = JSON.parse(localStorage.getItem(this.storageKey));
+                    
+                    // IMPORTANT: Convertim salt-ul stocat înapoi în WordArray pentru PBKDF2
+                    const salt = CryptoJS.enc.Hex.parse(vaultData.salt);
+                    
+                    const pinHash = CryptoJS.PBKDF2(masterPin, salt, {
+                        keySize: 256/32,
+                        iterations: 10000
+                    });
+
+                    if (pinHash.toString() !== vaultData.pinHash) {
+                        vaultData.failedAttempts = (vaultData.failedAttempts || 0) + 1;
+                        
+                        if (vaultData.failedAttempts >= this.maxFailedAttempts) {
+                            vaultData.lockoutUntil = new Date(Date.now() + this.lockoutDuration).toISOString();
+                            localStorage.setItem(this.storageKey, JSON.stringify(vaultData));
+                            
+                            return { 
+                                success: false, 
+                                message: `Prea multe încercări eșuate. Seiful a fost blocat pentru ${this.lockoutDuration/60000} minute`,
+                                locked: true
+                            };
+                        }
+                        
+                        localStorage.setItem(this.storageKey, JSON.stringify(vaultData));
+                        const remaining = this.maxFailedAttempts - vaultData.failedAttempts;
+                        
+                        return { 
+                            success: false, 
+                            message: `PIN incorect. Mai aveți ${remaining} încercări`,
+                            failedAttempts: vaultData.failedAttempts
+                        };
+                    }
+
+                    vaultData.failedAttempts = 0;
+                    vaultData.lockoutUntil = null;
+                    localStorage.setItem(this.storageKey, JSON.stringify(vaultData));
+
+                    const sessionToken = this.generateSessionToken(masterPin);
+                    sessionStorage.setItem(this.sessionKey, sessionToken);
+
+                    return { 
+                        success: true, 
+                        message: 'Seif deblocat cu succes',
+                        sessionToken
+                    };
+                } catch (error) {
+                    return { success: false, message: 'Eroare la deblocarea seifului: ' + error.message };
+                }
+            }
+
+            generateSessionToken(masterPin) {
+                const tokenData = {
+                    timestamp: Date.now(),
+                    pin: masterPin,
+                    random: Math.random().toString(36)
+                };
+                return CryptoJS.AES.encrypt(JSON.stringify(tokenData), 'vault-session-key').toString();
+            }
+
+            isSessionActive() {
+                try {
+                    const sessionToken = sessionStorage.getItem(this.sessionKey);
+                    if (!sessionToken) return false;
+
+                    const decrypted = CryptoJS.AES.decrypt(sessionToken, 'vault-session-key');
+                    const tokenData = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+                    
+                    const sessionAge = Date.now() - tokenData.timestamp;
+                    return sessionAge < 30 * 60 * 1000;
+                } catch (error) {
+                    return false;
+                }
+            }
+
+            getCurrentPin() {
+                try {
+                    const sessionToken = sessionStorage.getItem(this.sessionKey);
+                    if (!sessionToken) return null;
+
+                    const decrypted = CryptoJS.AES.decrypt(sessionToken, 'vault-session-key');
+                    const tokenData = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+                    
+                    const sessionAge = Date.now() - tokenData.timestamp;
+                    if (sessionAge >= 30 * 60 * 1000) {
+                        this.lockVault();
+                        return null;
+                    }
+                    
+                    return tokenData.pin;
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            lockVault() {
+                sessionStorage.removeItem(this.sessionKey);
+                return { success: true, message: 'Seif blocat' };
+            }
+
+            encryptData(data, masterPin) {
+                try {
+                    const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), masterPin).toString();
+                    return encrypted;
+                } catch (error) {
+                    throw new Error('Eroare la criptarea datelor');
+                }
+            }
+
+            decryptData(encryptedData, masterPin) {
+                try {
+                    const decrypted = CryptoJS.AES.decrypt(encryptedData, masterPin);
+                    const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+                    
+                    if (!decryptedText) {
+                        throw new Error('Date criptate invalide');
+                    }
+                    
+                    return JSON.parse(decryptedText);
+                } catch (error) {
+                    throw new Error('Eroare la decriptarea datelor');
+                }
+            }
+
+            addSecureNote(title, content, category = 'General') {
+                try {
+                    const masterPin = this.getCurrentPin();
+                    if (!masterPin) {
+                        return { success: false, message: 'Seiful nu este deblocat' };
+                    }
+
+                    const vaultData = JSON.parse(localStorage.getItem(this.storageKey));
+                    
+                    const note = {
+                        id: Date.now().toString(),
+                        title,
+                        content,
+                        category,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+
+                    const encryptedNote = this.encryptData(note, masterPin);
+                    vaultData.notes.push(encryptedNote);
+                    
+                    localStorage.setItem(this.storageKey, JSON.stringify(vaultData));
+                    
+                    return { success: true, message: 'Notiță adăugată cu succes', noteId: note.id };
+                } catch (error) {
+                    return { success: false, message: error.message };
+                }
+            }
+
+            getAllSecureNotes() {
+                try {
+                    const masterPin = this.getCurrentPin();
+                    if (!masterPin) {
+                        return { success: false, message: 'Seiful nu este deblocat' };
+                    }
+
+                    const vaultData = JSON.parse(localStorage.getItem(this.storageKey));
+                    const decryptedNotes = [];
+
+                    for (const encryptedNote of vaultData.notes) {
+                        try {
+                            const note = this.decryptData(encryptedNote, masterPin);
+                            decryptedNotes.push(note);
+                        } catch (error) {
+                            console.warn('Notiță coruptă sau invalidă:', error);
+                        }
+                    }
+
+                    decryptedNotes.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+                    return { success: true, notes: decryptedNotes };
+                } catch (error) {
+                    return { success: false, message: 'Eroare la încărcarea notițelor' };
+                }
+            }
+
+            resetVault() {
+                try {
+                    this.lockVault();
+                    localStorage.removeItem(this.storageKey);
+                    return { success: true, message: 'Seif a fost resetat complet' };
+                } catch (error) {
+                    return { success: false, message: 'Eroare la resetarea seifului: ' + error.message };
+                }
+            }
+        }
+
+        const vaultTest = new TestVaultService();
+
+        // Funcții de test
+        async function testEnvironment() {
+            vaultTest.log('Începere test mediu...');
+            
+            let results = [];
+            
+            // Test LocalStorage
+            try {
+                localStorage.setItem('test-key', 'test-value');
+                const value = localStorage.getItem('test-key');
+                localStorage.removeItem('test-key');
+                
+                if (value === 'test-value') {
+                    results.push('✅ LocalStorage: Funcțional');
+                } else {
+                    results.push('❌ LocalStorage: Nu funcționează corect');
+                }
+            } catch (error) {
+                results.push(`❌ LocalStorage: Eroare - ${error.message}`);
+            }
+            
+            // Test SessionStorage
+            try {
+                sessionStorage.setItem('test-key', 'test-value');
+                const value = sessionStorage.getItem('test-key');
+                sessionStorage.removeItem('test-key');
+                
+                if (value === 'test-value') {
+                    results.push('✅ SessionStorage: Funcțional');
+                } else {
+                    results.push('❌ SessionStorage: Nu funcționează corect');
+                }
+            } catch (error) {
+                results.push(`❌ SessionStorage: Eroare - ${error.message}`);
+            }
+            
+            // Test CryptoJS
+            try {
+                if (typeof CryptoJS !== 'undefined') {
+                    const testText = "Hello, Secure Vault!";
+                    const testKey = "test-key-123";
+                    const encrypted = CryptoJS.AES.encrypt(testText, testKey).toString();
+                    const decrypted = CryptoJS.AES.decrypt(encrypted, testKey).toString(CryptoJS.enc.Utf8);
+                    
+                    if (decrypted === testText) {
+                        results.push('✅ CryptoJS: Funcțional');
+                    } else {
+                        results.push('❌ CryptoJS: Criptare/decriptare eșuată');
+                    }
+                } else {
+                    results.push('❌ CryptoJS: Nu este încărcat');
+                }
+            } catch (error) {
+                results.push(`❌ CryptoJS: Eroare - ${error.message}`);
+            }
+            
+            // Test Browser Info
+            results.push(`🌐 Browser: ${navigator.userAgent}`);
+            results.push(`📱 Platform: ${navigator.platform}`);
+            results.push(`🔒 HTTPS: ${location.protocol === 'https:' ? 'Da' : 'Nu'}`);
+            
+            const allPassed = results.filter(r => r.startsWith('✅')).length === 3;
+            vaultTest.showResult('env-result', results.join('\n'), allPassed ? 'success' : 'error', 'env-progress');
+        }
+
+        async function testCryptography() {
+            vaultTest.log('Începere test criptare...');
+            
+            let results = [];
+            
+            try {
+                // Test PBKDF2
+                const testPin = '1234';
+                const salt = CryptoJS.lib.WordArray.random(256/8);
+                const pinHash = CryptoJS.PBKDF2(testPin, salt, {
+                    keySize: 256/32,
+                    iterations: 10000
+                });
+                
+                results.push(`✅ PBKDF2: Hash generat (${pinHash.toString().substring(0, 20)}...)`);
+                
+                // Test AES Encryption
+                const testData = { message: "Test secret", timestamp: Date.now() };
+                const encrypted = CryptoJS.AES.encrypt(JSON.stringify(testData), testPin).toString();
+                results.push(`✅ AES Encryption: Date criptate (${encrypted.length} caractere)`);
+                
+                // Test AES Decryption
+                const decrypted = CryptoJS.AES.decrypt(encrypted, testPin).toString(CryptoJS.enc.Utf8);
+                const decryptedData = JSON.parse(decrypted);
+                
+                if (decryptedData.message === testData.message) {
+                    results.push('✅ AES Decryption: Date decriptate corect');
+                } else {
+                    results.push('❌ AES Decryption: Datele nu corespund');
+                }
+                
+                // Test Session Token Generation
+                const tokenData = {
+                    timestamp: Date.now(),
+                    pin: testPin,
+                    random: Math.random().toString(36)
+                };
+                const sessionToken = CryptoJS.AES.encrypt(JSON.stringify(tokenData), 'vault-session-key').toString();
+                results.push(`✅ Session Token: Generat (${sessionToken.length} caractere)`);
+                
+                // Test Session Token Decryption
+                const decryptedToken = CryptoJS.AES.decrypt(sessionToken, 'vault-session-key').toString(CryptoJS.enc.Utf8);
+                const parsedToken = JSON.parse(decryptedToken);
+                
+                if (parsedToken.pin === testPin) {
+                    results.push('✅ Session Token: Decriptat corect');
+                } else {
+                    results.push('❌ Session Token: Decriptare eșuată');
+                }
+                
+            } catch (error) {
+                results.push(`❌ Eroare criptare: ${error.message}`);
+            }
+            
+            const allPassed = results.filter(r => r.startsWith('✅')).length >= 4;
+            vaultTest.showResult('crypto-result', results.join('\n'), allPassed ? 'success' : 'error', 'crypto-progress');
+        }
+
+        async function testVaultInitialization() {
+            const pin = document.getElementById('init-pin').value;
+            if (!pin) {
+                vaultTest.showResult('init-result', '⚠️ Introduceți un PIN pentru test', 'warning', 'init-progress');
+                return;
+            }
+            
+            vaultTest.log(`Test inițializare seif cu PIN: ${pin}`);
+            
+            try {
+                // Resetăm seiful mai întâi
+                vaultTest.resetVault();
+                
+                // Verificăm dacă seiful este neinițializat
+                if (vaultTest.isVaultInitialized()) {
+                    vaultTest.showResult('init-result', '⚠️ Seiful este deja inițializat. Se resetează...', 'warning', 'init-progress');
+                    vaultTest.resetVault();
+                }
+                
+                // Încercăm inițializarea
+                const result = vaultTest.initializeVault(pin);
+                
+                if (result.success) {
+                    // Debug hashing - salvăm datele pentru verificare
+                    const salt = result.data.salt;
+                    const storedHash = result.data.pinHash;
+                    
+                    // Verificare imediată a hash-ului - folosim același salt ca la stocare
+                    const testHash = CryptoJS.PBKDF2(pin, salt, {
+                        keySize: 256/32,
+                        iterations: 10000
+                    });
+                    
+                    const hashMatch = testHash.toString() === storedHash;
+                    
+                    let details = [
+                        '✅ Seif inițializat cu succes',
+                        `📅 Data creării: ${result.data.createdAt}`,
+                        `🔑 Salt: ${salt.substring(0, 20)}...`,
+                        `🔐 PIN Hash stocat: ${storedHash.substring(0, 20)}...`,
+                        `🧪 PIN Hash test: ${testHash.toString().substring(0, 20)}...`,
+                        `✅ Hash-uri se potrivesc: ${hashMatch ? 'DA' : 'NU'}`,
+                        `📝 Număr notițe: ${result.data.notes.length}`,
+                        `🚫 Încercări eșuate: ${result.data.failedAttempts}`,
+                        '',
+                        '🔍 DEBUG HASHING:',
+                        `   PIN original: "${pin}"`,
+                        `   Salt (hex): ${salt}`,
+                        `   Hash stocat: ${storedHash}`,
+                        `   Hash calculat: ${testHash.toString()}`,
+                        `   Identice: ${hashMatch}`
+                    ];
+                    
+                    // Salvăm PIN-ul pentru testul de deblocare
+                    window.lastTestPin = pin;
+                    window.lastTestSalt = salt;
+                    window.lastTestHash = storedHash;
+                    
+                    vaultTest.showResult('init-result', details.join('\n'), hashMatch ? 'success' : 'error', 'init-progress');
+                } else {
+                    vaultTest.showResult('init-result', `❌ Inițializare eșuată: ${result.message}`, 'error', 'init-progress');
+                }
+            } catch (error) {
+                vaultTest.showResult('init-result', `❌ Eroare neașteptată: ${error.message}`, 'error', 'init-progress');
+            }
+        }
+
+        async function testVaultUnlocking() {
+            const pin = document.getElementById('unlock-pin').value;
+            if (!pin) {
+                vaultTest.showResult('unlock-result', '⚠️ Introduceți un PIN pentru test', 'warning', 'unlock-progress');
+                return;
+            }
+            
+            vaultTest.log(`Test deblocare seif cu PIN: ${pin}`);
+            
+            try {
+                // Verificăm dacă seiful este inițializat
+                if (!vaultTest.isVaultInitialized()) {
+                    vaultTest.showResult('unlock-result', '⚠️ Seiful nu este inițializat. Inițializați-l mai întâi.', 'warning', 'unlock-progress');
+                    return;
+                }
+                
+                // Verificăm dacă este blocat
+                if (vaultTest.isVaultLocked()) {
+                    const remaining = vaultTest.getLockoutTimeRemaining();
+                    vaultTest.showResult('unlock-result', `⚠️ Seiful este blocat. Timp rămas: ${remaining} secunde`, 'warning', 'unlock-progress');
+                    return;
+                }
+                
+                // Debug înainte de deblocare
+                const vaultData = JSON.parse(localStorage.getItem('secureVault'));
+                const storedHash = vaultData.pinHash;
+                const salt = vaultData.salt;
+                
+                // Calculăm hash-ul pentru comparație
+                const testHash = CryptoJS.PBKDF2(pin, salt, {
+                    keySize: 256/32,
+                    iterations: 10000
+                });
+                
+                const hashMatch = testHash.toString() === storedHash;
+                
+                vaultTest.log(`DEBUG: Hash calculat = ${testHash.toString()}`);
+                vaultTest.log(`DEBUG: Hash stocat = ${storedHash}`);
+                vaultTest.log(`DEBUG: Se potrivesc? = ${hashMatch}`);
+                
+                // Încercăm deblocarea
+                const result = vaultTest.unlockVault(pin);
+                
+                if (result.success) {
+                    let details = [
+                        '✅ Seif deblocat cu succes',
+                        `🎫 Token sesiune: ${result.sessionToken.substring(0, 30)}...`,
+                        `👤 Sesiune activă: ${vaultTest.isSessionActive() ? 'Da' : 'Nu'}`,
+                        `🔑 PIN curent: ${vaultTest.getCurrentPin() ? 'Disponibil' : 'Indisponibil'}`,
+                        '',
+                        '🔍 DEBUG HASHING (SUCCESS):',
+                        `   PIN introdus: "${pin}"`,
+                        `   Hash calculat: ${testHash.toString().substring(0, 20)}...`,
+                        `   Hash stocat: ${storedHash.substring(0, 20)}...`,
+                        `   Identice: DA ✅`
+                    ];
+                    
+                    vaultTest.showResult('unlock-result', details.join('\n'), 'success', 'unlock-progress');
+                } else {
+                    let details = [
+                        `❌ Deblocare eșuată: ${result.message}`,
+                        `🚫 Blocat: ${result.locked ? 'Da' : 'Nu'}`,
+                        `📊 Încercări eșuate: ${result.failedAttempts || 'N/A'}`,
+                        `⏰ Timp rămas: ${result.lockoutTimeRemaining || 'N/A'} secunde`,
+                        '',
+                        '🔍 DEBUG HASHING (ERROR):',
+                        `   PIN introdus: "${pin}"`,
+                        `   Salt: ${salt.substring(0, 20)}...`,
+                        `   Hash calculat: ${testHash.toString().substring(0, 20)}...`,
+                        `   Hash stocat: ${storedHash.substring(0, 20)}...`,
+                        `   Identice: ${hashMatch ? 'DA' : 'NU'} ❌`,
+                        '',
+                        `💡 Dacă hash-urile nu se potrivesc, problema este în:`,
+                        `   1. Conversia string/WordArray la PBKDF2`,
+                        `   2. Iterațiile de hashing`,
+                        `   3. Encoding-ul caracterelor`
+                    ];
+                    
+                    vaultTest.showResult('unlock-result', details.join('\n'), 'error', 'unlock-progress');
+                }
+            } catch (error) {
+                vaultTest.showResult('unlock-result', `❌ Eroare neașteptată: ${error.message}`, 'error', 'unlock-progress');
+            }
+        }
+
+        async function testSessions() {
+            vaultTest.log('Test sesiuni...');
+            
+            try {
+                let results = [];
+                
+                // Verificăm starea inițială
+                results.push(`📊 Sesiune activă (inițial): ${vaultTest.isSessionActive() ? 'Da' : 'Nu'}`);
+                results.push(`🔑 PIN curent (inițial): ${vaultTest.getCurrentPin() ? 'Disponibil' : 'Indisponibil'}`);
+                
+                // Dacă nu avem sesiune, încercăm să creăm una
+                if (!vaultTest.isSessionActive()) {
+                    if (vaultTest.isVaultInitialized()) {
+                        // Încercăm deblocarea cu un PIN default
+                        const unlockResult = vaultTest.unlockVault('1234');
+                        if (unlockResult.success) {
+                            results.push('✅ Sesiune creată cu succes');
+                        } else {
+                            results.push('⚠️ Nu s-a putut crea sesiune automat');
+                        }
+                    } else {
+                        results.push('⚠️ Seiful nu este inițializat');
+                    }
+                }
+                
+                // Verificăm din nou starea
+                results.push(`📊 Sesiune activă (final): ${vaultTest.isSessionActive() ? 'Da' : 'Nu'}`);
+                results.push(`🔑 PIN curent (final): ${vaultTest.getCurrentPin() ? 'Disponibil' : 'Indisponibil'}`);
+                
+                // Test blocare
+                if (vaultTest.isSessionActive()) {
+                    const lockResult = vaultTest.lockVault();
+                    results.push(`🔒 Blocare sesiune: ${lockResult.success ? 'Succes' : 'Eșuat'}`);
+                    results.push(`📊 Sesiune activă (după blocare): ${vaultTest.isSessionActive() ? 'Da' : 'Nu'}`);
+                }
+                
+                const allPassed = results.filter(r => r.includes('✅') || r.includes('Da')).length >= 2;
+                vaultTest.showResult('session-result', results.join('\n'), allPassed ? 'success' : 'warning', 'session-progress');
+                
+            } catch (error) {
+                vaultTest.showResult('session-result', `❌ Eroare test sesiuni: ${error.message}`, 'error', 'session-progress');
+            }
+        }
+
+        async function testSecureNotes() {
+            vaultTest.log('Test note securizate...');
+            
+            try {
+                let results = [];
+                
+                // Verificăm dacă seiful este deblocat
+                if (!vaultTest.isSessionActive()) {
+                    results.push('⚠️ Seiful nu este deblocat. Încercare deblocare...');
+                    const unlockResult = vaultTest.unlockVault('1234');
+                    if (!unlockResult.success) {
+                        vaultTest.showResult('notes-result', '❌ Nu se poate testa - seiful nu poate fi deblocat', 'error', 'notes-progress');
+                        return;
+                    }
+                }
+                
+                // Test adăugare notiță
+                const noteTitle = `Test Note ${Date.now()}`;
+                const noteContent = 'Aceasta este o notiță de test pentru seiful securizat.';
+                const addResult = vaultTest.addSecureNote(noteTitle, noteContent, 'Test');
+                
+                if (addResult.success) {
+                    results.push(`✅ Notiță adăugată: ${addResult.noteId}`);
+                    
+                    // Test citire notițe
+                    const notesResult = vaultTest.getAllSecureNotes();
+                    if (notesResult.success) {
+                        results.push(`✅ Notițe citite: ${notesResult.notes.length} în total`);
+                        
+                        // Verificăm dacă notița noastră este acolo
+                        const ourNote = notesResult.notes.find(n => n.title === noteTitle);
+                        if (ourNote) {
+                            results.push(`✅ Notița noastră găsită: ${ourNote.title}`);
+                            results.push(`📝 Conținut: ${ourNote.content.substring(0, 50)}...`);
+                            results.push(`📂 Categorie: ${ourNote.category}`);
+                        } else {
+                            results.push('❌ Notița noastră nu a fost găsită');
+                        }
+                    } else {
+                        results.push(`❌ Eroare citire notițe: ${notesResult.message}`);
+                    }
+                } else {
+                    results.push(`❌ Eroare adăugare notiță: ${addResult.message}`);
+                }
+                
+                const allPassed = results.filter(r => r.startsWith('✅')).length >= 2;
+                vaultTest.showResult('notes-result', results.join('\n'), allPassed ? 'success' : 'error', 'notes-progress');
+                
+            } catch (error) {
+                vaultTest.showResult('notes-result', `❌ Eroare test notițe: ${error.message}`, 'error', 'notes-progress');
+            }
+        }
+
+        async function testLockoutMechanism() {
+            vaultTest.log('Test mecanism blocare...');
+            
+            try {
+                let results = [];
+                
+                // Resetăm seiful
+                vaultTest.resetVault();
+                
+                // Inițializăm cu un PIN cunoscut
+                const initResult = vaultTest.initializeVault('1234');
+                if (!initResult.success) {
+                    vaultTest.showResult('lockout-result', '❌ Nu s-a putut inițializa seiful pentru test', 'error', 'lockout-progress');
+                    return;
+                }
+                
+                results.push('✅ Seif inițializat pentru test');
+                
+                // Încercăm deblocări greșite pentru a activa blocarea
+                const wrongPin = '9999';
+                let attempts = 0;
+                
+                for (let i = 1; i <= vaultTest.maxFailedAttempts; i++) {
+                    attempts++;
+                    const unlockResult = vaultTest.unlockVault(wrongPin);
+                    results.push(`🚫 Încercare ${i}: ${unlockResult.message}`);
+                    
+                    if (unlockResult.locked) {
+                        results.push('✅ Seif blocat cu succes după încercări multiple');
+                        break;
+                    }
+                }
+                
+                // Verificăm timpul rămas
+                if (vaultTest.isVaultLocked()) {
+                    const remaining = vaultTest.getLockoutTimeRemaining();
+                    results.push(`⏰ Timp rămas blocare: ${remaining} secunde`);
+                    
+                    // Încercăm deblocare corectă (ar trebui să eșueze)
+                    const correctUnlock = vaultTest.unlockVault('1234');
+                    if (!correctUnlock.success && correctUnlock.message.includes('blocat')) {
+                        results.push('✅ Deblocare corectă blocată corespunzător');
+                    } else {
+                        results.push('❌ Deblocare corectă nu a fost blocată');
+                    }
+                } else {
+                    results.push('❌ Seiful nu s-a blocat după încercări multiple');
+                }
+                
+                const allPassed = results.filter(r => r.startsWith('✅')).length >= 2;
+                vaultTest.showResult('lockout-result', results.join('\n'), allPassed ? 'success' : 'error', 'lockout-progress');
+                
+            } catch (error) {
+                vaultTest.showResult('lockout-result', `❌ Eroare test blocare: ${error.message}`, 'error', 'lockout-progress');
+            }
+        }
+
+        async function testCompleteFlow() {
+            vaultTest.log('Test flux complet...');
+            
+            try {
+                let results = [];
+                let step = 1;
+                
+                // Pas 1: Reset
+                results.push(`${step++}. 🔄 Resetare seif...`);
+                const resetResult = vaultTest.resetVault();
+                results.push(`   ${resetResult.success ? '✅' : '❌'} ${resetResult.message}`);
+                
+                // Pas 2: Inițializare
+                results.push(`${step++}. 🚀 Inițializare seif...`);
+                const initResult = vaultTest.initializeVault('1234');
+                results.push(`   ${initResult.success ? '✅' : '❌'} ${initResult.message}`);
+                
+                if (!initResult.success) {
+                    vaultTest.showResult('flow-result', results.join('\n'), 'error', 'flow-progress');
+                    return;
+                }
+                
+                // Pas 3: Verificare inițializare
+                results.push(`${step++}. 🔍 Verificare inițializare...`);
+                const isInit = vaultTest.isVaultInitialized();
+                results.push(`   ${isInit ? '✅' : '❌'} Seif inițializat: ${isInit ? 'Da' : 'Nu'}`);
+                
+                // Pas 4: Deblocare
+                results.push(`${step++}. 🔓 Deblocare seif...`);
+                const unlockResult = vaultTest.unlockVault('1234');
+                results.push(`   ${unlockResult.success ? '✅' : '❌'} ${unlockResult.message}`);
+                
+                if (!unlockResult.success) {
+                    vaultTest.showResult('flow-result', results.join('\n'), 'error', 'flow-progress');
+                    return;
+                }
+                
+                // Pas 5: Verificare sesiune
+                results.push(`${step++}. 👤 Verificare sesiune...`);
+                const sessionActive = vaultTest.isSessionActive();
+                const currentPin = vaultTest.getCurrentPin();
+                results.push(`   ${sessionActive ? '✅' : '❌'} Sesiune activă: ${sessionActive ? 'Da' : 'Nu'}`);
+                results.push(`   ${currentPin ? '✅' : '❌'} PIN disponibil: ${currentPin ? 'Da' : 'Nu'}`);
+                
+                // Pas 6: Adăugare notiță
+                results.push(`${step++}. 📝 Adăugare notiță...`);
+                const noteResult = vaultTest.addSecureNote('Test Flux', 'Conținut test flux complet', 'Test');
+                results.push(`   ${noteResult.success ? '✅' : '❌'} ${noteResult.message}`);
+                
+                // Pas 7: Citire notițe
+                results.push(`${step++}. 📚 Citire notițe...`);
+                const notesResult = vaultTest.getAllSecureNotes();
+                if (notesResult.success) {
+                    results.push(`   ✅ ${notesResult.notes.length} notițe găsite`);
+                } else {
+                    results.push(`   ❌ ${notesResult.message}`);
+                }
+                
+                // Pas 8: Blocare
+                results.push(`${step++}. 🔒 Blocare seif...`);
+                const lockResult = vaultTest.lockVault();
+                results.push(`   ${lockResult.success ? '✅' : '❌'} ${lockResult.message}`);
+                
+                // Pas 9: Verificare finală
+                results.push(`${step++}. 🔍 Verificare finală...`);
+                const finalSession = vaultTest.isSessionActive();
+                results.push(`   ${!finalSession ? '✅' : '❌'} Sesiune închisă: ${!finalSession ? 'Da' : 'Nu'}`);
+                
+                // Rezumat
+                const passedSteps = results.filter(r => r.includes('✅')).length;
+                const totalSteps = (step - 1);
+                const successRate = Math.round((passedSteps / totalSteps) * 100);
+                
+                results.push(`\n📊 Rezumat: ${passedSteps}/${totalSteps} pași reușiți (${successRate}%)`);
+                
+                if (successRate >= 80) {
+                    results.push('🎉 Flux complet funcțional!');
+                } else {
+                    results.push('⚠️ Fluxul are probleme ce necesită atenție');
+                }
+                
+                vaultTest.showResult('flow-result', results.join('\n'), successRate >= 80 ? 'success' : 'error', 'flow-progress');
+                
+            } catch (error) {
+                vaultTest.showResult('flow-result', `❌ Eroare flux complet: ${error.message}`, 'error', 'flow-progress');
+            }
+        }
+
+        async function testVaultReset() {
+            vaultTest.log('Test resetare seif...');
+            
+            if (!confirm('⚠️ Această acțiune va șterge complet seiful! Sunteți sigur?')) {
+                vaultTest.showResult('reset-result', '⚠️ Resetare anulată de utilizator', 'warning', 'reset-progress');
+                return;
+            }
+            
+            try {
+                let results = [];
+                
+                // Verificăm starea înainte de reset
+                const wasInitialized = vaultTest.isVaultInitialized();
+                const hadSession = vaultTest.isSessionActive();
+                
+                results.push(`📊 Stare inițială:`);
+                results.push(`   Inițializat: ${wasInitialized ? 'Da' : 'Nu'}`);
+                results.push(`   Sesiune activă: ${hadSession ? 'Da' : 'Nu'}`);
+                
+                // Resetăm seiful
+                const resetResult = vaultTest.resetVault();
+                results.push(`\n🔄 Resetare: ${resetResult.success ? 'Succes' : 'Eșuat'}`);
+                results.push(`   Mesaj: ${resetResult.message}`);
+                
+                // Verificăm starea după reset
+                const isInitialized = vaultTest.isVaultInitialized();
+                const hasSession = vaultTest.isSessionActive();
+                
+                results.push(`\n📊 Stare finală:`);
+                results.push(`   Inițializat: ${isInitialized ? 'Da' : 'Nu'}`);
+                results.push(`   Sesiune activă: ${hasSession ? 'Da' : 'Nu'}`);
+                
+                // Verificăm localStorage
+                const vaultData = localStorage.getItem('secureVault');
+                const sessionData = sessionStorage.getItem('vaultSession');
+                
+                results.push(`\n💾 Stocare:`);
+                results.push(`   LocalStorage seif: ${vaultData ? 'Există' : 'Gol'}`);
+                results.push(`   SessionStorage sesiune: ${sessionData ? 'Există' : 'Gol'}`);
+                
+                const success = !isInitialized && !hasSession && !vaultData && !sessionData;
+                results.push(`\n${success ? '✅' : '❌'} Resetare ${success ? 'completă' : 'parțială'}`);
+                
+                vaultTest.showResult('reset-result', results.join('\n'), success ? 'success' : 'error', 'reset-progress');
+                
+            } catch (error) {
+                vaultTest.showResult('reset-result', `❌ Eroare resetare: ${error.message}`, 'error', 'reset-progress');
+            }
+        }
+
+        async function advancedDebug() {
+            vaultTest.log('Debug avansat...');
+            
+            try {
+                let debugInfo = [];
+                
+                // Informații browser
+                debugInfo.push('🌍 INFORMAȚII BROWSER:');
+                debugInfo.push(`   User Agent: ${navigator.userAgent}`);
+                debugInfo.push(`   Platform: ${navigator.platform}`);
+                debugInfo.push(`   Language: ${navigator.language}`);
+                debugInfo.push(`   Cookies Enabled: ${navigator.cookieEnabled}`);
+                debugInfo.push(`   On-line: ${navigator.onLine}`);
+                debugInfo.push(`   Protocol: ${location.protocol}`);
+                debugInfo.push(`   Hostname: ${location.hostname}`);
+                debugInfo.push(`   Port: ${location.port}`);
+                
+                // Informații stocare
+                debugInfo.push('\n💾 INFORMAȚII STOCARE:');
+                debugInfo.push(`   LocalStorage available: ${typeof(Storage) !== "undefined" ? 'Da' : 'Nu'}`);
+                debugInfo.push(`   LocalStorage used: ${JSON.stringify(localStorage).length} caractere`);
+                debugInfo.push(`   SessionStorage available: ${typeof(Storage) !== "undefined" ? 'Da' : 'Nu'}`);
+                debugInfo.push(`   SessionStorage used: ${JSON.stringify(sessionStorage).length} caractere`);
+                
+                // Informații seif
+                debugInfo.push('\n🔐 INFORMAȚII SEIF:');
+                const vaultData = localStorage.getItem('secureVault');
+                if (vaultData) {
+                    try {
+                        const parsed = JSON.parse(vaultData);
+                        debugInfo.push(`   Inițializat: ${parsed.initialized ? 'Da' : 'Nu'}`);
+                        debugInfo.push(`   Creat: ${parsed.createdAt}`);
+                        debugInfo.push(`   Încercări eșuate: ${parsed.failedAttempts || 0}`);
+                        debugInfo.push(`   Blocat până: ${parsed.lockoutUntil || 'Nu'}`);
+                        debugInfo.push(`   Număr notițe: ${parsed.notes ? parsed.notes.length : 0}`);
+                        debugInfo.push(`   Salt prezent: ${parsed.salt ? 'Da' : 'Nu'}`);
+                        debugInfo.push(`   PIN hash prezent: ${parsed.pinHash ? 'Da' : 'Nu'}`);
+                    } catch (e) {
+                        debugInfo.push(`   Eroare parsare date: ${e.message}`);
+                    }
+                } else {
+                    debugInfo.push('   Nu există date seif în localStorage');
+                }
+                
+                // Informații sesiune
+                debugInfo.push('\n👤 INFORMAȚII SESIUNE:');
+                const sessionData = sessionStorage.getItem('vaultSession');
+                if (sessionData) {
+                    debugInfo.push(`   Token prezent: Da (${sessionData.length} caractere)`);
+                    try {
+                        const decrypted = CryptoJS.AES.decrypt(sessionData, 'vault-session-key');
+                        const tokenData = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+                        debugInfo.push(`   Timestamp: ${new Date(tokenData.timestamp).toLocaleString()}`);
+                        debugInfo.push(`   Vechime: ${Math.round((Date.now() - tokenData.timestamp) / 1000)} secunde`);
+                        debugInfo.push(`   PIN prezent: ${tokenData.pin ? 'Da' : 'Nu'}`);
+                    } catch (e) {
+                        debugInfo.push(`   Eroare decriptare token: ${e.message}`);
+                    }
+                } else {
+                    debugInfo.push('   Nu există sesiune activă');
+                }
+                
+                // Test performanță
+                debugInfo.push('\n⚡ TEST PERFORMANȚĂ:');
+                const start = performance.now();
+                const testHash = CryptoJS.PBKDF2('1234', 'test', { keySize: 256/32, iterations: 10000 });
+                const end = performance.now();
+                debugInfo.push(`   PBKDF2 (10k iter): ${(end - start).toFixed(2)}ms`);
+                
+                const encStart = performance.now();
+                const testEnc = CryptoJS.AES.encrypt('test message', 'testkey').toString();
+                const encEnd = performance.now();
+                debugInfo.push(`   AES Encryption: ${(encEnd - encStart).toFixed(2)}ms`);
+                
+                const decStart = performance.now();
+                const testDec = CryptoJS.AES.decrypt(testEnc, 'testkey').toString(CryptoJS.enc.Utf8);
+                const decEnd = performance.now();
+                debugInfo.push(`   AES Decryption: ${(decEnd - decStart).toFixed(2)}ms`);
+                
+                // Recomandări
+                debugInfo.push('\n💡 RECOMANDĂRI:');
+                
+                if (!vaultData) {
+                    debugInfo.push('   - Seiful nu este inițializat. Rulați testul de inițializare.');
+                }
+                
+                if (!sessionData && vaultData) {
+                    debugInfo.push('   - Seiful este inițializat dar nu aveți sesiune activă. Deblocați-l.');
+                }
+                
+                if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+                    debugInfo.push('   - Folosiți HTTP pe un domeniu public. Considerați HTTPS pentru securitate.');
+                }
+                
+                const storageUsed = JSON.stringify(localStorage).length;
+                if (storageUsed > 100000) { // 100KB
+                    debugInfo.push('   - LocalStorage este aproape plin. Considerați curățarea.');
+                }
+                
+                vaultTest.showResult('debug-result', debugInfo.join('\n'), 'info', 'debug-progress');
+                
+            } catch (error) {
+                vaultTest.showResult('debug-result', `❌ Eroare debug: ${error.message}`, 'error', 'debug-progress');
+            }
+        }
+
+        // Auto-rulare test mediu la încărcare
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                vaultTest.log('Pagină încărcată. Se rulează testul de mediu automat...');
+                testEnvironment();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -96,6 +96,7 @@ const Layout = ({ children, title, description }) => {
               <a href="/pomodoro" className="footer-nav-link">🍅 {t('navigation.pomodoro')}</a>
               <a href="/financial" className="footer-nav-link">💰 {t('navigation.financial')}</a>
               <a href="/dashboard" className="footer-nav-link">📊 {t('navigation.dashboard')}</a>
+              <a href="/vault" className="footer-nav-link">🔐 {t('navigation.vault')}</a>
               <a href="/settings" className="footer-nav-link">⚙️ {t('navigation.settings')}</a>
             </div>
             

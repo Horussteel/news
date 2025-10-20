@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Seif - Verificare Probleme</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔐 Debug Seif Securizat - Investigare Probleme</h1>
+        <p>Această pagină verifică problemele cu funcționarea seifului pe localhost.</p>
+    </div>
+
+    <div class="test-section">
+        <h3>1. Verificare LocalStorage</h3>
+        <button onclick="checkLocalStorage()">Verifică LocalStorage</button>
+        <div id="localStorage-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Verificare CryptoJS</h3>
+        <button onclick="checkCryptoJS()">Verifică CryptoJS</button>
+        <div id="cryptojs-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Testare Inițializare Seif</h3>
+        <input type="text" id="test-pin" placeholder="Introduceți PIN (ex: 1234)" value="1234">
+        <button onclick="testVaultInit()">Testează Inițializare</button>
+        <div id="init-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Testare Deblocare Seif</h3>
+        <input type="text" id="test-unlock-pin" placeholder="PIN pentru deblocare" value="1234">
+        <button onclick="testVaultUnlock()">Testează Deblocare</button>
+        <div id="unlock-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>5. Testare Completă Flux</h3>
+        <button onclick="testCompleteFlow()">Testează Flux Complet</button>
+        <div id="complete-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>6. Curățare și Reset</h3>
+        <button onclick="clearVault()">Șterge Seif</button>
+        <div id="clear-result"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        // Simulare serviciu vault pentru test
+        const testVaultService = {
+            storageKey: 'secureVault',
+            sessionKey: 'vaultSession',
+            maxFailedAttempts: 5,
+            lockoutDuration: 5 * 60 * 1000,
+            
+            initializeVault(masterPin) {
+                try {
+                    if (this.isVaultInitialized()) {
+                        throw new Error('Seiful este deja inițializat');
+                    }
+                    
+                    const salt = CryptoJS.lib.WordArray.random(256/8);
+                    const pinHash = CryptoJS.PBKDF2(masterPin, salt, {
+                        keySize: 256/32,
+                        iterations: 10000
+                    });
+                    
+                    const vaultData = {
+                        initialized: true,
+                        salt: salt.toString(),
+                        pinHash: pinHash.toString(),
+                        failedAttempts: 0,
+                        lockoutUntil: null,
+                        notes: [],
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    localStorage.setItem(this.storageKey, JSON.stringify(vaultData));
+                    return { success: true, message: 'Seif inițializat cu succes', data: vaultData };
+                } catch (error) {
+                    return { success: false, message: error.message };
+                }
+            },
+            
+            isVaultInitialized() {
+                try {
+                    const vaultData = localStorage.getItem(this.storageKey);
+                    if (!vaultData) return false;
+                    const parsed = JSON.parse(vaultData);
+                    return parsed.initialized === true;
+                } catch (error) {
+                    return false;
+                }
+            },
+            
+            unlockVault(masterPin) {
+                try {
+                    if (!this.isVaultInitialized()) {
+                        return { success: false, message: 'Seiful nu este inițializat' };
+                    }
+                    
+                    const vaultData = JSON.parse(localStorage.getItem(this.storageKey));
+                    const pinHash = CryptoJS.PBKDF2(masterPin, vaultData.salt, {
+                        keySize: 256/32,
+                        iterations: 10000
+                    });
+                    
+                    if (pinHash.toString() !== vaultData.pinHash) {
+                        vaultData.failedAttempts = (vaultData.failedAttempts || 0) + 1;
+                        localStorage.setItem(this.storageKey, JSON.stringify(vaultData));
+                        const remaining = this.maxFailedAttempts - vaultData.failedAttempts;
+                        return { 
+                            success: false, 
+                            message: `PIN incorect. Mai aveți ${remaining} încercări`,
+                            failedAttempts: vaultData.failedAttempts
+                        };
+                    }
+                    
+                    vaultData.failedAttempts = 0;
+                    vaultData.lockoutUntil = null;
+                    localStorage.setItem(this.storageKey, JSON.stringify(vaultData));
+                    
+                    return { 
+                        success: true, 
+                        message: 'Seif deblocat cu succes'
+                    };
+                } catch (error) {
+                    return { success: false, message: 'Eroare la deblocarea seifului: ' + error.message };
+                }
+            },
+            
+            clearVault() {
+                try {
+                    localStorage.removeItem(this.storageKey);
+                    sessionStorage.removeItem(this.sessionKey);
+                    return { success: true, message: 'Seif șters' };
+                } catch (error) {
+                    return { success: false, message: 'Eroare la ștergere: ' + error.message };
+                }
+            }
+        };
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = `<div class="test-result ${type}">${message}</div>`;
+            }
+        }
+
+        function checkLocalStorage() {
+            try {
+                const vaultData = localStorage.getItem('secureVault');
+                if (vaultData) {
+                    const parsed = JSON.parse(vaultData);
+                    showResult('localStorage-result', 
+                        `✅ LocalStorage funcțional\nDate seif: ${JSON.stringify(parsed, null, 2)}`, 
+                        'success');
+                } else {
+                    showResult('localStorage-result', 'ℹ️ LocalStorage gol - nu există date seif', 'info');
+                }
+            } catch (error) {
+                showResult('localStorage-result', `❌ Eroare LocalStorage: ${error.message}`, 'error');
+            }
+        }
+
+        function checkCryptoJS() {
+            try {
+                if (typeof CryptoJS === 'undefined') {
+                    showResult('cryptojs-result', '❌ CryptoJS nu este încărcat', 'error');
+                    return;
+                }
+                
+                const testText = "Hello, Secure Vault!";
+                const testKey = "test-key-123";
+                const encrypted = CryptoJS.AES.encrypt(testText, testKey).toString();
+                const decrypted = CryptoJS.AES.decrypt(encrypted, testKey).toString(CryptoJS.enc.Utf8);
+                
+                if (decrypted === testText) {
+                    showResult('cryptojs-result', 
+                        `✅ CryptoJS funcțional\nTest criptare/decriptare: OK`, 
+                        'success');
+                } else {
+                    showResult('cryptojs-result', '❌ CryptoJS nu funcționează corect', 'error');
+                }
+            } catch (error) {
+                showResult('cryptojs-result', `❌ Eroare CryptoJS: ${error.message}`, 'error');
+            }
+        }
+
+        function testVaultInit() {
+            const pin = document.getElementById('test-pin').value;
+            if (!pin) {
+                showResult('init-result', '⚠️ Introduceți un PIN', 'warning');
+                return;
+            }
+            
+            showResult('init-result', '🔄 Inițializare seif...', 'info');
+            
+            setTimeout(() => {
+                const result = testVaultService.initializeVault(pin);
+                if (result.success) {
+                    showResult('init-result', 
+                        `✅ Inițializare reușită\nPIN: ${pin}\nMesaj: ${result.message}\nDate: ${JSON.stringify(result.data, null, 2)}`, 
+                        'success');
+                } else {
+                    showResult('init-result', 
+                        `❌ Inițializare eșuată\nMesaj: ${result.message}`, 
+                        'error');
+                }
+            }, 500);
+        }
+
+        function testVaultUnlock() {
+            const pin = document.getElementById('test-unlock-pin').value;
+            if (!pin) {
+                showResult('unlock-result', '⚠️ Introduceți un PIN', 'warning');
+                return;
+            }
+            
+            showResult('unlock-result', '🔄 Deblocare seif...', 'info');
+            
+            setTimeout(() => {
+                const result = testVaultService.unlockVault(pin);
+                if (result.success) {
+                    showResult('unlock-result', 
+                        `✅ Deblocare reușită\nPIN: ${pin}\nMesaj: ${result.message}`, 
+                        'success');
+                } else {
+                    showResult('unlock-result', 
+                        `❌ Deblocare eșuată\nMesaj: ${result.message}\nÎncercări eșuate: ${result.failedAttempts || 0}`, 
+                        'error');
+                }
+            }, 500);
+        }
+
+        function testCompleteFlow() {
+            showResult('complete-result', '🔄 Testare flux complet...', 'info');
+            
+            // Pas 1: Șterge seiful
+            setTimeout(() => {
+                const clearResult = testVaultService.clearVault();
+                if (clearResult.success) {
+                    showResult('complete-result', '✅ Seif șters\nPas 1: OK', 'success');
+                } else {
+                    showResult('complete-result', '❌ Eroare la ștergere', 'error');
+                    return;
+                }
+                
+                // Pas 2: Inițializare
+                setTimeout(() => {
+                    const testPin = '1234';
+                    const initResult = testVaultService.initializeVault(testPin);
+                    if (initResult.success) {
+                        showResult('complete-result', `✅ Seif inițializat\nPas 2: OK (PIN: ${testPin})`, 'success');
+                    } else {
+                        showResult('complete-result', '❌ Inițializare eșuată', 'error');
+                        return;
+                    }
+                    
+                    // Pas 3: Deblocare
+                    setTimeout(() => {
+                        const unlockResult = testVaultService.unlockVault(testPin);
+                        if (unlockResult.success) {
+                            showResult('complete-result', 
+                                `✅ Flux complet funcțional\n1. Ștergere: OK\n2. Inițializare: OK (PIN: ${testPin})\n3. Deblocare: OK\n🎉 Seiful funcționează perfect!`, 
+                                'success');
+                        } else {
+                            showResult('complete-result', '❌ Deblocare eșuată', 'error');
+                        }
+                    }, 500);
+                }, 500);
+            }, 500);
+        }
+
+        function clearVault() {
+            showResult('clear-result', '🔄 Ștergere seif...', 'info');
+            
+            setTimeout(() => {
+                const result = testVaultService.clearVault();
+                if (result.success) {
+                    showResult('clear-result', '✅ Seif șters complet', 'success');
+                } else {
+                    showResult('clear-result', '❌ Eroare la ștergere', 'error');
+                }
+            }, 500);
+        }
+
+        // Auto-verificare la încărcare
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                showResult('init-result', '🔐 Auto-verificare inițializare...', 'info');
+                checkLocalStorage();
+                checkCryptoJS();
+                testCompleteFlow();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

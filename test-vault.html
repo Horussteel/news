@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Seif Securizat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .crypto-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #1565c0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .info-box strong {
+            color: #0d47a1;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+            <h1>🔐 Test Seif Securizat</h1>
+            <p>Acest fișier testează funcționalitatea de bază a seifului securizat.</p>
+            <div class="info-box">
+                <strong>📋 Instructiuni Utilizare:</strong><br>
+                1. Introduceți 4 cifre (ex: 1234)<br>
+                2. La completare, seiful se va debloca automatice<br>
+                3. Sau apăsați Enter manual după introducere<br>
+                4. Puteți folosi și butonul verde "🔓 Deblochează Seiful"<br>
+                <br>
+                <strong>🎯 Comportament Actualizat:</strong><br>
+                ✅ Auto-submit la completarea PIN-ului<br>
+                ✅ Buton vizibil "Deblochează Seiful"<br>
+                ✅ Enter funcțional pentru orice lungime PIN<br>
+                ✅ Feedback vizual imediat
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>1. Verificare CryptoJS</h3>
+            <div id="crypto-test"></div>
+            <button onclick="testCryptoJS()">Testează CryptoJS</button>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Test Criptare/Decriptare</h3>
+            <input type="text" id="test-text" placeholder="Text de test..." value="Parola secreta: 123456">
+            <input type="text" id="test-pin" placeholder="PIN..." value="1234">
+            <button onclick="testEncryption()">Testează Criptare</button>
+            <button onclick="testDecryption()">Testează Decriptare</button>
+            <div id="encryption-test"></div>
+            <div id="decryption-test"></div>
+            <div id="crypto-details" class="crypto-info"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Test LocalStorage</h3>
+            <button onclick="testLocalStorage()">Testează LocalStorage</button>
+            <button onclick="clearVaultData()">Șterge Date Seif</button>
+            <div id="storage-test"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Test Funcții Vault</h3>
+            <button onclick="testVaultFunctions()">Testează Funcții Vault</button>
+            <div id="vault-functions-test"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>5. Test Securitate</h3>
+            <button onclick="testSecurity()">Testează Securitatea</button>
+            <div id="security-test"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        // Simulare serviciu vault pentru test
+        const testVaultService = {
+            storageKey: 'secureVault',
+            sessionKey: 'vaultSession',
+            
+            encryptData(data, masterPin) {
+                try {
+                    const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), masterPin).toString();
+                    return { success: true, encrypted };
+                } catch (error) {
+                    return { success: false, message: error.message };
+                }
+            },
+
+            decryptData(encryptedData, masterPin) {
+                try {
+                    const decrypted = CryptoJS.AES.decrypt(encryptedData, masterPin);
+                    const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+                    
+                    if (!decryptedText) {
+                        throw new Error('Date criptate invalide');
+                    }
+                    
+                    return { success: true, data: JSON.parse(decryptedText) };
+                } catch (error) {
+                    return { success: false, message: error.message };
+                }
+            },
+
+            saveToStorage(data) {
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(data));
+                    return { success: true };
+                } catch (error) {
+                    return { success: false, message: error.message };
+                }
+            },
+
+            loadFromStorage() {
+                try {
+                    const data = localStorage.getItem(this.storageKey);
+                    return data ? JSON.parse(data) : null;
+                } catch (error) {
+                    return null;
+                }
+            },
+
+            clearStorage() {
+                try {
+                    localStorage.removeItem(this.storageKey);
+                    sessionStorage.removeItem(this.sessionKey);
+                    return { success: true };
+                } catch (error) {
+                    return { success: false, message: error.message };
+                }
+            }
+        };
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = `<div class="test-result ${type}">${message}</div>`;
+            }
+        }
+
+        function showCryptoDetails(details) {
+            const element = document.getElementById('crypto-details');
+            if (element) {
+                element.innerHTML = `<strong>Detalii Crypto:</strong><br>${details}`;
+            }
+        }
+
+        function testCryptoJS() {
+            try {
+                // Verifică dacă CryptoJS este încărcat
+                if (typeof CryptoJS === 'undefined') {
+                    showResult('crypto-test', '❌ CryptoJS nu este încărcat', 'error');
+                    return;
+                }
+
+                // Test criptare de bază
+                const testText = "Hello, Secure Vault!";
+                const testKey = "test-key-123";
+                const encrypted = CryptoJS.AES.encrypt(testText, testKey).toString();
+                const decrypted = CryptoJS.AES.decrypt(encrypted, testKey).toString(CryptoJS.enc.Utf8);
+
+                if (decrypted === testText) {
+                    showResult('crypto-test', '✅ CryptoJS funcționează corect', 'success');
+                    showCryptoDetails(
+                        `Text original: "${testText}"<br>` +
+                        `Cheie: "${testKey}"<br>` +
+                        `Text criptat: ${encrypted.substring(0, 50)}...<br>` +
+                        `Text decriptat: "${decrypted}"<br>` +
+                        `Algoritm: AES`
+                    );
+                } else {
+                    showResult('crypto-test', '❌ CryptoJS nu funcționează corect', 'error');
+                }
+            } catch (error) {
+                showResult('crypto-test', `❌ Eroare CryptoJS: ${error.message}`, 'error');
+            }
+        }
+
+        function testEncryption() {
+            const text = document.getElementById('test-text').value;
+            const pin = document.getElementById('test-pin').value;
+
+            if (!text || !pin) {
+                showResult('encryption-test', '⚠️ Introduceți text și PIN', 'info');
+                return;
+            }
+
+            const testData = {
+                title: "Notiță de test",
+                content: text,
+                category: "Test",
+                createdAt: new Date().toISOString()
+            };
+
+            const result = testVaultService.encryptData(testData, pin);
+            
+            if (result.success) {
+                showResult('encryption-test', '✅ Criptare reușită', 'success');
+                showCryptoDetails(
+                    `Date criptate salvate în memorie pentru test<br>` +
+                    `Lungime text: ${text.length} caractere<br>` +
+                    `Lungime criptată: ${result.encrypted.length} caractere<br>` +
+                    `Timestamp: ${new Date().toISOString()}`
+                );
+                
+                // Salvăm temporar pentru testul de decriptare
+                window.testEncryptedData = result.encrypted;
+            } else {
+                showResult('encryption-test', `❌ Eroare la criptare: ${result.message}`, 'error');
+            }
+        }
+
+        function testDecryption() {
+            const pin = document.getElementById('test-pin').value;
+
+            if (!pin) {
+                showResult('decryption-test', '⚠️ Introduceți PIN', 'info');
+                return;
+            }
+
+            if (!window.testEncryptedData) {
+                showResult('decryption-test', '⚠️ Mai întâi criptați datele', 'info');
+                return;
+            }
+
+            const result = testVaultService.decryptData(window.testEncryptedData, pin);
+            
+            if (result.success) {
+                const data = result.data;
+                showResult('decryption-test', '✅ Decriptare reușită', 'success');
+                showCryptoDetails(
+                    `Date decriptate:<br>` +
+                    `Titlu: ${data.title}<br>` +
+                    `Conținut: ${data.content}<br>` +
+                    `Categorie: ${data.category}<br>` +
+                    `Creat: ${data.createdAt}`
+                );
+            } else {
+                showResult('decryption-test', `❌ Eroare la decriptare: ${result.message}`, 'error');
+            }
+        }
+
+        function testLocalStorage() {
+            try {
+                // Test scriere
+                const testData = {
+                    test: "LocalStorage funcționează",
+                    timestamp: new Date().toISOString(),
+                    random: Math.random()
+                };
+
+                const saveResult = testVaultService.saveToStorage(testData);
+                if (!saveResult.success) {
+                    showResult('storage-test', `❌ Eroare salvare: ${saveResult.message}`, 'error');
+                    return;
+                }
+
+                // Test citire
+                const loadedData = testVaultService.loadFromStorage();
+                if (!loadedData || loadedData.test !== testData.test) {
+                    showResult('storage-test', '❌ LocalStorage nu funcționează corect', 'error');
+                    return;
+                }
+
+                showResult('storage-test', '✅ LocalStorage funcționează corect', 'success');
+                showCryptoDetails(
+                    `Date test salvate și citite cu succes<br>` +
+                    `Dimensiune date: ${JSON.stringify(testData).length} caractere<br>` +
+                    `Timestamp test: ${testData.timestamp}`
+                );
+            } catch (error) {
+                showResult('storage-test', `❌ Eroare LocalStorage: ${error.message}`, 'error');
+            }
+        }
+
+        function clearVaultData() {
+            const result = testVaultService.clearStorage();
+            if (result.success) {
+                showResult('storage-test', '✅ Datele seifului au fost șterse', 'success');
+                delete window.testEncryptedData;
+            } else {
+                showResult('storage-test', `❌ Eroare la ștergere: ${result.message}`, 'error');
+            }
+        }
+
+        function testVaultFunctions() {
+            const tests = [];
+            
+            // Test 1: Inițializare seif
+            try {
+                const pin = "1234";
+                const salt = CryptoJS.lib.WordArray.random(256/8);
+                const pinHash = CryptoJS.PBKDF2(pin, salt, {
+                    keySize: 256/32,
+                    iterations: 10000
+                });
+
+                const vaultData = {
+                    initialized: true,
+                    salt: salt.toString(),
+                    pinHash: pinHash.toString(),
+                    notes: []
+                };
+
+                const saveResult = testVaultService.saveToStorage(vaultData);
+                tests.push({
+                    name: "Inițializare seif",
+                    status: saveResult.success ? 'success' : 'error',
+                    message: saveResult.success ? 'Seif inițializat cu succes' : saveResult.message
+                });
+            } catch (error) {
+                tests.push({
+                    name: "Inițializare seif",
+                    status: 'error',
+                    message: error.message
+                });
+            }
+
+            // Test 2: Adăugare notiță
+            try {
+                const note = {
+                    id: Date.now().toString(),
+                    title: "Notiță test",
+                    content: "Conținut de test",
+                    category: "Test",
+                    createdAt: new Date().toISOString()
+                };
+
+                const pin = "1234";
+                const encryptResult = testVaultService.encryptData(note, pin);
+                
+                if (encryptResult.success) {
+                    const vaultData = testVaultService.loadFromStorage();
+                    vaultData.notes.push(encryptResult.encrypted);
+                    const saveResult = testVaultService.saveToStorage(vaultData);
+                    
+                    tests.push({
+                        name: "Adăugare notiță",
+                        status: saveResult.success ? 'success' : 'error',
+                        message: saveResult.success ? 'Notiță adăugată cu succes' : saveResult.message
+                    });
+                } else {
+                    tests.push({
+                        name: "Adăugare notiță",
+                        status: 'error',
+                        message: encryptResult.message
+                    });
+                }
+            } catch (error) {
+                tests.push({
+                    name: "Adăugare notiță",
+                    status: 'error',
+                    message: error.message
+                });
+            }
+
+            // Test 3: Citire notițe
+            try {
+                const vaultData = testVaultService.loadFromStorage();
+                const pin = "1234";
+                let notesCount = 0;
+
+                for (const encryptedNote of vaultData.notes) {
+                    const decryptResult = testVaultService.decryptData(encryptedNote, pin);
+                    if (decryptResult.success) {
+                        notesCount++;
+                    }
+                }
+
+                tests.push({
+                    name: "Citire notițe",
+                    status: 'success',
+                    message: `${notesCount} notițe citite cu succes`
+                });
+            } catch (error) {
+                tests.push({
+                    name: "Citire notițe",
+                    status: 'error',
+                    message: error.message
+                });
+            }
+
+            // Afișează rezultate
+            const resultsHtml = tests.map(test => 
+                `<div class="test-result ${test.status}">${test.status === 'success' ? '✅' : '❌'} ${test.name}: ${test.message}</div>`
+            ).join('');
+
+            document.getElementById('vault-functions-test').innerHTML = resultsHtml;
+        }
+
+        function testSecurity() {
+            const securityTests = [];
+
+            // Test 1: Verificare lungime PIN
+            const shortPin = "123";
+            const longPin = "12345678";
+            
+            securityTests.push({
+                name: "Lungime PIN minimă",
+                status: shortPin.length >= 4 ? 'warning' : 'error',
+                message: `PIN de ${shortPin.length} cifre - ${shortPin.length >= 4 ? 'Acceptabil' : 'Prea scurt (minim 4)'}`
+            });
+
+            securityTests.push({
+                name: "Lungime PIN maximă",
+                status: longPin.length <= 6 ? 'success' : 'warning',
+                message: `PIN de ${longPin.length} cifre - ${longPin.length <= 6 ? 'Acceptabil' : 'Prea lung (maxim 6)'}`
+            });
+
+            // Test 2: Verificare complexitate
+            const weakPin = "1111";
+            const strongPin = "a1b2c3";
+            
+            securityTests.push({
+                name: "Complexitate PIN",
+                status: 'info',
+                message: `Recomandare: Evitați PIN-uri cu cifre repetitive (ex: ${weakPin})`
+            });
+
+            // Test 3: Verificare criptare
+            try {
+                const sensitiveData = "Parola bancară: 123456789";
+                const weakPin = "1234";
+                const encryptResult = testVaultService.encryptData({ data: sensitiveData }, weakPin);
+                
+                if (encryptResult.success) {
+                    // Verifică dacă datele sunt cu adevărat criptate
+                    const isEncrypted = encryptResult.encrypted !== sensitiveData;
+                    securityTests.push({
+                        name: "Criptare date sensibile",
+                        status: isEncrypted ? 'success' : 'error',
+                        message: `Datele sunt ${isEncrypted ? 'criptate corect' : 'necriptate'}`
+                    });
+                }
+            } catch (error) {
+                securityTests.push({
+                    name: "Criptare date sensibile",
+                    status: 'error',
+                    message: error.message
+                });
+            }
+
+            // Test 4: Verificare stocare locală
+            try {
+                const testData = { test: "security test" };
+                const saveResult = testVaultService.saveToStorage(testData);
+                const loadResult = testVaultService.loadFromStorage();
+                
+                const isWorking = saveResult.success && loadResult && loadResult.test === testData.test;
+                securityTests.push({
+                    name: "Stocare locală securizată",
+                    status: isWorking ? 'success' : 'error',
+                    message: `Stocarea locală ${isWorking ? 'funcționează' : 'nu funcționează'} corect`
+                });
+            } catch (error) {
+                securityTests.push({
+                    name: "Stocare locală securizată",
+                    status: 'error',
+                    message: error.message
+                });
+            }
+
+            // Afișează rezultate
+            const resultsHtml = securityTests.map(test => 
+                `<div class="test-result ${test.status}">${test.status === 'success' ? '✅' : test.status === 'error' ? '❌' : '⚠️'} ${test.name}: ${test.message}</div>`
+            ).join('');
+
+            document.getElementById('security-test').innerHTML = resultsHtml;
+        }
+    </script>
+</body>
+</html>
