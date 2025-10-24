@@ -226,14 +226,38 @@ const HomePage = () => {
             </div>
           </div>
 
-          {/* Card 3: Administrare & Analiză */}
-          <div className="glass-card admin-card">
+          {/* Card 3: 🔍 Google - Administrare & Analiză */}
+          <div className="glass-card google-admin-card">
             <div className="card-header">
-              <h2 className="card-title">⚙️ Administrare & Analiză</h2>
+              <h2 className="card-title">🔍 Google - Administrare & Analiză</h2>
               <div className="card-icon">📊</div>
             </div>
             <div className="card-content">
               <div className="feature-grid">
+                <Link href="/google" className="feature-item">
+                  <div className="feature-icon">🔍</div>
+                  <div className="feature-text">
+                    <div className="feature-name">Google Admin</div>
+                    <div className="feature-desc">Calendar & Gmail unificate</div>
+                  </div>
+                </Link>
+
+                <Link href="/gmail" className="feature-item">
+                  <div className="feature-icon">📧</div>
+                  <div className="feature-text">
+                    <div className="feature-name">Gmail</div>
+                    <div className="feature-desc">Emailuri & mesaje</div>
+                  </div>
+                </Link>
+
+                <Link href="/calendar" className="feature-item">
+                  <div className="feature-icon">📅</div>
+                  <div className="feature-text">
+                    <div className="feature-name">Calendar</div>
+                    <div className="feature-desc">Evenimente & programare</div>
+                  </div>
+                </Link>
+
                 <Link href="/financial" className="feature-item">
                   <div className="feature-icon">💰</div>
                   <div className="feature-text">
@@ -241,12 +265,23 @@ const HomePage = () => {
                     <div className="feature-desc">Gestionare bani</div>
                   </div>
                 </Link>
+              </div>
+            </div>
+          </div>
 
+          {/* Card 4: Administrare Generală */}
+          <div className="glass-card admin-card">
+            <div className="card-header">
+              <h2 className="card-title">⚙️ Administrare Generală</h2>
+              <div className="card-icon">📊</div>
+            </div>
+            <div className="card-content">
+              <div className="feature-grid">
                 <Link href="/dashboard" className="feature-item">
                   <div className="feature-icon">📊</div>
                   <div className="feature-text">
                     <div className="feature-name">Panou de control</div>
-                    <div className="feature-desc">Statistici</div>
+                    <div className="feature-desc">Statistici complete</div>
                   </div>
                 </Link>
 
@@ -255,6 +290,14 @@ const HomePage = () => {
                   <div className="feature-text">
                     <div className="feature-name">Setări</div>
                     <div className="feature-desc">Personalizare</div>
+                  </div>
+                </Link>
+
+                <Link href="/vault" className="feature-item">
+                  <div className="feature-icon">🔐</div>
+                  <div className="feature-text">
+                    <div className="feature-name">Seif Digital</div>
+                    <div className="feature-desc">Date securizate</div>
                   </div>
                 </Link>
               </div>
@@ -447,6 +490,10 @@ const HomePage = () => {
 
         .admin-card::before {
           background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .google-admin-card::before {
+          background: linear-gradient(90deg, #4285F4, #EA4335);
         }
 
         .glass-card:hover {

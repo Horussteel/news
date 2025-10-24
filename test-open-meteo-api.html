@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Open-Meteo API Direct</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .test-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .test-result {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+        
+        .button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test Direct Open-Meteo API</h1>
+            <p>Verificare conectivitate și răspunsuri API</p>
+        </div>
+
+        <div class="test-section">
+            <h2>📍 Test Locații</h2>
+            <button class="button" onclick="testLocation(44.4268, 26.1025, 'București')">🏛️ București</button>
+            <button class="button" onclick="testLocation(45.7489, 21.2087, 'Timișoara')">🏰 Timișoara</button>
+            <button class="button" onclick="testLocation(46.7712, 23.6236, 'Cluj-Napoca')">🏔️ Cluj-Napoca</button>
+            <button class="button" onclick="testCurrentLocation()">📍 Locația Curentă</button>
+            <div id="location-result" class="test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🌤️ Test Current Weather</h2>
+            <button class="button" onclick="testCurrentWeather()">🌡️ Test Vreme Curentă</button>
+            <div id="current-weather-result" class="test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📅 Test Forecast</h2>
+            <button class="button" onclick="testForecast()">📊 Test Prognoză 7 Zile</button>
+            <div id="forecast-result" class="test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔄 Test Weather Codes</h2>
+            <button class="button" onclick="testWeatherCodes()">🌈 Test WMO Codes</button>
+            <div id="weather-codes-result" class="test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>⚡ Test Performance</h2>
+            <button class="button" onclick="testPerformance()">🚀 Test Viteză Răspuns</button>
+            <div id="performance-result" class="test-result"></div>
+        </div>
+    </div>
+
+    <script>
+        let testLat = 44.4268;
+        let testLon = 26.1025;
+        let testLocationName = 'București';
+
+        // Converteste WMO weather code în descriere românească
+        function getWeatherDescription(weatherCode) {
+            const weatherMap = {
+                0: 'cer senin',
+                1: 'predominant senin',
+                2: 'parțial noros',
+                3: 'noros',
+                45: 'ceață',
+                48: 'ceață depusă',
+                51: 'burniță ușoară',
+                53: 'burniță moderată',
+                55: 'burniță densă',
+                61: 'ploaie ușoară',
+                63: 'ploaie moderată',
+                65: 'ploaie torențială',
+                71: 'ninsoare ușoară',
+                73: 'ninsoare moderată',
+                75: 'ninsoare abundentă',
+                80: 'averse ușoare',
+                81: 'averse moderate',
+                82: 'averse violente',
+                95: 'furtună ușoară',
+                96: 'furtună cu grindină ușoară'
+            };
+            return weatherMap[weatherCode] || 'necunoscut';
+        }
+
+        // Test locație
+        function testLocation(lat, lon, name) {
+            testLat = lat;
+            testLon = lon;
+            testLocationName = name;
+            
+            const resultDiv = document.getElementById('location-result');
+            resultDiv.innerHTML = `<div class="loading">🔄 Testare locație ${name}...</div>`;
+            
+            resultDiv.innerHTML = `✅ Locație setată: ${name}\nLat: ${lat}, Lon: ${lon}`;
+            resultDiv.className = 'test-result success';
+        }
+
+        // Test locație curentă
+        function testCurrentLocation() {
+            const resultDiv = document.getElementById('location-result');
+            resultDiv.innerHTML = '<div class="loading">🔄 Detectare locație curentă...</div>';
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        testLat = position.coords.latitude;
+                        testLon = position.coords.longitude;
+                        testLocationName = 'Locație Curentă';
+                        
+                        resultDiv.innerHTML = `✅ Locație detectată!\nLat: ${testLat.toFixed(4)}\nLon: ${testLon.toFixed(4)}\nPrecizie: ${position.coords.accuracy.toFixed(0)}m`;
+                        resultDiv.className = 'test-result success';
+                    },
+                    (error) => {
+                        resultDiv.innerHTML = `❌ Eroare geolocație: ${error.message}`;
+                        resultDiv.className = 'test-result error';
+                    }
+                );
+            } else {
+                resultDiv.innerHTML = '❌ Geolocația nu este suportată';
+                resultDiv.className = 'test-result error';
+            }
+        }
+
+        // Test vreme curentă
+        async function testCurrentWeather() {
+            const resultDiv = document.getElementById('current-weather-result');
+            resultDiv.innerHTML = '<div class="loading">🔄 Testare vreme curentă...</div>';
+            
+            try {
+                const startTime = performance.now();
+                const response = await fetch(
+                    `https://api.open-meteo.com/v1/forecast?latitude=${testLat}&longitude=${testLon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,weathercode,windspeed_10m,winddirection_10m&daily=sunrise,sunset&timezone=auto`
+                );
+                const endTime = performance.now();
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                const weatherInfo = {
+                    temperature: data.current_weather.temperature,
+                    windSpeed: data.current_weather.windspeed,
+                    windDirection: data.current_weather.winddirection,
+                    weatherCode: data.current_weather.weathercode,
+                    description: getWeatherDescription(data.current_weather.weathercode),
+                    sunrise: data.daily.sunrise[0],
+                    sunset: data.daily.sunset[0],
+                    humidity: data.hourly.relativehumidity_2m[0],
+                    responseTime: (endTime - startTime).toFixed(2)
+                };
+                
+                resultDiv.innerHTML = `✅ Vreme curentă pentru ${testLocationName}
+Temperatură: ${weatherInfo.temperature}°C
+Vânt: ${weatherInfo.windSpeed} m/s (${weatherInfo.windDirection}°)
+Umiditate: ${weatherInfo.humidity}%
+Cod meteo: ${weatherInfo.weatherCode} (${weatherInfo.description})
+Răsărit: ${new Date(weatherInfo.sunrise).toLocaleTimeString('ro-RO')}
+Apus: ${new Date(weatherInfo.sunset).toLocaleTimeString('ro-RO')}
+Timp răspuns: ${weatherInfo.responseTime}ms`;
+                resultDiv.className = 'test-result success';
+                
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Eroare vreme curentă: ${error.message}`;
+                resultDiv.className = 'test-result error';
+            }
+        }
+
+        // Test prognoză
+        async function testForecast() {
+            const resultDiv = document.getElementById('forecast-result');
+            resultDiv.innerHTML = '<div class="loading">🔄 Testare prognoză 7 zile...</div>';
+            
+            try {
+                const startTime = performance.now();
+                const response = await fetch(
+                    `https://api.open-meteo.com/v1/forecast?latitude=${testLat}&longitude=${testLon}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max&timezone=auto`
+                );
+                const endTime = performance.now();
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                let forecastText = `✅ Prognoză 7 zile pentru ${testLocationName}\n`;
+                forecastText += `Timp răspuns: ${(endTime - startTime).toFixed(2)}ms\n\n`;
+                
+                for (let i = 0; i < Math.min(7, data.daily.time.length); i++) {
+                    const date = new Date(data.daily.time[i]);
+                    const dayName = date.toLocaleDateString('ro-RO', { weekday: 'long' });
+                    const tempMin = data.daily.temperature_2m_min[i];
+                    const tempMax = data.daily.temperature_2m_max[i];
+                    const weatherCode = data.daily.weathercode[i];
+                    const description = getWeatherDescription(weatherCode);
+                    const precipitation = data.daily.precipitation_probability_max[i];
+                    const windSpeed = data.daily.windspeed_10m_max[i];
+                    
+                    forecastText += `${dayName}: ${tempMin}°C - ${tempMax}°C | ${description} | Precip: ${precipitation}% | Vânt: ${windSpeed}m/s\n`;
+                }
+                
+                resultDiv.textContent = forecastText;
+                resultDiv.className = 'test-result success';
+                
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Eroare prognoză: ${error.message}`;
+                resultDiv.className = 'test-result error';
+            }
+        }
+
+        // Test weather codes
+        function testWeatherCodes() {
+            const resultDiv = document.getElementById('weather-codes-result');
+            resultDiv.innerHTML = '<div class="loading">🔄 Testare WMO weather codes...</div>';
+            
+            const testCodes = [0, 1, 2, 3, 45, 51, 61, 71, 80, 95];
+            let codesText = '✅ WMO Weather Codes implementate:\n\n';
+            
+            testCodes.forEach(code => {
+                const description = getWeatherDescription(code);
+                codesText += `Code ${code}: ${description}\n`;
+            });
+            
+            resultDiv.textContent = codesText;
+            resultDiv.className = 'test-result success';
+        }
+
+        // Test performance
+        async function testPerformance() {
+            const resultDiv = document.getElementById('performance-result');
+            resultDiv.innerHTML = '<div class="loading">🔄 Testare performanță...</div>';
+            
+            try {
+                const requests = [];
+                const times = [];
+                
+                // Efectuăm 5 requesturi simultane
+                for (let i = 0; i < 5; i++) {
+                    const startTime = performance.now();
+                    const request = fetch(
+                        `https://api.open-meteo.com/v1/forecast?latitude=${testLat}&longitude=${testLon}&current_weather=true&timezone=auto`
+                    ).then(response => {
+                        const endTime = performance.now();
+                        times.push(endTime - startTime);
+                        return response.ok;
+                    });
+                    requests.push(request);
+                }
+                
+                const results = await Promise.all(requests);
+                const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
+                const minTime = Math.min(...times);
+                const maxTime = Math.max(...times);
+                const successRate = results.filter(r => r).length;
+                
+                resultDiv.innerHTML = `✅ Test Performanță Open-Meteo API
+Requesturi simultane: 5
+Requesturi reușite: ${successRate}/5
+Timp mediu răspuns: ${avgTime.toFixed(2)}ms
+Timp minim: ${minTime.toFixed(2)}ms
+Timp maxim: ${maxTime.toFixed(2)}ms
+Status: ${successRate === 5 ? 'EXCELLENT' : 'PROBLEME'}`;
+                resultDiv.className = successRate === 5 ? 'test-result success' : 'test-result error';
+                
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Eroare performanță: ${error.message}`;
+                resultDiv.className = 'test-result error';
+            }
+        }
+
+        // Test inițial la încărcare
+        window.onload = function() {
+            console.log('🧪 Test Open-Meteo API inițiat');
+            testCurrentWeather();
+        };
+    </script>
+</body>
+</html>

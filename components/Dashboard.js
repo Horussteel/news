@@ -3,6 +3,8 @@ import analyticsService from '../lib/analyticsService';
 import financialService from '../lib/financialService';
 import weatherService from '../lib/weatherService';
 import DataExportManager from './DataExportManager';
+import CalendarWidget from './CalendarWidget';
+import GmailWidget from './GmailWidget';
 import { useTranslation } from '../contexts/LanguageContext';
 
 const Dashboard = () => {
@@ -13,6 +15,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('week');
   const [activeTab, setActiveTab] = useState('overview');
+  const [activeGoogleTab, setActiveGoogleTab] = useState('calendar');
   const [showDataExport, setShowDataExport] = useState(false);
 
   useEffect(() => {
@@ -349,6 +352,32 @@ const Dashboard = () => {
           <DataExportManager />
         </div>
       )}
+
+      {/* Google Admin & Analytics Card */}
+      <div className="google-admin-card">
+        <div className="google-admin-header">
+          <h3>🔍 Google - Administrare & Analiză</h3>
+          <div className="google-admin-tabs">
+            <button 
+              className={`admin-tab ${activeGoogleTab === 'calendar' ? 'active' : ''}`}
+              onClick={() => setActiveGoogleTab('calendar')}
+            >
+              📅 Calendar
+            </button>
+            <button 
+              className={`admin-tab ${activeGoogleTab === 'gmail' ? 'active' : ''}`}
+              onClick={() => setActiveGoogleTab('gmail')}
+            >
+              📧 Gmail
+            </button>
+          </div>
+        </div>
+        
+        <div className="google-admin-content">
+          {activeGoogleTab === 'calendar' && <CalendarWidget />}
+          {activeGoogleTab === 'gmail' && <GmailWidget />}
+        </div>
+      </div>
 
       {/* Weather Widget */}
       <div className="weather-widget-section">
@@ -815,6 +844,83 @@ const Dashboard = () => {
 
         .data-export-section {
           margin-bottom: 30px;
+        }
+
+        /* Google Admin Card Styles */
+        .google-admin-card {
+          background: var(--bg-secondary);
+          border: 1px solid var(--border-color);
+          border-radius: 16px;
+          padding: 0;
+          margin-bottom: 30px;
+          overflow: hidden;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .google-admin-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .google-admin-header {
+          background: linear-gradient(135deg, #4285F4, #EA4335);
+          padding: 20px 24px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .google-admin-header h3 {
+          color: white;
+          margin: 0;
+          font-size: 1.3rem;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .google-admin-tabs {
+          display: flex;
+          gap: 8px;
+          background: rgba(255, 255, 255, 0.1);
+          padding: 4px;
+          border-radius: 12px;
+          backdrop-filter: blur(10px);
+        }
+
+        .admin-tab {
+          background: transparent;
+          color: rgba(255, 255, 255, 0.8);
+          border: none;
+          padding: 8px 16px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          font-weight: 500;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .admin-tab.active {
+          background: white;
+          color: #4285F4;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-tab:hover:not(.active) {
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+        }
+
+        .google-admin-content {
+          padding: 24px;
+          min-height: 400px;
         }
 
         /* Weather Widget Styles */
@@ -1423,6 +1529,22 @@ const Dashboard = () => {
 
           .header-actions {
             justify-content: center;
+          }
+
+          .google-admin-header {
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
+            text-align: center;
+          }
+
+          .google-admin-tabs {
+            justify-content: center;
+          }
+
+          .google-admin-content {
+            padding: 16px;
+            min-height: auto;
           }
 
           .weather-main {

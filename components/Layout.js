@@ -55,8 +55,11 @@ const Layout = ({ children, title, description }) => {
                 <a href="/habits" className="transparent-nav-link">🎯 {t('navigation.habits')}</a>
                 <a href="/pomodoro" className="transparent-nav-link">🍅 {t('navigation.pomodoro')}</a>
                 <a href="/financial" className="transparent-nav-link">💰 {t('navigation.financial')}</a>
-                <a href="/dashboard" className="transparent-nav-link">📊 {t('navigation.dashboard')}</a>
-                <a href="/settings" className="transparent-nav-link">⚙️ {t('navigation.settings')}</a>
+              <a href="/google" className="transparent-nav-link">🔍 Google Admin</a>
+              <a href="/calendar" className="transparent-nav-link">📅 Calendar</a>
+              <a href="/gmail" className="transparent-nav-link">📧 Gmail</a>
+              <a href="/dashboard" className="transparent-nav-link">📊 {t('navigation.dashboard')}</a>
+              <a href="/settings" className="transparent-nav-link">⚙️ {t('navigation.settings')}</a>
               </nav>
               )}
             </div>
@@ -97,6 +100,9 @@ const Layout = ({ children, title, description }) => {
               <a href="/todo" className="footer-nav-link">✅ {t('navigation.todo')}</a>
               <a href="/pomodoro" className="footer-nav-link">🍅 {t('navigation.pomodoro')}</a>
               <a href="/financial" className="footer-nav-link">💰 {t('navigation.financial')}</a>
+              <a href="/google" className="footer-nav-link">🔍 Google Admin</a>
+              <a href="/calendar" className="footer-nav-link">📅 Calendar</a>
+              <a href="/gmail" className="footer-nav-link">📧 Gmail</a>
               <a href="/dashboard" className="footer-nav-link">📊 {t('navigation.dashboard')}</a>
               <a href="/vault" className="footer-nav-link">🔐 {t('navigation.vault')}</a>
               <a href="/settings" className="footer-nav-link">⚙️ {t('navigation.settings')}</a>

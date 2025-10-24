@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Prognoză Meteo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 2rem 0;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .forecast-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .forecast-day {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .day-name {
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+        .date-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+        .temps {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+        }
+        .temp-max {
+            font-weight: bold;
+            color: #dc3545;
+        }
+        .temp-min {
+            color: #6c757d;
+        }
+        .description {
+            font-size: 0.9rem;
+            color: #495057;
+            margin: 0.5rem 0;
+        }
+        .details {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌤️ Test Prognoză Meteo pe Zile</h1>
+        <p>Verificare corectitudine prognoză pe următoarele 5 zile</p>
+
+        <div class="test-section">
+            <h3>1. Test Funcție getFallbackForecast()</h3>
+            <button onclick="testFallbackForecast()">Testează Prognoza Fallback</button>
+            <div id="fallback-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Test Calcule Zile și Date</h3>
+            <button onclick="testDayCalculations()">Testează Calcule Zile</button>
+            <div id="day-calc-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Test Varietate Date Prognoză</h3>
+            <button onclick="testForecastVariety()">Testează Variația Datelor</button>
+            <div id="variety-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Afișare Prognoză Completă</h3>
+            <button onclick="displayFullForecast()">Afișează Prognoza Completă</button>
+            <div id="full-forecast"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simulare a funcțiilor din weatherService.js
+        const weatherService = {
+            getDayName: function(date) {
+                const days = ['Duminică', 'Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă'];
+                return days[date.getDay()];
+            },
+
+            getVariedDescription: function(dayIndex) {
+                const descriptions = [
+                    'parțial noros',
+                    'cer senin',
+                    'noros',
+                    'posibilă ploaie',
+                    'vămurit'
+                ];
+                return descriptions[(dayIndex - 1) % descriptions.length];
+            },
+
+            getVariedIcon: function(dayIndex) {
+                const icons = ['02d', '01d', '03d', '10d', '50d'];
+                return icons[(dayIndex - 1) % icons.length];
+            },
+
+            getFallbackForecast: function() {
+                const forecast = [];
+                const today = new Date();
+                
+                // Începem de la mâine (i = 1) pentru prognoza pe următoarele 5 zile
+                for (let i = 1; i <= 5; i++) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() + i);
+                    
+                    forecast.push({
+                        date: date,
+                        day_name: this.getDayName(date),
+                        temperature: {
+                            min: 15 + (i - 1) * 2, // Temperatura crește progresiv
+                            max: 25 + (i - 1) * 2,
+                            avg: 20 + (i - 1) * 2
+                        },
+                        description: this.getVariedDescription(i), // Descrieri variate pentru fiecare zi
+                        icon: this.getVariedIcon(i), // Iconițe variate
+                        humidity: Math.max(40, 65 - (i - 1) * 5), // Umiditate descrescătoare, minim 40%
+                        wind_speed: 3 + (i - 1) * 0.5, // Vânt ușor crescător
+                        precipitation: i % 3 === 0 ? 2.5 : 0 // Precipitații ocazionale
+                    });
+                }
+                
+                return forecast;
+            }
+        };
+
+        function testFallbackForecast() {
+            const result = document.getElementById('fallback-result');
+            result.textContent = 'Se testează prognoza fallback...';
+            
+            try {
+                const forecast = weatherService.getFallbackForecast();
+                
+                let output = '✅ Prognoza fallback generată cu succes:\n\n';
+                output += `Număr zile: ${forecast.length}\n\n`;
+                
+                forecast.forEach((day, index) => {
+                    output += `Ziua ${index + 1}:\n`;
+                    output += `  Data: ${day.date.toLocaleDateString('ro-RO')}\n`;
+                    output += `  Nume zi: ${day.day_name}\n`;
+                    output += `  Temperaturi: Min ${day.temperature.min}°C, Max ${day.temperature.max}°C, Avg ${day.temperature.avg}°C\n`;
+                    output += `  Descriere: ${day.description}\n`;
+                    output += `  Iconiță: ${day.icon}\n`;
+                    output += `  Umiditate: ${day.humidity}%\n`;
+                    output += `  Vânt: ${day.wind_speed} m/s\n`;
+                    output += `  Precipitații: ${day.precipitation}mm\n\n`;
+                });
+                
+                result.className = 'result success';
+                result.textContent = output;
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = `❌ Eroare: ${error.message}`;
+            }
+        }
+
+        function testDayCalculations() {
+            const result = document.getElementById('day-calc-result');
+            result.textContent = 'Se verifică calculele zilelor...';
+            
+            try {
+                const today = new Date();
+                const forecast = weatherService.getFallbackForecast();
+                
+                let output = '✅ Verificare calcule zile:\n\n';
+                output += `Data curentă: ${today.toLocaleDateString('ro-RO')} (${weatherService.getDayName(today)})\n\n`;
+                
+                let allValid = true;
+                forecast.forEach((day, index) => {
+                    const expectedDate = new Date(today);
+                    expectedDate.setDate(today.getDate() + index + 1); // +1 pentru că începem de mâine
+                    
+                    const actualDate = day.date;
+                    const isCorrectDate = actualDate.toDateString() === expectedDate.toDateString();
+                    
+                    output += `Ziua ${index + 1}:\n`;
+                    output += `  Data așteptată: ${expectedDate.toLocaleDateString('ro-RO')}\n`;
+                    output += `  Data actuală: ${actualDate.toLocaleDateString('ro-RO')}\n`;
+                    output += `  Nume zi: ${day.day_name}\n`;
+                    output += `  Corect: ${isCorrectDate ? '✅' : '❌'}\n\n`;
+                    
+                    if (!isCorrectDate) {
+                        allValid = false;
+                    }
+                });
+                
+                output += `Rezultat final: ${allValid ? '✅ Toate zilele sunt corecte!' : '❌ Există erori în calcule!'}`;
+                
+                result.className = allValid ? 'result success' : 'result error';
+                result.textContent = output;
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = `❌ Eroare: ${error.message}`;
+            }
+        }
+
+        function testForecastVariety() {
+            const result = document.getElementById('variety-result');
+            result.textContent = 'Se verifică varietatea datelor...';
+            
+            try {
+                const forecast = weatherService.getFallbackForecast();
+                
+                let output = '✅ Verificare varietate date prognoză:\n\n';
+                
+                // Verificăm descrieri
+                const descriptions = forecast.map(day => day.description);
+                const uniqueDescriptions = [...new Set(descriptions)];
+                output += `Descrieri unice: ${uniqueDescriptions.length}/5 (${uniqueDescriptions.join(', ')})\n\n`;
+                
+                // Verificăm iconițe
+                const icons = forecast.map(day => day.icon);
+                const uniqueIcons = [...new Set(icons)];
+                output += `Iconițe unice: ${uniqueIcons.length}/5 (${uniqueIcons.join(', ')})\n\n`;
+                
+                // Verificăm temperaturi
+                const temps = forecast.map(day => day.temperature.max);
+                const tempsIncreasing = temps.every((temp, index) => index === 0 || temp > temps[index - 1]);
+                output += `Temperaturi maxime: ${temps.join(', ')}\n`;
+                output += `Trend crescător: ${tempsIncreasing ? '✅' : '❌'}\n\n`;
+                
+                // Verificăm umiditate
+                const humidity = forecast.map(day => day.humidity);
+                const humidityDecreasing = humidity.every((hum, index) => index === 0 || hum <= humidity[index - 1]);
+                output += `Umiditate: ${humidity.join('%, ')}%\n`;
+                output += `Trend descrescător: ${humidityDecreasing ? '✅' : '❌'}\n\n`;
+                
+                // Verificăm precipitații
+                const precipitation = forecast.map((day, index) => `Ziua ${index + 1}: ${day.precipitation}mm`);
+                output += `Precipitații:\n  ${precipitation.join('\n  ')}\n\n`;
+                
+                const hasVariety = uniqueDescriptions.length > 1 && uniqueIcons.length > 1 && tempsIncreasing;
+                output += `Rezultat final: ${hasVariety ? '✅ Datele sunt variate și realiste!' : '❌ Lipsă varietate!'}`;
+                
+                result.className = hasVariety ? 'result success' : 'result warning';
+                result.textContent = output;
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = `❌ Eroare: ${error.message}`;
+            }
+        }
+
+        function displayFullForecast() {
+            const container = document.getElementById('full-forecast');
+            container.innerHTML = '<p>Se generează prognoza...</p>';
+            
+            try {
+                const forecast = weatherService.getFallbackForecast();
+                
+                let html = '<h4>Prognoza pe Următoarele 5 Zile:</h4>';
+                html += '<div class="forecast-display">';
+                
+                forecast.forEach((day, index) => {
+                    html += `
+                        <div class="forecast-day">
+                            <div class="day-name">${day.day_name}</div>
+                            <div class="date-text">${day.date.toLocaleDateString('ro-RO')}</div>
+                            <img src="https://openweathermap.org/img/wn/${day.icon}@2x.png" alt="${day.description}">
+                            <div class="temps">
+                                <span class="temp-max">${day.temperature.max}°</span>
+                                <span class="temp-min">${day.temperature.min}°</span>
+                            </div>
+                            <div class="description">${day.description}</div>
+                            <div class="details">
+                                💧 ${day.precipitation}mm | 💨 ${day.wind_speed}m/s | 💧 ${day.humidity}%
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = `<div class="result error">❌ Eroare: ${error.message}</div>`;
+            }
+        }
+
+        // Test automat la încărcare
+        window.addEventListener('load', () => {
+            console.log('Pagina de test prognoză meteo încărcată');
+            testFallbackForecast();
+        });
+    </script>
+</body>
+</html>
