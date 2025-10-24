@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import analyticsService from '../lib/analyticsService';
 import financialService from '../lib/financialService';
+import weatherService from '../lib/weatherService';
 import DataExportManager from './DataExportManager';
 import { useTranslation } from '../contexts/LanguageContext';
 
@@ -8,6 +9,7 @@ const Dashboard = () => {
   const { t } = useTranslation();
   const [analyticsData, setAnalyticsData] = useState(null);
   const [financialStats, setFinancialStats] = useState(null);
+  const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('week');
   const [activeTab, setActiveTab] = useState('overview');
@@ -16,7 +18,41 @@ const Dashboard = () => {
   useEffect(() => {
     loadAnalytics();
     loadFinancialStats();
+    loadWeatherData();
   }, []);
+
+  const loadWeatherData = async () => {
+    try {
+      // Get weather data for current location
+      const data = await weatherService.getWeatherData(44.4268, 26.1025); // Bucharest coordinates
+      setWeatherData(data);
+    } catch (error) {
+      console.error('Error loading weather data:', error);
+    }
+  };
+
+  const getWeatherIcon = (description) => {
+    if (!description) return '🌤️';
+    
+    const desc = description.toLowerCase();
+    if (desc.includes('clear') || desc.includes('senin')) return '☀️';
+    if (desc.includes('cloud')) return '☁️';
+    if (desc.includes('rain')) return '🌧️';
+    if (desc.includes('snow')) return '❄️';
+    if (desc.includes('storm')) return '⛈️';
+    if (desc.includes('fog')) return '🌫️';
+    if (desc.includes('wind')) return '💨';
+    
+    return '🌤️';
+  };
+
+  const getTemperatureColor = (temp) => {
+    if (temp < 0) return '#3B82F6'; // Very cold - blue
+    if (temp < 10) return '#06B6D4'; // Cold - light blue
+    if (temp < 20) return '#10B981'; // Cool - green
+    if (temp < 30) return '#F59E0B'; // Warm - orange
+    return '#EF4444'; // Hot - red
+  };
 
   const loadAnalytics = () => {
     console.log('🔄 Dashboard: loadAnalytics() called');
@@ -88,6 +124,7 @@ const Dashboard = () => {
     analyticsService.clearCache();
     loadAnalytics();
     loadFinancialStats();
+    loadWeatherData();
   };
 
   if (loading) {
@@ -312,6 +349,40 @@ const Dashboard = () => {
           <DataExportManager />
         </div>
       )}
+
+      {/* Weather Widget */}
+      <div className="weather-widget-section">
+        <h3>🌤️ Vreme</h3>
+        <div className="weather-widget">
+          {weatherData ? (
+            <div className="weather-display">
+              <div className="weather-main">
+                <div className="weather-temp">
+                  <span className="temp-value">
+                    {Math.round(weatherData.current?.temperature || 20)}°C
+                  </span>
+                </div>
+                <div className="weather-details">
+                  <div className="weather-icon">
+                    {getWeatherIcon(weatherData.current?.description)}
+                  </div>
+                  <div className="weather-feel">
+                    Simți {Math.round(weatherData.current?.feels_like || weatherData.current?.temperature || 20)}°C
+                  </div>
+                </div>
+              </div>
+              <div className="weather-location">
+                📍 București
+              </div>
+            </div>
+          ) : (
+            <div className="weather-loading">
+              <div className="weather-spinner"></div>
+              <span>Se încarcă...</span>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Overview Section */}
       <div className="overview-section">
@@ -544,7 +615,7 @@ const Dashboard = () => {
                 <span>
                   {financialStats.loans.totalPrincipalGiven > 0 ? 
                     Math.round((financialStats.loans.totalReceived / financialStats.loans.totalPrincipalGiven) * 100) : 0}%
-                  </span>
+                </span>
               </div>
             </div>
 
@@ -570,7 +641,7 @@ const Dashboard = () => {
                 <span>
                   {financialStats.loans.totalPrincipalReceived > 0 ? 
                     Math.round((financialStats.loans.totalPaid / financialStats.loans.totalPrincipalReceived) * 100) : 0}%
-                  </span>
+                </span>
               </div>
             </div>
 
@@ -599,14 +670,14 @@ const Dashboard = () => {
                 <span style={{ color: financialStats.loans.netWorth >= 0 ? '#10B981' : '#EF4444' }}>
                   {Math.abs(financialStats.loans.netWorth) > 0 ? 
                     Math.round((Math.abs(financialStats.loans.netWorth) / Math.max(financialStats.loans.totalAssets, financialStats.loans.totalLiabilities)) * 100) : 0}%
-                  </span>
+                </span>
               </div>
             </div>
 
             <div className="loan-card health-card">
               <div className="loan-header">
                 <span className="loan-icon">❤️</span>
-                <span className="loan-label">{t('dashboard.financialHealth')}</span>
+                <span className="loan-label">{t('dashboard.finacialHealth')}</span>
               </div>
               <div className="loan-value" style={{ 
                 color: financialStats?.financialHealth?.financialHealthScore >= 70 ? '#10B981' : 
@@ -687,7 +758,7 @@ const Dashboard = () => {
                   )}
                   {activity.type === 'reading' && (
                     <span className="activity-progress">
-                      📖 {activity.progress}% complete
+                      📚 {activity.progress}% complete
                     </span>
                   )}
                 </div>
@@ -744,6 +815,94 @@ const Dashboard = () => {
 
         .data-export-section {
           margin-bottom: 30px;
+        }
+
+        /* Weather Widget Styles */
+        .weather-widget-section {
+          margin-bottom: 30px;
+        }
+
+        .weather-widget-section h3 {
+          margin: 0 0 20px 0;
+          color: var(--text-primary);
+          font-size: 1.2rem;
+        }
+
+        .weather-widget {
+          background: var(--bg-secondary);
+          border: 1px solid var(--border-color);
+          border-radius: 12px;
+          padding: 20px;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+
+        .weather-widget:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .weather-display {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 15px;
+        }
+
+        .weather-main {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+
+        .weather-temp {
+          text-align: center;
+        }
+
+        .temp-value {
+          font-size: 2.5rem;
+          font-weight: bold;
+          color: var(--text-primary);
+          margin-bottom: 5px;
+        }
+
+        .weather-details {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .weather-icon {
+          font-size: 2rem;
+        }
+
+        .weather-feel {
+          font-size: 0.9rem;
+          color: var(--text-secondary);
+        }
+
+        .weather-location {
+          font-size: 0.8rem;
+          color: var(--text-secondary);
+          margin-top: 10px;
+        }
+
+        .weather-loading {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          color: var(--text-secondary);
+        }
+
+        .weather-spinner {
+          width: 30px;
+          height: 30px;
+          border: 3px solid var(--border-color);
+          border-top: 3px solid var(--accent-color);
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
         }
 
         .overview-section {
@@ -1266,6 +1425,11 @@ const Dashboard = () => {
             justify-content: center;
           }
 
+          .weather-main {
+            flex-direction: column;
+            gap: 10px;
+          }
+
           .overview-cards {
             grid-template-columns: 1fr;
           }
@@ -1310,6 +1474,14 @@ const Dashboard = () => {
 
           .metrics-grid {
             grid-template-columns: 1fr;
+          }
+
+          .weather-widget {
+            padding: 15px;
+          }
+
+          .temp-value {
+            font-size: 2rem;
           }
         }
       `}</style>

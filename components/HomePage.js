@@ -5,6 +5,7 @@ import todoService from '../lib/todoService';
 import habitService from '../lib/habitService';
 import pomodoroService from '../lib/pomodoroService';
 import financialService from '../lib/financialService';
+import WeatherTracker from '../components/WeatherTracker';
 import Link from 'next/link';
 
 const HomePage = () => {
@@ -170,6 +171,14 @@ const HomePage = () => {
                     <div className="feature-desc">Urmărește progresul</div>
                   </div>
                 </Link>
+
+                <Link href="/weather" className="feature-item">
+                  <div className="feature-icon">🌤️</div>
+                  <div className="feature-text">
+                    <div className="feature-name">Vreme</div>
+                    <div className="feature-desc">Prognoză meteo</div>
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -251,6 +260,13 @@ const HomePage = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Weather Widget Section */}
+      <section className="weather-widget-section">
+        <div className="weather-widget-container">
+          <WeatherTracker />
         </div>
       </section>
 
@@ -600,6 +616,22 @@ const HomePage = () => {
           opacity: 0.9;
         }
 
+        /* Weather Widget Section */
+        .weather-widget-section {
+          padding: 0 20px 40px;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .weather-widget-container {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 24px;
+          padding: 20px;
+          margin-bottom: 40px;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
           .hero-title {
@@ -627,6 +659,10 @@ const HomePage = () => {
           .card-title {
             font-size: 1.2rem;
           }
+
+          .weather-widget-section {
+            padding: 0 16px 30px;
+          }
         }
 
         @media (max-width: 480px) {
@@ -643,6 +679,10 @@ const HomePage = () => {
           }
 
           .glass-card {
+            padding: 16px;
+          }
+
+          .weather-widget-container {
             padding: 16px;
           }
         }

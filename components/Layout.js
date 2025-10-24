@@ -48,15 +48,16 @@ const Layout = ({ children, title, description }) => {
               </h1>
               <p className="subtitle">{t('layout.subtitle')}</p>
               {!isHomePage && (
-                <nav className="transparent-nav">
-                  <a href="/news" className="transparent-nav-link">📰 {t('navigation.news')}</a>
-                  <a href="/todo" className="transparent-nav-link">✅ {t('navigation.todo')}</a>
-                  <a href="/habits" className="transparent-nav-link">🎯 {t('navigation.habits')}</a>
-                  <a href="/pomodoro" className="transparent-nav-link">🍅 {t('navigation.pomodoro')}</a>
-                  <a href="/financial" className="transparent-nav-link">💰 {t('navigation.financial')}</a>
-                  <a href="/dashboard" className="transparent-nav-link">📊 {t('navigation.dashboard')}</a>
-                  <a href="/settings" className="transparent-nav-link">⚙️ {t('navigation.settings')}</a>
-                </nav>
+              <nav className="transparent-nav">
+                <a href="/news" className="transparent-nav-link">📰 {t('navigation.news')}</a>
+                <a href="/weather" className="transparent-nav-link">🌤️ {t('navigation.weather')}</a>
+                <a href="/todo" className="transparent-nav-link">✅ {t('navigation.todo')}</a>
+                <a href="/habits" className="transparent-nav-link">🎯 {t('navigation.habits')}</a>
+                <a href="/pomodoro" className="transparent-nav-link">🍅 {t('navigation.pomodoro')}</a>
+                <a href="/financial" className="transparent-nav-link">💰 {t('navigation.financial')}</a>
+                <a href="/dashboard" className="transparent-nav-link">📊 {t('navigation.dashboard')}</a>
+                <a href="/settings" className="transparent-nav-link">⚙️ {t('navigation.settings')}</a>
+              </nav>
               )}
             </div>
             <div className="header-right">
@@ -87,6 +88,7 @@ const Layout = ({ children, title, description }) => {
           <div className="footer-content">
             <div className="footer-nav">
               <a href="/news" className="footer-nav-link">📰 {t('navigation.news')}</a>
+              <a href="/weather" className="footer-nav-link">🌤️ {t('navigation.weather')}</a>
               <a href="/bookmarks" className="footer-nav-link">📚 {t('navigation.bookmarks')}</a>
               <a href="/history" className="footer-nav-link">📖 {t('navigation.history')}</a>
               <a href="/radio" className="footer-nav-link">🎵 Radio</a>
