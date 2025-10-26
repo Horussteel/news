@@ -89,6 +89,21 @@ http://localhost:3000/dashboard
 
 ## 🔍 **Depanare - Probleme Comune**
 
+### **PROBLEMĂ CRITICĂ: "erderom.ro has not completed the Google verification process"**
+**Soluție IMEDIATĂ:**
+1. Mergi la Google Cloud Console: https://console.cloud.google.com/
+2. Selectează proiectul tău
+3. Navighează la "**APIs & Services**" → "**OAuth consent screen**"
+4. Verifică status-ul - ar trebui să fie "**Testing**"
+5. Scroll down la "**Test users**"
+6. Click "**+ ADD USERS**"
+7. Adaugă email-ul: `masaproiect@gmail.com`
+8. Click "**SAVE**"
+9. Așteaptă 1-2 minute pentru propagare
+10. Reîncearcă autentificarea
+
+**IMPORTANT:** Pentru aplicații în testing, DOAR utilizatorii din lista "Test users" se pot autentifica!
+
 ### **Problemă: "redirect_uri_mismatch"**
 **Soluție:**
 - Verifică în Google Console la Credentials → OAuth Client ID
@@ -105,6 +120,7 @@ http://localhost:3000/dashboard
 **Soluție:**
 - Verifică că Google Calendar API e activat
 - Verifică scope-urile în NextAuth config includ `calendar.readonly`
+- **VERIFICĂ:** Email-ul tău e în "Test users" listă!
 
 ### **Problemă: Widget-ul rămâne la loading**
 **Verifică în browser console (F12):**
@@ -112,7 +128,7 @@ http://localhost:3000/dashboard
 - Verifică network tab pentru failed requests
 - Asigură-te că `.env.local` e încărcat corect
 
-## 📱 **Testare Rapidă**
+## � **Testare Rapidă**
 
 ### 1. Verifică NextAuth session:
 ```javascript
@@ -129,7 +145,7 @@ http://localhost:3000/api/auth/session
 - Mergi la: https://console.developers.google.com/apis/api/calendar/overview
 - Verifică că API e "Enabled"
 
-## 🔐 **Security Considerations**
+## � **Security Considerations**
 
 ### **Important pentru producție:**
 1. **Nu commit** `.env.local` în Git!

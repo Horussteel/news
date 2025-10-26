@@ -12,6 +12,7 @@ import '../lib/readingService'
 import '../lib/habitService'
 import '../lib/pomodoroService'
 import '../lib/financialService'
+import '../lib/gamesService'
 import '../lib/dataExportService'
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
@@ -35,6 +36,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
       });
       import('../lib/financialService').then(module => {
         window.financialService = module.default;
+      });
+      import('../lib/gamesService').then(module => {
+        window.gamesService = module.default;
       });
       import('../lib/dataExportService').then(module => {
         window.dataExportService = module.default;

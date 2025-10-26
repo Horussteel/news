@@ -59,6 +59,7 @@ const Layout = ({ children, title, description }) => {
               <a href="/calendar" className="transparent-nav-link">📅 Calendar</a>
               <a href="/gmail" className="transparent-nav-link">📧 Gmail</a>
               <a href="/dashboard" className="transparent-nav-link">📊 {t('navigation.dashboard')}</a>
+              <a href="/games" className="transparent-nav-link">🎮 {t('navigation.games')}</a>
               <a href="/settings" className="transparent-nav-link">⚙️ {t('navigation.settings')}</a>
               </nav>
               )}
@@ -104,6 +105,7 @@ const Layout = ({ children, title, description }) => {
               <a href="/calendar" className="footer-nav-link">📅 Calendar</a>
               <a href="/gmail" className="footer-nav-link">📧 Gmail</a>
               <a href="/dashboard" className="footer-nav-link">📊 {t('navigation.dashboard')}</a>
+              <a href="/games" className="footer-nav-link">🎮 {t('navigation.games')}</a>
               <a href="/vault" className="footer-nav-link">🔐 {t('navigation.vault')}</a>
               <a href="/settings" className="footer-nav-link">⚙️ {t('navigation.settings')}</a>
             </div>
